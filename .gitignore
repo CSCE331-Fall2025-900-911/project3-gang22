@@ -1,3 +1,5 @@
 .env
 
+*.REST
+
 node_modules/
