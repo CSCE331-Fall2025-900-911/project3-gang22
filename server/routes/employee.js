@@ -23,11 +23,21 @@ router.post('/Order', async (req, res) => {
 
   if (
         !order_time || !employee_id 
-        || !Array.isArray(menu_ids) || !Array.isArray(quantities) || !Array.isArray(totals) 
+        || !menu_ids || !quantities || !totals
         || !card_number || !card_expr_m || !card_expr_y || !card_holder) 
     {
     return res.status(400).json({ error: 'Missing or invalid required fields' });
   }
+
+  if (!Array.isArray(menu_ids) || !Array.isArray(quantities) || !Array.isArray(totals)) {
+    return res.status(400).json({ error: 'Menu IDs, quantities, and totals must be arrays' });
+  }
+
+
+  if (menu_ids.length !== quantities.length || menu_ids.length !== totals.length) {
+    return res.status(400).json({ error: 'Array lengths of menu_ids, quantities, and totals must match' });
+  }
+
 
   try {
     // Calculate totals
