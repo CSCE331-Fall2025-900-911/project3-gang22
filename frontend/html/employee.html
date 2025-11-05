@@ -1,8 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><title>Manager</title></head>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cashier POS</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
 <body>
-  <h1>Employee Page</h1>
-  <script src="employee.js"></script>
+<header class="wrap"><h1>Cashier POS</h1><p class="muted">Shortcuts: "/" to focus, 1–9 add, Enter checkout.</p></header>
+<main class="wrap grid-2">
+    <section>
+        <div class="toolbar">
+            <label for="posSearch" class="sr-only">Search</label>
+            <input id="posSearch" class="input" type="search" placeholder="Search items (/)" />
+        </div>
+        <div id="posMenuGrid" class="grid-cards" aria-live="polite"></div>
+    </section>
+    <aside class="panel" aria-labelledby="posCartHeading">
+        <h2 id="posCartHeading">Order</h2>
+        <div id="posCartItems"></div>
+        <div class="totals">
+            <div class="row"><span>Subtotal</span><strong id="posSubtotal">$0.00</strong></div>
+            <div class="row"><span>Tax</span><strong id="posTax">$0.00</strong></div>
+            <div class="row total"><span>Total</span><strong id="posTotal">$0.00</strong></div>
+        </div>
+        <div class="row gap">
+            <button id="posClear" class="btn">Void</button>
+            <button id="posCheckout" class="btn primary">Charge (Enter)</button>
+        </div>
+        <p class="mt-sm"><a href="index.html">Back</a></p>
+    </aside>
+</main>
+<script src="../js/employee.js" defer></script>
 </body>
 </html>
