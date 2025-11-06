@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Kiosk</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+<header class="wrap"><h1>Order Drinks</h1></header>
+
+
+<main class="wrap grid-2">
+    <section>
+        <div class="toolbar">
+            <label for="search" class="sr-only">Search menu</label>
+            <input id="search" class="input" type="search" placeholder="Search drinks…" />
+        </div>
+        <div id="menuGrid" class="grid-cards" aria-live="polite"></div>
+    </section>
+
+
+    <aside class="panel" aria-labelledby="cartHeading">
+        <h2 id="cartHeading">Your Cart</h2>
+        <div id="cartItems"></div>
+        <div class="totals">
+            <div class="row"><span>Subtotal</span><strong id="subtotal">$0.00</strong></div>
+            <div class="row"><span>Tax</span><strong id="tax">$0.00</strong></div>
+            <div class="row total"><span>Total</span><strong id="total">$0.00</strong></div>
+        </div>
+        <div class="row gap">
+            <button id="clearCart" class="btn">Clear</button>
+            <button id="checkout" class="btn primary">Checkout</button>
+        </div>
+        <p class="mt-sm"><a href="index.html">Back</a></p>
+    </aside>
+</main>
+
+
+<script src="../js/user.js" defer></script>
+</body>
+</html>
