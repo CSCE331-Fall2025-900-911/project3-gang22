@@ -57,3 +57,4 @@ h1{margin:0 0 12px; font-size:2rem}
 #empTable thead th{background:#fafafa}
 
 .navbar{display:flex; margin: 10px 10px; align-items:center; gap: 10px;}
+.menu{display: block; margin: 20px 20px; border-collapse: collapse; td, th {padding: 10px; border: 2px solid black;}}

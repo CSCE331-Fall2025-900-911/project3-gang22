@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Table({ headers, data }) {
   return (
-    <table border="1" cellPadding="5">
+    <table className="menu">
       <thead>
         <tr>
           {headers.map((header, index) => (
