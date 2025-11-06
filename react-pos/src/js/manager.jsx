@@ -1,13 +1,21 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useState } from "react"
 import Navbar from "./manager-components/navbar.jsx";
 import Table from "./manager-components/table.jsx";
+import Chart from "./manager-components/chart.jsx";
 
 const HEADERS = [
   { display: "Menu ID", key: "id" },
   { display: "Drink Name", key: "name" },
   { display: "Price", key: "price" },
   { display: "Image", key: "image" }
+];
+
+const chartData = [
+  { stuff: "Mon", value: 400 },
+  { stuff: "Tue", value: 300 },
+  { stuff: "Wed", value: 500 }
 ];
 
 const MENU = [
@@ -34,12 +42,17 @@ const MENU = [
 ];
 
 
+
 export default function ManagerDashboard() {
+
+  const [showTable, setShowTable] = React.useState(false);
+  const [showChart, setShowChart] = React.useState(false);
+
   return (
     <div>
       <BrowserRouter>
-        <Navbar />
-        <Routes>
+        <Navbar setShowChart={setShowChart} />       
+         <Routes>
           <Route path="/menu" element={<div>Menu Page (stub)</div>} />
           <Route path="/employees" element={<div>Employee Page (stub)</div>} />
           <Route path="/inventory" element={<div>Inventory Page (stub)</div>} />
@@ -53,6 +66,8 @@ export default function ManagerDashboard() {
         </Routes>
 
         <Table headers={HEADERS} data={MENU}/>
+
+        {showChart && <Chart xaxis="stuff" yaxis="value" data={chartData} />}
       </BrowserRouter>
 
     </div>
