@@ -3,7 +3,7 @@
     "id": 1,
     "name": "Black Tea Leaves",
     "unit": "bag",
-    "quantity": 59.98,
+    "quantity": 59.85999999999999,
     "reorder_threshold": 12,
     "unit_cost": 6.99
   },
@@ -11,7 +11,7 @@
     "id": 2,
     "name": "Green Tea Leaves",
     "unit": "bag",
-    "quantity": 59.98,
+    "quantity": 59.93999999999999,
     "reorder_threshold": 12,
     "unit_cost": 6.99
   },
@@ -19,7 +19,7 @@
     "id": 3,
     "name": "Oolong Tea Leaves",
     "unit": "bag",
-    "quantity": 60,
+    "quantity": 59.959999999999994,
     "reorder_threshold": 10,
     "unit_cost": 7.49
   },
@@ -27,7 +27,7 @@
     "id": 4,
     "name": "Taro Powder",
     "unit": "kg",
-    "quantity": 29.78,
+    "quantity": 29.76,
     "reorder_threshold": 8,
     "unit_cost": 8.99
   },
@@ -51,7 +51,7 @@
     "id": 7,
     "name": "Brown Sugar Syrup",
     "unit": "L",
-    "quantity": 79.74,
+    "quantity": 79.43999999999998,
     "reorder_threshold": 20,
     "unit_cost": 2.49
   },
@@ -99,7 +99,7 @@
     "id": 13,
     "name": "Tapioca Pearls",
     "unit": "kg",
-    "quantity": 79.56,
+    "quantity": 79.34,
     "reorder_threshold": 20,
     "unit_cost": 4.99
   },
@@ -107,7 +107,7 @@
     "id": 14,
     "name": "Cups 500ml",
     "unit": "ea",
-    "quantity": 7971,
+    "quantity": 7960,
     "reorder_threshold": 2000,
     "unit_cost": 0.05
   },
@@ -115,7 +115,7 @@
     "id": 15,
     "name": "Sealing Film",
     "unit": "roll",
-    "quantity": 39.855000000000004,
+    "quantity": 39.8,
     "reorder_threshold": 8,
     "unit_cost": 10
   },
@@ -123,7 +123,7 @@
     "id": 16,
     "name": "Straws (fat)",
     "unit": "ea",
-    "quantity": 8971,
+    "quantity": 8960,
     "reorder_threshold": 2000,
     "unit_cost": 0.01
   }

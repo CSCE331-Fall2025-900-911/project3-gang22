@@ -1,3 +1,15 @@
+(async () => {
+    try {
+        const r = await fetch('/api/auth/whoami', { credentials: 'include' });
+        const data = await r.json();
+        const role = data?.user?.role;
+        if (role !== 'manager') location.replace('/user.html');
+    } catch {
+        location.replace('/user.html');
+    }
+})();
+
+
 console.log('[mgr] manager.js loaded');
 
 const $ = (s, c=document) => c.querySelector(s);

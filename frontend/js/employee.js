@@ -1,5 +1,18 @@
 // Cashier POS — fetch live menu from /api/menu and render a fast, keyboard-friendly POS
 
+(async () => {
+    try {
+        const r = await fetch('/api/auth/whoami', { credentials: 'include' });
+        const data = await r.json();
+        const role = data?.user?.role;
+        if (!role || !['cashier', 'manager'].includes(role)) {
+            location.replace('/user.html'); // kiosk
+        }
+    } catch {
+        location.replace('/user.html');
+    }
+})();
+
 const $ = (sel, ctx = document) => ctx.querySelector(sel);
 const byId = (id) => document.getElementById(id);
 

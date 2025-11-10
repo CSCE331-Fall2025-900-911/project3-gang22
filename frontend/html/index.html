@@ -13,6 +13,25 @@
         <a class="nav-btn" href="user.html">Customer Kiosk</a>
         <a class="nav-btn" href="employee.html">Cashier POS</a>
         <a class="nav-btn" href="manager.html">Manager Dashboard</a>
+        <script>
+            (async () => {
+                try {
+                    const r = await fetch('/api/auth/me');
+                    const { user } = await r.json();
+                    if (user) {
+                        document.body.classList.add(`role-${user.role}`);
+                        const el = document.getElementById('whoami');
+                        if (el) el.textContent = `${user.name} (${user.role})`;
+                    } else {
+                        location.href = '/login.html';
+                    }
+                } catch {
+                    location.href = '/login.html';
+                }
+            })();
+        </script>
+        <span id="whoami" aria-live="polite"></span>
+
     </nav>
 </main>
 </body>
