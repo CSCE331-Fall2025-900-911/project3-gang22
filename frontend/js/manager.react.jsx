@@ -53,7 +53,15 @@ function Table({ columns, rows, rowKey=(r,i)=>r.id ?? i, actions, rowClass }) {
     return (
         <div className="table-wrap" role="region" aria-label="data table">
             <table style={{ width:'100%', borderCollapse:'separate', borderSpacing:0 }}>
-                <thead>…</thead>
+                <thead>
+                    <tr>
+                        {columns.map(c => (
+                            <th key={c.key} style={{textAlign: 'left', padding: '8px', borderBottom: '2px solid #ccc'}}>
+                                {c.label}
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
                 <tbody>
                 {rows.map((r,i)=>(
                     <tr key={rowKey(r,i)} className={rowClass ? rowClass(r) : ''}>
