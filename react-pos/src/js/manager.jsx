@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { useState } from "react"
+import { useState } from "react";
+import fetchMenu from "./manager-pages/menu.jsx";
 import Navbar from "./manager-components/navbar.jsx";
 import Table from "./manager-components/table.jsx";
 import Chart from "./manager-components/chart.jsx";
@@ -45,13 +46,31 @@ const MENU = [
 
 export default function ManagerDashboard() {
 
-  const [showTable, setShowTable] = React.useState(false);
-  const [showChart, setShowChart] = React.useState(false);
+  const [tableItems, setTableItems] = useState([]);
+
+  const [showTable, setShowTable] = useState(false);
+  const [showChart, setShowChart] = useState(false);
+
+  const handleMenuClick = async () => {
+    const data = await fetchMenu();
+    setTableItems(data);
+  }
 
   return (
     <div>
       <BrowserRouter>
-        <Navbar setShowChart={setShowChart} />       
+        <Navbar onMenuClick={handleMenuClick} 
+                onEmployeelick={handleEmployeeClick}
+                onInventoryClick={handleInventoryClick}
+                onOrderClick={handleOrderClick}
+                onSalesTrendClick={handleSalesTrendClick}
+                onRestockClick={handleRestockClick}
+                onProductUsageClick={handleProductUsageClick}
+                onSalesReportClick={handleSalesReportClick}
+                onXReportClick={handleXReportClick}
+                onZReportClick={handleZReportClick}
+
+                setShowChart={setShowChart} />       
          <Routes>
           <Route path="/menu" element={<div>Menu Page (stub)</div>} />
           <Route path="/employees" element={<div>Employee Page (stub)</div>} />
@@ -65,7 +84,7 @@ export default function ManagerDashboard() {
           <Route path="/z-report" element={<div>Z-Report Page (stub)</div>} />
         </Routes>
 
-        <Table headers={HEADERS} data={MENU}/>
+        <Table headers={HEADERS} data={tableItems}/>
 
         {showChart && <Chart xaxis="stuff" yaxis="value" data={chartData} />}
       </BrowserRouter>
