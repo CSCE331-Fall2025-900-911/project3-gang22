@@ -49,35 +49,27 @@ function Img({ src, alt }) {
     );
 }
 
-function Table({ columns, rows, rowKey = (r,i)=>r.id ?? i, actions }) {
+function Table({ columns, rows, rowKey=(r,i)=>r.id ?? i, actions, rowClass }) {
     return (
         <div className="table-wrap" role="region" aria-label="data table">
             <table style={{ width:'100%', borderCollapse:'separate', borderSpacing:0 }}>
-                <thead>
-                <tr>
-                    {columns.map(c => <th key={c.key} style={{ textAlign:'left', padding:'8px' }}>{c.label}</th>)}
-                    {actions && <th style={{ width:140 }}></th>}
-                </tr>
-                </thead>
+                <thead>…</thead>
                 <tbody>
-                {rows.map((r, i) => (
-                    <tr key={rowKey(r,i)}>
-                        {columns.map(c => (
+                {rows.map((r,i)=>(
+                    <tr key={rowKey(r,i)} className={rowClass ? rowClass(r) : ''}>
+                        {columns.map(c=>(
                             <td key={c.key} style={{ padding:'8px', borderTop:'1px solid #eee' }}>
                                 {c.render ? c.render(r[c.key], r) : String(r[c.key] ?? '')}
                             </td>
                         ))}
-                        {actions && (
-                            <td style={{ borderTop:'1px solid #eee' }}>
-                                {actions(r)}
-                            </td>
-                        )}
+                        {actions && <td style={{ borderTop:'1px solid #eee' }}>{actions(r)}</td>}
                     </tr>
                 ))}
                 </tbody>
             </table>
         </div>
     );
+
 }
 
 /* ------------------------ tiny chart ------------------------ */
@@ -102,7 +94,11 @@ function SalesTrends() {
     );
 }
 
-/* ------------------------ Menu Editor (CRUD) ------------------------ */
+function nextId(list) {
+    return list && list.length
+        ? Math.max(...list.map(i => Number(i.id) || 0)) + 1
+        : 1;
+}
 /* ------------------------ Menu Editor (CRUD via /api/menu) ------------------------ */
 function MenuEditor() {
     const [items, setItems] = useState([]);
@@ -293,9 +289,6 @@ function MenuEditor() {
     );
 }
 
-function nextId(list) {
-    return list.length ? Math.max(...list.map(i => Number(i.id) || 0)) + 1 : 1;
-}
 
 /* ------------------------ other screens ------------------------ */
 function Employees() {
@@ -308,14 +301,115 @@ function Employees() {
     return <section className="panel"><h2>Employees</h2><Table columns={columns} rows={EMPLOYEES} /></section>;
 }
 
-function Inventory() {
-    const columns = [
-        { key:'sku', label:'SKU' },
-        { key:'item', label:'Item' },
-        { key:'stock', label:'On Hand' }
-    ];
-    return <section className="panel"><h2>Inventory</h2><Table columns={columns} rows={INVENTORY} /></section>;
+/* ---------------------- Inventory Editor ---------------------- */
+function InventoryEditor() {
+    const [rows, setRows] = useState([]);
+    const [editingId, setEditingId] = useState(null);
+    const empty = { id:'', name:'', unit:'', quantity:'0', reorder_threshold:'0', unit_cost:'0' };
+    const [form, setForm] = useState(empty);
+
+    useEffect(() => {
+        fetch('/api/inventory').then(r=>r.json()).then(setRows).catch(()=>setRows([]));
+    }, []);
+
+    function startAdd()  { setEditingId('NEW'); setForm({ ...empty, id: nextId(rows) }); }
+    function startEdit(r){ setEditingId(r.id); setForm({ ...r,
+        quantity:String(r.quantity), reorder_threshold:String(r.reorder_threshold), unit_cost:String(r.unit_cost)
+    }); }
+    function cancel()    { setEditingId(null); setForm(empty); }
+
+    async function save() {
+        const payload = {
+            id: Number(form.id),
+            name: form.name.trim(),
+            unit: form.unit.trim(),
+            quantity: Number(form.quantity),
+            reorder_threshold: Number(form.reorder_threshold),
+            unit_cost: Number(form.unit_cost)
+        };
+        if (!payload.id || !payload.name || !payload.unit) return alert('ID, name, unit are required.');
+        try {
+            if (editingId === 'NEW') {
+                setRows(prev => [...prev, payload].sort((a,b)=>a.id-b.id));
+                const r = await fetch('/api/inventory', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+                if (!r.ok) throw new Error('Add failed');
+                const serverRow = await r.json();
+                setRows(prev => prev.map(x => x.id===serverRow.id? serverRow : x));
+            } else {
+                setRows(prev => prev.map(x => x.id===payload.id? payload : x));
+                const r = await fetch(`/api/inventory/${payload.id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+                if (!r.ok) throw new Error('Update failed');
+                const serverRow = await r.json();
+                setRows(prev => prev.map(x => x.id===serverRow.id? serverRow : x));
+            }
+            cancel();
+        } catch (e) {
+            alert(e.message || 'Request failed');
+            fetch('/api/inventory').then(r=>r.json()).then(setRows).catch(()=>{});
+        }
+    }
+
+    async function del(r) {
+        if (!confirm(`Delete "${r.name}"?`)) return;
+        setRows(prev => prev.filter(x => x.id !== r.id));
+        try {
+            const res = await fetch(`/api/inventory/${r.id}`, { method:'DELETE' });
+            if (!res.ok && res.status !== 204) throw new Error('Delete failed');
+        } catch(e) {
+            alert(e.message || 'Request failed');
+            fetch('/api/inventory').then(r=>r.json()).then(setRows).catch(()=>{});
+        }
+    }
+
+    const columns = useMemo(() => [
+        { key:'id',                 label:'ID' },
+        { key:'name',               label:'Name' },
+        { key:'unit',               label:'Unit' },
+        { key:'quantity',           label:'Qty' },
+        { key:'reorder_threshold',  label:'Reorder @' },
+        { key:'unit_cost',          label:'Unit Cost', render:(v)=>`$${Number(v).toFixed(2)}` },
+        { key:'_need',              label:'Needs Restock', render:(_,r)=> r.quantity <= r.reorder_threshold ? '⚠️ Yes' : '—' }
+    ], []);
+
+    return (
+        <section className="panel">
+            <div className="row gap">
+                <h2 className="grow">Inventory</h2>
+                <button className="btn" onClick={startAdd}>Add Item</button>
+            </div>
+
+            {editingId !== null && (
+                <div className="card" style={{ padding:12, margin:'12px 0' }}>
+                    <div className="row gap">
+                        <label> ID <input type="number" value={form.id} onChange={e=>setForm(f=>({...f,id:e.target.value}))} style={{width:100}}/></label>
+                        <label className="grow"> Name <input type="text" value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} style={{width:'100%'}}/></label>
+                        <label> Unit <input type="text" value={form.unit} onChange={e=>setForm(f=>({...f,unit:e.target.value}))} style={{width:100}}/></label>
+                        <label> Qty <input type="number" value={form.quantity} onChange={e=>setForm(f=>({...f,quantity:e.target.value}))} style={{width:120}}/></label>
+                        <label> Reorder @ <input type="number" value={form.reorder_threshold} onChange={e=>setForm(f=>({...f,reorder_threshold:e.target.value}))} style={{width:120}}/></label>
+                        <label> Unit Cost <input type="number" step="0.01" value={form.unit_cost} onChange={e=>setForm(f=>({...f,unit_cost:e.target.value}))} style={{width:120}}/></label>
+                    </div>
+                    <div className="row gap mt-sm">
+                        <button className="btn" onClick={save}>Save</button>
+                        <button className="btn subtle" onClick={cancel}>Cancel</button>
+                    </div>
+                </div>
+            )}
+
+            <Table
+                columns={columns}
+                rows={rows}
+                rowClass={(r)=> r.quantity <= r.reorder_threshold ? 'low' : '' }
+                actions={(r)=>(
+                    <div className="row gap-sm">
+                        <button className="btn" onClick={()=>startEdit(r)}>Edit</button>
+                        <button className="btn danger" onClick={()=>del(r)}>Delete</button>
+                    </div>
+                )}
+            />
+        </section>
+    );
 }
+
 
 /* ------------------------ app shell ------------------------ */
 const VIEWS = [
@@ -336,7 +430,7 @@ function App() {
 
             {view === 'menu' && <MenuEditor />}
             {view === 'employees' && <Employees />}
-            {view === 'inventory' && <Inventory />}
+            + {view === 'inventory' && <InventoryEditor />}
             {view === 'sales' && <SalesTrends />}
 
             {['orders','restock','usage','xreport','zreport'].includes(view) && (

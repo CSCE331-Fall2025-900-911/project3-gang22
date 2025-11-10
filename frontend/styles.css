@@ -64,3 +64,22 @@ h1{margin:0 0 12px; font-size:2rem}
     background-color: #f9f9f9;
     border-radius: 6px;
 }
+
+tr.low td { background: #fff6f6; }
+
+/*.table-wrap thead th {*/
+/*    background-color: #f5f5f5;*/
+/*    position: sticky;*/
+/*    top: 0;*/
+/*    z-index: 2;*/
+/*    font-weight: 600;*/
+/*    padding: 8px;*/
+/*    border-bottom: 2px solid #ccc;*/
+/*}*/
+
+/*.table-wrap {*/
+/*    max-height: 480px;*/
+/*    overflow-y: auto;*/
+/*    border-radius: 8px;*/
+/*}*/
+

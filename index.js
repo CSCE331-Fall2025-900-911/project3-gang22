@@ -13,6 +13,7 @@ app.use('/styles.css', express.static(path.join(__dirname, 'frontend/styles.css'
 
 // API
 app.use('/api/menu', require('./server/routes/menu'));
+app.use('/api/inventory', require('./server/routes/inventory'));
 
 app.get('/', (_,res)=>res.sendFile(path.join(__dirname,'frontend/html/index.html')));
 app.listen(PORT, ()=>console.log(`http://localhost:${PORT}`));
