@@ -298,15 +298,140 @@ function MenuEditor() {
 }
 
 
-/* ------------------------ other screens ------------------------ */
-function Employees() {
-    const columns = [
-        { key:'id', label:'ID' },
-        { key:'name', label:'Name' },
-        { key:'role', label:'Role', render:v => (Number(v)===1?'Manager':'Employee') },
-        { key:'schedule', label:'Schedule' }
-    ];
-    return <section className="panel"><h2>Employees</h2><Table columns={columns} rows={EMPLOYEES} /></section>;
+/* ------------------------ Employee Editor ------------------------ */
+function EmployeeEditor() {
+    const [rows, setRows] = useState([]);
+    const [editingId, setEditingId] = useState(null);
+    const empty = { id: '', name: '', role: '0', schedule: '0' };
+    const [form, setForm] = useState(empty);
+
+    useEffect(() => {
+        fetch('/api/employees')
+            .then(r => r.json())
+            .then(setRows)
+            .catch(() => setRows([]));
+    }, []);
+
+    function startAdd() {
+        setEditingId('NEW');
+        setForm({ ...empty, id: nextId(rows) });
+    }
+
+    function startEdit(r) {
+        setEditingId(r.id);
+        setForm({ ...r });
+    }
+
+    function cancel() {
+        setEditingId(null);
+        setForm(empty);
+    }
+
+    async function save() {
+        const payload = {
+            id: Number(form.id),
+            name: form.name.trim(),
+            role: Number(form.role),
+            schedule: form.schedule.trim()
+        };
+        if (!payload.name || payload.role == null || !payload.schedule) {
+            alert('Name, role, and schedule are required.');
+            return;
+        }
+
+        try {
+            if (editingId === 'NEW') {
+                setRows(prev => [...prev, payload].sort((a, b) => a.id - b.id));
+                const r = await fetch('/api/employees/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: payload.name,
+                        role: payload.role,
+                        schedule: payload.schedule
+                    })
+                });
+                if (!r.ok) throw new Error('Add failed');
+                const serverRow = await r.json();
+                setRows(prev => prev.map(x => x.id === payload.id ? serverRow : x));
+            } else {
+                setRows(prev => prev.map(x => x.id === payload.id ? payload : x));
+                const r = await fetch('/api/employees/update', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!r.ok) throw new Error('Update failed');
+            }
+            cancel();
+        } catch (e) {
+            alert(e.message || 'Request failed');
+            fetch('/api/employees').then(r => r.json()).then(setRows).catch(() => {});
+        }
+    }
+
+    async function del(r) {
+        if (!confirm(`Delete "${r.name}"?`)) return;
+        setRows(prev => prev.filter(x => x.id !== r.id));
+        try {
+            const res = await fetch('/api/employees/del', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: r.id })
+            });
+            if (!res.ok) throw new Error('Delete failed');
+        } catch (e) {
+            alert(e.message || 'Request failed');
+            fetch('/api/employees').then(r => r.json()).then(setRows).catch(() => {});
+        }
+    }
+
+    const columns = useMemo(() => [
+        { key: 'id', label: 'ID' },
+        { key: 'name', label: 'Name' },
+        { key: 'role', label: 'Role', render: v => Number(v) === 1 ? 'Manager' : 'Employee' },
+        { key: 'schedule', label: 'Schedule' }
+    ], []);
+
+    return (
+        <section className="panel">
+            <div className="row gap">
+                <h2 className="grow">Employees</h2>
+                <button className="btn" onClick={startAdd}>Add Employee</button>
+            </div>
+
+            {editingId !== null && (
+                <div className="card" style={{ padding: 12, margin: '12px 0' }}>
+                    <div className="row gap">
+                        <label> ID <input type="number" value={form.id} onChange={e => setForm(f => ({ ...f, id: e.target.value }))} style={{ width: 100 }} /></label>
+                        <label className="grow"> Name <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={{ width: '100%' }} /></label>
+                        <label> Role
+                            <select value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
+                                <option value="0">Employee</option>
+                                <option value="1">Manager</option>
+                            </select>
+                        </label>
+                        <label> Schedule <input type="text" value={form.schedule} onChange={e => setForm(f => ({ ...f, schedule: e.target.value }))} style={{ width: 120 }} /></label>
+                    </div>
+                    <div className="row gap mt-sm">
+                        <button className="btn" onClick={save}>Save</button>
+                        <button className="btn subtle" onClick={cancel}>Cancel</button>
+                    </div>
+                </div>
+            )}
+
+            <Table
+                columns={columns}
+                rows={rows}
+                actions={(r) => (
+                    <div className="row gap-sm">
+                        <button className="btn" onClick={() => startEdit(r)}>Edit</button>
+                        <button className="btn danger" onClick={() => del(r)}>Delete</button>
+                    </div>
+                )}
+            />
+        </section>
+    );
 }
 
 /* ---------------------- Inventory Editor ---------------------- */
@@ -437,7 +562,7 @@ function App() {
             </div>
 
             {view === 'menu' && <MenuEditor />}
-            {view === 'employees' && <Employees />}
+            {view === 'employees' && <EmployeeEditor />}
             + {view === 'inventory' && <InventoryEditor />}
             {view === 'sales' && <SalesTrends />}
 
