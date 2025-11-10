@@ -1,16 +1,12 @@
-const express = require('express');
 const path = require('path');
+const express = require('express');
 const app = express();
-const port = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
 
-// serve the static frontend files
-app.use(express.static(path.join(__dirname, '/html')));
+app.use(express.static(path.join(__dirname, 'frontend/html')));
+app.use('/js',     express.static(path.join(__dirname, 'frontend/js')));
+app.use('/images', express.static(path.join(__dirname, 'frontend/html', 'images')));
+app.use('/styles.css', express.static(path.join(__dirname, 'frontend', 'styles.css')));
 
-// default route -> serve index.html
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../html/index.html'));
-});
-
-app.listen(port, () => {
-  console.log(`✅ Listening on http://localhost:${port}`);
-});
+app.get('/', (_,res)=>res.sendFile(path.join(__dirname,'frontend/html/index.html')));
+app.listen(PORT, ()=>console.log(`http://localhost:${PORT}`));
