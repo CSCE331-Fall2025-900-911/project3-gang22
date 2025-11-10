@@ -7,7 +7,11 @@ import Manager from "./js/manager.jsx";
 
 export default function Home() {
 
-    const [ currentScreen, setScreen ]= useState();
+    const [ currentScreen, setScreen ] = useState();
+
+    if (currentScreen === "Customer") return <Customer />;
+    if (currentScreen === "Employee") return <Employee />;
+    if (currentScreen === "Manager") return <Manager />;
 
     return (
         <div>
@@ -19,12 +23,6 @@ export default function Home() {
                 <button className="nav-btn" onClick={() => setScreen("Manager")}>Manager Dashboard</button>
                 </nav>
             </main>
-
-            <div>
-                {currentScreen === "Customer" && <Customer />}
-                {currentScreen === "Employee" && <Employee />}
-                {currentScreen === "Manager" && <Manager />}
-            </div>
         </div>
     )
 }
