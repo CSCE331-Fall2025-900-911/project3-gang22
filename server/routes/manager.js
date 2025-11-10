@@ -81,6 +81,32 @@ router.get('/orders', async (req, res) => {
   }
 });
 
+router.get('/sales-report', async (req, res) => {
+  const { dateFmt, range, dateStr } = req.query;
+
+  if (!dateFmt || !range || !dateStr) {
+    return res.status(400).json({ error: 'Missing required fields: dateFmt, range, or dateStr' });
+  }
+
+  try {
+    const sql = `
+      SELECT 
+        TO_CHAR(order_time, '${dateFmt}') AS label, 
+        SUM(total) AS total_sales
+      FROM p2_orders
+      WHERE DATE_TRUNC('${range}', order_time) = DATE_TRUNC('${range}', CAST($1 AS DATE))
+      GROUP BY label
+      ORDER BY MIN(order_time);
+    `;
+
+    const result = await query(sql, [dateStr]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching sales report:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // --- POST ---
 
 router.post('/menu/add', async (req, res) => {
