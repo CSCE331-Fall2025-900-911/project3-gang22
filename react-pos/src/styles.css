@@ -58,3 +58,5 @@ h1{margin:0 0 12px; font-size:2rem}
 
 .navbar{display:flex; margin: 10px 10px; align-items:center; gap: 10px;}
 .menu{display: block; margin: 20px 20px; border-collapse: collapse; td, th {padding: 5px; border: 2px solid black;}}
+
+.page-container{display: flex; flex-direction: column; align-items: center; justify-content: center;}
