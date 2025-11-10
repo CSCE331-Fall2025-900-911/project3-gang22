@@ -55,14 +55,16 @@ export default function Navbar() {
     const navigate = useNavigate();
     const [showChart, setShowChart] = useState(false);
     const [chartData, setChartData] = useState([]);
-    const [tableHeaders, setTableHeaders] = useState([MENU_HEADERS]);
+    const [tableHeaders, setTableHeaders] = useState([]);
     const [tableItems, setTableItems] = useState([]);
     const [date, setDate] = useState("10-25-2024")
 
     useEffect(() => {
         async function loadMenuOnStart() {
         const data = await fetchMenu();
-        setTableItems(data);             
+        setTableItems(data); 
+        setTableHeaders(MENU_HEADERS);
+            
         }
         loadMenuOnStart();
     }, [])
