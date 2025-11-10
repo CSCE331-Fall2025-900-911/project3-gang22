@@ -1,8 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><title>Manager</title></head>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Manager Dashboard</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
 <body>
-  <h1>Manager Page</h1>
-  <script src="manager.js"></script>
+<main class="wrap">
+    <h1>Manager Dashboard</h1>
+
+
+    <section class="panel" aria-labelledby="eHead">
+        <div class="row gap">
+            <h2 id="eHead" class="grow">Employees</h2>
+            <button id="refreshEmp" class="btn">Refresh</button>
+            <button id="exportEmp" class="btn">Export CSV</button>
+        </div>
+        <div class="table-wrap">
+            <table id="empTable">
+                <thead>
+                <tr><th>ID</th><th>Name</th><th>Role</th><th>Schedule</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <p class="muted">Uses in-memory mock until you wire a backend.</p>
+    </section>
+
+
+    <p class="mt-sm"><a href="index.html">Back</a></p>
+</main>
+<script src="../js/manager.js" defer></script>
 </body>
 </html>
