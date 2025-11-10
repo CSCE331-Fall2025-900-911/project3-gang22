@@ -3,7 +3,7 @@
     "id": 1,
     "name": "Black Tea Leaves",
     "unit": "bag",
-    "quantity": 60,
+    "quantity": 59.98,
     "reorder_threshold": 12,
     "unit_cost": 6.99
   },
@@ -11,7 +11,7 @@
     "id": 2,
     "name": "Green Tea Leaves",
     "unit": "bag",
-    "quantity": 60,
+    "quantity": 59.98,
     "reorder_threshold": 12,
     "unit_cost": 6.99
   },
@@ -27,7 +27,7 @@
     "id": 4,
     "name": "Taro Powder",
     "unit": "kg",
-    "quantity": 30,
+    "quantity": 29.78,
     "reorder_threshold": 8,
     "unit_cost": 8.99
   },
@@ -35,7 +35,7 @@
     "id": 5,
     "name": "Milk Powder",
     "unit": "kg",
-    "quantity": 50,
+    "quantity": 49.94,
     "reorder_threshold": 10,
     "unit_cost": 8.99
   },
@@ -43,7 +43,7 @@
     "id": 6,
     "name": "Fresh Milk",
     "unit": "L",
-    "quantity": 120,
+    "quantity": 119.8,
     "reorder_threshold": 30,
     "unit_cost": 1.49
   },
@@ -51,7 +51,7 @@
     "id": 7,
     "name": "Brown Sugar Syrup",
     "unit": "L",
-    "quantity": 80,
+    "quantity": 79.74,
     "reorder_threshold": 20,
     "unit_cost": 2.49
   },
@@ -67,7 +67,7 @@
     "id": 9,
     "name": "Fruit Puree (Mango)",
     "unit": "L",
-    "quantity": 40,
+    "quantity": 39.97,
     "reorder_threshold": 10,
     "unit_cost": 3.99
   },
@@ -75,7 +75,7 @@
     "id": 10,
     "name": "Fruit Puree (Strawberry)",
     "unit": "L",
-    "quantity": 40,
+    "quantity": 39.97,
     "reorder_threshold": 10,
     "unit_cost": 3.99
   },
@@ -83,7 +83,7 @@
     "id": 11,
     "name": "Fruit Puree (Lychee)",
     "unit": "L",
-    "quantity": 40,
+    "quantity": 39.97,
     "reorder_threshold": 10,
     "unit_cost": 3.99
   },
@@ -91,7 +91,7 @@
     "id": 12,
     "name": "Fruit Puree (Peach)",
     "unit": "L",
-    "quantity": 40,
+    "quantity": 39.94,
     "reorder_threshold": 10,
     "unit_cost": 3.99
   },
@@ -99,7 +99,7 @@
     "id": 13,
     "name": "Tapioca Pearls",
     "unit": "kg",
-    "quantity": 80,
+    "quantity": 79.56,
     "reorder_threshold": 20,
     "unit_cost": 4.99
   },
@@ -107,7 +107,7 @@
     "id": 14,
     "name": "Cups 500ml",
     "unit": "ea",
-    "quantity": 8000,
+    "quantity": 7971,
     "reorder_threshold": 2000,
     "unit_cost": 0.05
   },
@@ -115,7 +115,7 @@
     "id": 15,
     "name": "Sealing Film",
     "unit": "roll",
-    "quantity": 40,
+    "quantity": 39.855000000000004,
     "reorder_threshold": 8,
     "unit_cost": 10
   },
@@ -123,7 +123,7 @@
     "id": 16,
     "name": "Straws (fat)",
     "unit": "ea",
-    "quantity": 9000,
+    "quantity": 8971,
     "reorder_threshold": 2000,
     "unit_cost": 0.01
   }

@@ -115,10 +115,41 @@ function bindSearch(items) {
     bindSearch(items);
 
     if (EL.clearBtn) EL.clearBtn.onclick = () => { cart.clear(); renderCart(); };
-    if (EL.checkoutBtn) EL.checkoutBtn.onclick = () => {
-        alert('Thanks! (stub)');
-        cart.clear(); renderCart();
+    if (EL.checkoutBtn) EL.checkoutBtn.onclick = async () => {
+        const items = [...cart.values()].map(({ item, qty }) => ({
+            id: item.id,
+            qty
+        }));
+
+        if (!items.length) {
+            alert('Cart is empty.');
+            return;
+        }
+
+        try {
+            const r = await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items })
+            });
+
+            const data = await r.json().catch(() => ({}));
+
+            if (!r.ok) {
+                alert('Order failed: ' + (data.error || r.statusText));
+                console.error(data);
+                return;
+            }
+
+            alert('Order placed successfully!');
+            cart.clear();
+            renderCart();
+        } catch (e) {
+            console.error(e);
+            alert('Network error placing order');
+        }
     };
+
 
     // auto-refresh grid every 30s (non-destructive to cart)
     setInterval(async () => {
