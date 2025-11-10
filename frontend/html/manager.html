@@ -1,12 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manager Dashboard</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Manager Dashboard</title>
+    <link rel="stylesheet" href="../styles.css" />
 </head>
 <body>
-  <div id="root"></div>
-  <script type="module" src="../js/manager.js" defer></script>
+<main class="wrap">
+    <h1>Manager Dashboard</h1>
+    <div id="root"></div>
+    <p class="mt-sm"><a href="index.html">Back</a></p>
+</main>
+
+<!-- React + Chart.js via CDN -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<!-- Babel transforms JSX in the browser (fine for class demos) -->
+<script src="https://unpkg.com/@babel/standalone@7.23.9/babel.min.js"></script>
+
+<!-- Your React code -->
+<script type="text/babel" data-presets="env,react" src="../js/manager.react.jsx"></script>
 </body>
 </html>

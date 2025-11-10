@@ -1,104 +1,130 @@
-// Customer Kiosk — pure JS fallback data
-const $ = (s, c=document) => c.querySelector(s);
+// Customer Kiosk — fetch live menu from /api/menu and render a big tap-friendly UI
+
+const $ = (sel, ctx = document) => ctx.querySelector(sel);
+const byId = (id) => document.getElementById(id);
+
+// Try to match whatever IDs your kiosk HTML uses
+const EL = {
+    grid: byId('menuGrid') || byId('posMenuGrid'),
+    cartBox: byId('cartItems') || byId('posCartItems'),
+    subtotal: byId('kSubtotal') || byId('subtotal') || byId('posSubtotal'),
+    tax: byId('kTax') || byId('tax') || byId('posTax'),
+    total: byId('kTotal') || byId('total') || byId('posTotal'),
+    search: byId('menuSearch') || byId('posSearch'),
+    clearBtn: byId('kClear') || byId('clear') || byId('posClear'),
+    checkoutBtn: byId('kCheckout') || byId('checkout') || byId('posCheckout')
+};
+
 const TAX = 0.0825;
-const money = n => `$${Number(n).toFixed(2)}`;
+const money = (n) => `$${Number(n).toFixed(2)}`;
 
-// Hardcoded menu (20 items). Images optional; will fall back.
-const MENU = [
-    { id:1, name:'Classic Black Milk Tea with Boba', price:4.50, image:'/images/drink1-3.jpg' },
-    { id:2, name:'Jasmine Green Milk Tea with Boba', price:4.75, image:'/images/drink1-3.jpg' },
-    { id:3, name:'Oolong Milk Tea with Boba', price:4.95, image:'/images/drink1-3.jpg' },
-    { id:4, name:'Taro Milk Tea with Boba', price:5.25, image:'/images/drink4.jpg' },
-    { id:5, name:'Thai Milk Tea with Boba', price:5.10, image:'/images/drink5.jpg' },
-    { id:6, name:'Honeydew Milk Tea with Boba', price:4.85, image:'/images/drink6.jpg' },
-    { id:7, name:'Matcha Latte with Boba', price:5.50, image:'/images/drink7.jpg' },
-    { id:8, name:'Brown Sugar Milk Tea with Boba', price:5.75, image:'/images/drink8.jpg' },
-    { id:9, name:'Strawberry Fruit Tea with Boba', price:4.60, image:'/images/placeholder.png' },
-    { id:10, name:'Mango Fruit Tea with Boba', price:4.70, image:'/images/drink10.jpg' },
-    { id:11, name:'Lychee Fruit Tea with Boba', price:4.95, image:'/images/drink11.jpg' },
-    { id:12, name:'Passionfruit Green Tea with Boba', price:4.90, image:'/images/placeholder.png' },
-    { id:13, name:'Peach Oolong Tea with Boba', price:5.00, image:'/images/drink13.jpg' },
-    { id:14, name:'Coconut Milk Tea with Boba', price:5.15, image:'/images/drink14.jpg' },
-    { id:15, name:'Almond Milk Tea with Boba', price:5.20, image:'/images/placeholder.png' },
-    { id:16, name:'Coffee Milk Tea with Boba', price:5.30, image:'/images/drink16.jpg' },
-    { id:17, name:'Wintermelon Milk Tea with Boba', price:4.80, image:'/images/placeholder.png' },
-    { id:18, name:'Avocado Smoothie with Boba', price:6.25, image:'/images/placeholder.png' },
-    { id:19, name:'Strawberry Banana Smoothie w/ Boba', price:6.50, image:'/images/drink19.jpg' },
-    { id:20, name:'Mango Slush with Boba', price:6.00, image:'/images/drink20.jpg' }
-];
+async function fetchMenu() {
+    try {
+        const r = await fetch('/api/menu');
+        if (!r.ok) throw new Error('bad response');
+        return await r.json();
+    } catch {
+        return [];
+    }
+}
 
+const cart = new Map();
 
-const cart = new Map(); // id -> { item, qty }
+function add(item) {
+    const cur = cart.get(item.id) || { item, qty: 0 };
+    cur.qty++;
+    cart.set(item.id, cur);
+    renderCart();
+}
+function dec(item) {
+    const cur = cart.get(item.id);
+    if (!cur) return;
+    cur.qty--;
+    if (cur.qty <= 0) cart.delete(item.id);
+    renderCart();
+}
+
+function updateTotals() {
+    let subtotal = 0;
+    cart.forEach(({ item, qty }) => { subtotal += item.price * qty; });
+    if (EL.subtotal) EL.subtotal.textContent = money(subtotal);
+    if (EL.tax) EL.tax.textContent = money(subtotal * TAX);
+    if (EL.total) EL.total.textContent = money(subtotal * (1 + TAX));
+}
+
+function renderCart() {
+    if (!EL.cartBox) return;
+    EL.cartBox.innerHTML = '';
+    cart.forEach(({ item, qty }) => {
+        const row = document.createElement('div');
+        row.className = 'cart-row';
+        row.innerHTML = `
+      <div class="cart-row-name">${item.name}</div>
+      <div class="cart-row-qty">
+        <button class="btn btn-sm" data-a="dec">−</button>
+        <span class="qty">${qty}</span>
+        <button class="btn btn-sm" data-a="inc">+</button>
+      </div>
+      <div class="cart-row-price">${money(item.price * qty)}</div>
+    `;
+        row.querySelector('[data-a="dec"]').onclick = () => dec(item);
+        row.querySelector('[data-a="inc"]').onclick = () => add(item);
+        EL.cartBox.appendChild(row);
+    });
+    updateTotals();
+}
+
+function tileHTML(it) {
+    const img = it.image || '/images/placeholder.png';
+    return `
+    <button class="tile" data-id="${it.id}" title="${it.name}">
+      <img src="${img}" alt="${it.name}" onerror="this.src='/images/placeholder.png'"/>
+      <div class="tile-name">${it.name}</div>
+      <div class="tile-price">${money(it.price)}</div>
+    </button>
+  `;
+}
 
 function renderMenu(items) {
-    const grid = $('#menuGrid');
-    grid.innerHTML = '';
-    items.forEach(it => {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'card';
-        card.setAttribute('aria-label', `${it.name} ${money(it.price)}`);
-        card.innerHTML = `
-<img class="card-img" src="${it.image || '/images/placeholder.png'}" alt="${it.name}" onerror="this.src='/images/placeholder.png'">
-<div class="card-body">
-<div class="card-name">${it.name}</div>
-<div class="card-price">${money(it.price)}</div>
-</div>`;
-        card.addEventListener('click', () => add(it));
-        grid.appendChild(card);
+    if (!EL.grid) return;
+    EL.grid.innerHTML = '';
+    items.forEach((it) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'tile-wrap';
+        wrap.innerHTML = tileHTML(it);
+        const btn = wrap.firstElementChild;
+        btn.onclick = () => add(it);
+        EL.grid.appendChild(wrap);
     });
 }
 
-
-function add(item){
-    const cur = cart.get(item.id) || { item, qty:0 };
-    cur.qty++; cart.set(item.id, cur); renderCart();
-}
-function dec(id){
-    const cur = cart.get(id); if(!cur) return; cur.qty--; if(cur.qty<=0) cart.delete(id); renderCart();
-}
-
-
-function totals(){
-    let sub=0; cart.forEach(({item,qty})=> sub += item.price*qty);
-    const tax=sub*TAX; return {sub, tax, total: sub+tax};
-}
-
-function renderCart(){
-    const box = $('#cartItems'); box.innerHTML='';
-    cart.forEach(({item,qty})=>{
-        const row = document.createElement('div'); row.className='cart-row';
-        row.innerHTML = `
-<div class="cart-row-name">${item.name}</div>
-<div class="cart-row-qty">
-<button class="btn sm" data-a="dec">−</button>
-<span class="qty">${qty}</span>
-<button class="btn sm" data-a="inc">+</button>
-</div>
-<div class="cart-row-price">${money(item.price*qty)}</div>`;
-        row.querySelector('[data-a="dec"]').onclick = () => dec(item.id);
-        row.querySelector('[data-a="inc"]').onclick = () => add(item);
-        box.appendChild(row);
+function bindSearch(items) {
+    if (!EL.search) return;
+    EL.search.addEventListener('input', () => {
+        const q = EL.search.value.toLowerCase();
+        const filtered = items.filter(it => it.name.toLowerCase().includes(q));
+        renderMenu(filtered);
     });
-    const {sub,tax,total} = totals();
-    $('#subtotal').textContent = money(sub);
-    $('#tax').textContent = money(tax);
-    $('#total').textContent = money(total);
 }
 
+// init + optional 30s refresh
+(async function init() {
+    const items = await fetchMenu();
+    renderMenu(items);
+    renderCart();
+    bindSearch(items);
 
-// Search
-$('#search').addEventListener('input', e => {
-    const q = e.target.value.toLowerCase();
-    const filtered = MENU.filter(it => it.name.toLowerCase().includes(q));
-    renderMenu(filtered);
-});
+    if (EL.clearBtn) EL.clearBtn.onclick = () => { cart.clear(); renderCart(); };
+    if (EL.checkoutBtn) EL.checkoutBtn.onclick = () => {
+        alert('Thanks! (stub)');
+        cart.clear(); renderCart();
+    };
 
-
-// Buttons
-$('#clearCart').addEventListener('click', ()=>{ cart.clear(); renderCart(); });
-$('#checkout').addEventListener('click', ()=>{ alert('Thanks! (stub)'); cart.clear(); renderCart(); });
-
-
-// Boot
-renderMenu(MENU); renderCart();
+    // auto-refresh grid every 30s (non-destructive to cart)
+    setInterval(async () => {
+        const fresh = await fetchMenu();
+        const q = (EL.search?.value || '').toLowerCase();
+        const filtered = q ? fresh.filter(it => it.name.toLowerCase().includes(q)) : fresh;
+        renderMenu(filtered);
+    }, 30000);
+})();
