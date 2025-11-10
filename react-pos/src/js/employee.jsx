@@ -1,33 +1,23 @@
-import React, { useEffect } from "react";
+import React from "react";
+import { useEffect, useState } from "react";
+import fetchMenu from "./employee-pages/menu";
 
 export default function Employee() {
+
+   const [ menuItems, setMenuItems ] = useState([]);
+  
+    useEffect(() => {
+        async function loadMenuOnStart() {
+          const data = await fetchMenu();
+          setMenuItems(data);             
+        }
+        loadMenuOnStart();
+    }, [])
+
   useEffect(() => {
     const $ = (s, c = document) => c.querySelector(s);
     const TAX = 0.0825;
     const money = n => `$${Number(n).toFixed(2)}`;
-    const MENU = [
-      { id:1, name:'Classic Black Milk Tea with Boba', price:4.50, image:'/images/drink1-3.jpg' },
-      { id:2, name:'Jasmine Green Milk Tea with Boba', price:4.75, image:'/images/drink1-3.jpg' },
-      { id:3, name:'Oolong Milk Tea with Boba', price:4.95, image:'/images/drink1-3.jpg' },
-      { id:4, name:'Taro Milk Tea with Boba', price:5.25, image:'/images/drink4.jpg' },
-      { id:5, name:'Thai Milk Tea with Boba', price:5.10, image:'/images/drink5.jpg' },
-      { id:6, name:'Honeydew Milk Tea with Boba', price:4.85, image:'/images/drink6.jpg' },
-      { id:7, name:'Matcha Latte with Boba', price:5.50, image:'/images/drink7.jpg' },
-      { id:8, name:'Brown Sugar Milk Tea with Boba', price:5.75, image:'/images/drink8.jpg' },
-      { id:9, name:'Strawberry Fruit Tea with Boba', price:4.60, image:'/images/placeholder.png' },
-      { id:10,name:'Mango Fruit Tea with Boba', price:4.70, image:'/images/drink10.jpg' },
-      { id:11,name:'Lychee Fruit Tea with Boba', price:4.95, image:'/images/drink11.jpg' },
-      { id:12,name:'Passionfruit Green Tea with Boba', price:4.90, image:'/images/placeholder.png' },
-      { id:13,name:'Peach Oolong Tea with Boba', price:5.00, image:'/images/drink13.jpg' },
-      { id:14,name:'Coconut Milk Tea with Boba', price:5.15, image:'/images/drink14.jpg' },
-      { id:15,name:'Almond Milk Tea with Boba', price:5.20, image:'/images/placeholder.png' },
-      { id:16,name:'Coffee Milk Tea with Boba', price:5.30, image:'/images/drink16.jpg' },
-      { id:17,name:'Wintermelon Milk Tea with Boba', price:4.80, image:'/images/placeholder.png' },
-      { id:18,name:'Avocado Smoothie with Boba', price:6.25, image:'/images/placeholder.png' },
-      { id:19,name:'Strawberry Banana Smoothie w/ Boba', price:6.50, image:'/images/drink19.jpg' },
-      { id:20,name:'Mango Slush with Boba', price:6.00, image:'/images/drink20.jpg' },
-    ];
-
     const cart = new Map();
     function add(item){ const c=cart.get(item.id)||{item,qty:0}; c.qty++; cart.set(item.id,c); renderCart(); }
     function dec(id){ const c=cart.get(id); if(!c) return; c.qty--; if(c.qty<=0) cart.delete(id); renderCart(); }
@@ -38,7 +28,7 @@ export default function Employee() {
       const box=$('#posCartItems'); box.innerHTML='';
       cart.forEach(({item,qty})=>{
         const row=document.createElement('div'); row.className='cart-row';
-        row.innerHTML=`<div class="cart-row-name">${item.name}</div>
+        row.innerHTML=`<div class="cart-row-name">${item.drink_name}</div>
         <div class="cart-row-qty"><button class="btn sm" data-a="dec">−</button>
         <span class="qty">${qty}</span><button class="btn sm" data-a="inc">+</button></div>
         <div class="cart-row-price">${money(item.price*qty)}</div>`;
@@ -57,9 +47,9 @@ export default function Employee() {
       items.forEach((it,i)=>{
         const b=document.createElement('button'); b.type='button'; b.className='card';
         b.innerHTML=`
-        <img class="card-img" src="${it.image || '/images/placeholder.png'}" alt="${it.name}" onerror="this.src='/images/placeholder.png'">
+        <img class="card-img" src="/images/drink${it.id}.jpg" alt="${it.drink_name}" onerror="this.src='/images/placeholder.png'">
         <div class="card-body">
-          <div class="card-name">${i<9?`${i+1}. `:''}${it.name}</div>
+          <div class="card-name">${i<9?`${i+1}. `:''}${it.drink_name}</div>
           <div class="card-price">${money(it.price)}</div>
         </div>`;
         b.addEventListener('click',()=>add(it)); grid.appendChild(b);
@@ -75,15 +65,15 @@ export default function Employee() {
       });
       input.addEventListener('input',()=>{
         const q=input.value.toLowerCase();
-        renderMenu(items.filter(it=>it.name.toLowerCase().includes(q)));
+        renderMenu(items.filter(it=>it.drink_name.toLowerCase().includes(q)));
       });
     }
 
     $('#posClear').addEventListener('click',()=>{ cart.clear(); renderCart(); });
     $('#posCheckout').addEventListener('click',()=>{ alert('Paid (stub)'); cart.clear(); renderCart(); });
 
-    renderMenu(MENU); renderCart(); bindShortcuts(MENU);
-  }, []);
+    renderMenu(menuItems); renderCart(); bindShortcuts(menuItems);
+  }, [menuItems]);
 
   return (
     <main className="wrap grid-2">

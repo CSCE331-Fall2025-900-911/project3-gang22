@@ -8,8 +8,8 @@ export default function Customer() {
 
     useEffect(() => {
         async function loadMenuOnStart() {
-        const data = await fetchMenu();
-        setMenuItems(data);             
+          const data = await fetchMenu();
+          setMenuItems(data);             
         }
         loadMenuOnStart();
     }, [])
@@ -31,9 +31,7 @@ export default function Customer() {
             card.className = 'card';
             card.setAttribute('aria-label', `${it.drink_name} ${money(it.price)}`);
             card.innerHTML = `
-            <img class="card-img" src="/drink${it.id}.jpg} || '/images/placeholder.png'}" 
-                alt="${it.drink_name}" 
-                onerror="this.src='/images/placeholder.png'">
+            <img class="card-img" src="/images/drink${it.id}.jpg" alt="${it.drink_name}" onerror="this.src='/images/placeholder.png'">
             <div class="card-body">
                 <div class="card-name">${it.drink_name}</div>
                 <div class="card-price">${money(it.price)}</div>
