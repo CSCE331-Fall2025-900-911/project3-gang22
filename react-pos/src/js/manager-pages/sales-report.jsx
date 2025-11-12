@@ -1,10 +1,16 @@
+import { loadSalesReport } from '../api';
+
+/**
+ * @param {string} dateFmt - e.g., "day" | "week" | "month"
+ * @param {string} range   - e.g., "last7" | "last30" | "custom"
+ * @param {string} dateStr - depends on your backend (often "YYYY-MM-DD" or "YYYY-MM-DD,YYYY-MM-DD")
+ */
 export default async function fetchSalesReport(dateFmt, range, dateStr) {
-  try {
-    const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/sales-report?dateFmt=${dateFmt}&range=${range}&dateStr=${dateStr}`);
-    const data = await response.json()
-    return data;                           
-  } catch (err) {
-    console.error("Error fetching menu:", err);
-    return [];
-  }
+    try {
+        const data = await loadSalesReport(dateFmt, range, dateStr);
+        return data;
+    } catch (err) {
+        console.error('Error fetching sales report:', err);
+        return [];
+    }
 }

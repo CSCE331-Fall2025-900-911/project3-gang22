@@ -1,10 +1,16 @@
-export default async function fetchOrders(date) {
-  try {
-    const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/orders?date=${encodeURIComponent(date)}`);
-    const data = await response.json()
-    return data;                           
-  } catch (err) {
-    console.error("Error fetching menu:", err);
-    return [];
-  }
+import { loadOrdersByDate } from '../api';
+
+/**
+ * @param {string | [string, string]} dateOrRange
+ *   - "YYYY-MM-DD" for a single day
+ *   - ["YYYY-MM-DD","YYYY-MM-DD"] for a range
+ */
+export default async function fetchOrders(dateOrRange) {
+    try {
+        const data = await loadOrdersByDate(dateOrRange);
+        return data;
+    } catch (err) {
+        console.error('Error fetching orders:', err);
+        return [];
+    }
 }

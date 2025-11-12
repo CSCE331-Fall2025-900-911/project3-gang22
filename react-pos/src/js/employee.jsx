@@ -1,8 +1,16 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import fetchMenu from "./employee-pages/menu";
+import { useSession } from "./useSession";
+import { LoginButton } from "./LoginButton";
 
 export default function Employee() {
+
+    const { loading, authenticated, user } = useSession();
+    if (loading) return <p>Loading…</p>;
+    if (!authenticated) return <LoginButton />;
+    if (!(user?.role === "cashier" || user?.role === "manager")) return <p>Access denied.</p>;
+    return <div>{/* cashier UI here */}</div>;
 
    const [ menuItems, setMenuItems ] = useState([]);
   

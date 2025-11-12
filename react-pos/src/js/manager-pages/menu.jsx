@@ -1,10 +1,12 @@
+import { loadMenu } from '../api';
+
+//this version uses a centralized helper instead of hardcoding the URL
 export default async function fetchMenu() {
-  try {
-    const response = await fetch("https://project3-gang22-backend.onrender.com/api/managers/menu");
-    const data = await response.json(); 
-    return data;                           
-  } catch (err) {
-    console.error("Error fetching menu:", err);
-    return [];
-  }
+    try {
+        const data = await loadMenu();  // this calls /manager/menu and includes cookies
+        return data;
+    } catch (err) {
+        console.error('Error fetching menu:', err);
+        return [];
+    }
 }
