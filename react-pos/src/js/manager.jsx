@@ -1,6 +1,10 @@
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Navbar from "./manager-components/navbar.jsx";
+import MenuPage from "./manager-pages/menu.jsx";
+import EmployeePage from "./manager-pages/employees.jsx";
+import InventoryPage from "./manager-pages/inventory.jsx";
+import OrdersPage from "./manager-pages/orders.jsx";
 
 export default function Manager() {
 
@@ -9,10 +13,11 @@ export default function Manager() {
       <BrowserRouter>
         <Navbar />       
          <Routes>
-          <Route path="/menu" element={<div></div>} />
-          <Route path="/employees" element={<div></div>} />
-          <Route path="/inventory" element={<div></div>} />
-          <Route path="/orders" element={<div></div>} />
+          <Route path="/" element={<Navigate to="/menu" replace />} />
+          <Route path="/menu" element={<MenuPage />} />
+          <Route path="/employees" element={<EmployeePage />} />
+          <Route path="/inventory" element={<InventoryPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
           <Route path="/sales-trends" element={<div></div>} />
           <Route path="/restock" element={<div></div>} />
           <Route path="/product-usage" element={<div></div>} />
