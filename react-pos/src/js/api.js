@@ -158,4 +158,4 @@ export const submitCashierOrder = (body) =>
    Optional helpers
    =========================== */
 
-export const getSession = () => apiFetch('/api/me', { withCredentials: true });
+export const getSession = () => apiFetch('/auth/me', { withCredentials: true });
