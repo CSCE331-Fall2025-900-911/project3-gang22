@@ -1,11 +1,14 @@
+const API_BASE = 'https://project3-gang22-backend.onrender.com';
+
 export default async function fetchMenu() {
-  try {
-    const response = await fetch("https://project3-gang22-backend.onrender.com/api/employees/menu");
-    const data = await response.json(); 
-    console.log(data);
-    return data;                           
-  } catch (err) {
-    console.error("Error fetching menu:", err);
-    return [];
-  }
+    const res = await fetch(`${API_BASE}/api/employees/menu`, {
+        headers: { Accept: 'application/json' }
+    });
+
+    if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`HTTP ${res.status} ${res.statusText}: ${txt.slice(0,200)}`);
+    }
+
+    return res.json();
 }

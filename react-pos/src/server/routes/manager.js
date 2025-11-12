@@ -2,6 +2,17 @@ const express = require('express');
 const router = express.Router();
 const { query } = require('../db');
 
+function requireAuth(req, res, next) {
+    if (!req.user) return res.status(401).json({ error: 'Not logged in' });
+    next();
+}
+function requireManager(req, res, next) {
+    if (req.user?.role !== 'manager') return res.status(403).json({ error: 'Forbidden' });
+    next();
+}
+
+router.use(requireAuth, requireManager);
+
 // --- GET ---
 
 router.get('/menu', async (req, res) => {
@@ -83,26 +94,29 @@ router.get('/orders', async (req, res) => {
 
 // --- POST ---
 
+// POST /manager/menu/add
 router.post('/menu/add', async (req, res) => {
-  const { drink_name, price, category, picture_url, tea_type, milk_type } = req.body;
+    try {
+        const { drink_name, price, category, picture_url, tea_type, milk_type } = req.body;
 
-  if (!drink_name || !price || !category || !picture_url || !tea_type || !milk_type) {
-    return res.status(400).json({ error: 'Missing or invalid required fields' });
-  }
+        if (!drink_name || price == null || !category || !picture_url) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
 
-  try {
-    const result = await query(
-      `INSERT INTO p2_menu (drink_name, price, category, picture_url, tea_type, milk_type)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING *`,
-      [drink_name, price, category, picture_url, tea_type, milk_type]
-    );
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error('Error adding menu:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+        const result = await query(
+            `insert into p2_menu (drink_name, price, category, picture_url, tea_type, milk_type)
+       values ($1,$2,$3,$4,$5,$6)
+       returning *`,
+            [drink_name, price, category, picture_url, tea_type || null, milk_type || null]
+        );
+
+        return res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error('Error adding menu:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
 });
+
 
 router.post('/employee/add', async (req, res) => {
   const { name, role, schedule } = req.body;
@@ -148,26 +162,41 @@ router.post('/inventory/add', async (req, res) => {
 
 // --- PUT ---
 
+// PUT /manager/menu/update
 router.put('/menu/update', async (req, res) => {
-  const { id, drink_name, price, category, picture_url, tea_type, milk_type } = req.body;
+    try {
+        const { id, drink_name, price, category, picture_url, tea_type, milk_type } = req.body;
+        if (!id) return res.status(400).json({ error: 'id required' });
 
-  if (!id || !drink_name || !price || !category || !picture_url || !tea_type || !milk_type) {
-    return res.status(400).json({ error: 'Missing or invalid required fields' });
-  }
+        await query(
+            `update p2_menu
+         set drink_name = coalesce($2, drink_name),
+             price      = coalesce($3, price),
+             category   = coalesce($4, category),
+             picture_url= coalesce($5, picture_url),
+             tea_type   = $6,
+             milk_type  = $7
+       where id = $1`,
+            [
+                id,
+                drink_name ?? null,
+                price ?? null,
+                category ?? null,
+                picture_url ?? null,
+                tea_type ?? null,
+                milk_type ?? null
+            ]
+        );
 
-  try {
-    await query(
-      `UPDATE p2_menu
-       SET drink_name=$1, price=$2, category=$3, picture_url=$4, tea_type=$5, milk_type=$6
-       WHERE id=$7`,
-      [drink_name, price, category, picture_url, tea_type, milk_type, id]
-    );
-    res.json({ message: 'Menu item updated successfully' });
-  } catch (err) {
-    console.error('Error updating menu:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+        const { rows } = await query('select * from p2_menu where id=$1', [id]);
+        if (!rows.length) return res.status(404).json({ error: 'Not found' });
+        return res.json(rows[0]);
+    } catch (err) {
+        console.error('Error updating menu:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
 });
+
 
 router.put('/employee/update', async (req, res) => {
   const { id, name, role, schedule } = req.body;
@@ -214,20 +243,17 @@ router.put('/inventory/update', async (req, res) => {
 // --- DELETE ---
 
 router.delete('/menu/del', async (req, res) => {
-  const { id } = req.body;
-
-  if (!id) {
-    return res.status(400).json({ error: 'Missing or invalid required field: id' });
-  }
-
-  try {
-    await query(`DELETE FROM p2_menu WHERE id=$1`, [id]);
-    res.json({ message: 'Menu item deleted successfully' });
-  } catch (err) {
-    console.error('Error deleting menu:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+    try {
+        const { id } = req.body;
+        if (!id) return res.status(400).json({ error: 'id required' });
+        await query('delete from p2_menu where id=$1', [id]);
+        return res.sendStatus(204);
+    } catch (e) {
+        console.error('Error deleting menu:', e);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
 });
+
 
 router.delete('/employee/del', async (req, res) => {
   const { id } = req.body;

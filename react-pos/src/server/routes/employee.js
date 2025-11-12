@@ -14,7 +14,7 @@ router.get('/menu', async (req, res) => {
 });
 
 // --- POST ---
-router.post('/Order', async (req, res) => {
+router.post('/order', async (req, res) => {
   const { 
         order_time, employee_id, 
         menu_ids, quantities, totals,
