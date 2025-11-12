@@ -18,15 +18,34 @@ const {
     NODE_ENV,
 } = process.env;
 
+if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !GOOGLE_CALLBACK_URL) {
+  console.error('[AUTH] Missing Google OAuth env vars:', {
+    id: !!GOOGLE_CLIENT_ID,
+    secret: !!GOOGLE_CLIENT_SECRET,
+    callback: !!GOOGLE_CALLBACK_URL,
+    envPath: path.resolve(__dirname, '../../.env')
+  });
+  throw new Error('Missing Google OAuth env vars');
+}
+
 const isProd = NODE_ENV === 'production';
 
 /* -------------------- Passport serialize/deserialize -------------------- */
 passport.serializeUser((user, done) =>
     done(null, { id: user.id, role: user.role, email: user.email })
 );
-passport.deserializeUser(async (obj, done) => {
-    // Trust the session payload. If you prefer, re-query by obj.id.
-    done(null, obj);
+passport.deserializeUser(async (id, done) => {
+  try {
+    const { query } = require('../db'); // adjust relative path if needed
+    const r = await query(
+      'SELECT id, email, role, display_name FROM users WHERE id = $1',
+      [id]
+    );
+    if (r.rows.length === 0) return done(null, false);
+    done(null, r.rows[0]);  // req.user will have current role
+  } catch (e) {
+    done(e); 
+  }
 });
 
 /* -------------------- Google OAuth strategy -------------------- */
@@ -50,10 +69,8 @@ passport.use(
                     `
             INSERT INTO users (email, display_name, provider, provider_id, role)
             VALUES ($1, $2, 'google', $3,
-                    COALESCE(
-                      (SELECT role FROM users WHERE email = $1),
-                      CASE WHEN $1 = 'reveille.bubbletea@gmail.com' THEN 'manager' ELSE 'customer' END
-                    )
+                COALESCE((SELECT role FROM users WHERE email=$1), 'customer')
+                )
             )
             ON CONFLICT (email)
             DO UPDATE SET display_name = EXCLUDED.display_name,
