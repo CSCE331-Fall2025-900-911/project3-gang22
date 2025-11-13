@@ -4,6 +4,7 @@ import Table from "../manager-components/table";
 export default function SalesReportPage() {
 
   const [ salesReportItems , setSalesReportItems ] = useState([]);
+  let interval = "day";
 
   
     const SALES_REPORT_HEADERS = [
@@ -17,7 +18,7 @@ export default function SalesReportPage() {
     useEffect(() => {
       async function getSalesReport() {
         try {
-         const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/sales-report?dateFmt=${dateFmt}&range=${range}&dateStr=${dateStr}`);
+         const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/sales-report?interval=${encodeURIComponent(interval)}`);
          const data = await response.json();
          setSalesReportItems(data);                           
         } catch (err) {

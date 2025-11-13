@@ -4,7 +4,7 @@ import Table from "../manager-components/table";
 export default function OrdersPage() {
 
   const [ orderItems , setOrderItems ] = useState([]);
-  const [date, setDate] = useState("10-25-2024")
+  let date = "10-25-2024";
 
 
     const ORDER_HEADERS = [

@@ -81,6 +81,51 @@ router.get('/orders', async (req, res) => {
   }
 });
 
+router.get('/sales-report', async (req, res) => {
+
+  const { interval } = req.query;
+
+   let timeFormat;
+   
+   switch (interval.toLowerCase()) {
+      case "hour": 
+        timeFormat = "YYYY-MM-DD HH24:00";
+        break;
+      case "day":
+        timeFormat = "YYYY-MM-DD";
+        break;
+      case "week":
+        timeFormat = "IYYY-IW";
+        break;
+      case "month":
+        timeFormat ="YYYY-MM";
+        break;
+      default:
+        timeFormat = "YYYY-MM-DD";
+    }
+
+  try {
+    const result = await query(
+      `SELECT m.drink_name AS drink_name,
+      TO_CHAR(o.order_time, '${timeFormat}') AS time_label,
+      SUM(oi.quantity) AS total_qty,
+      SUM(oi.total) AS total_sales
+      FROM p2_order_items oi
+      JOIN p2_orders o ON oi.order_id = o.id
+      JOIN p2_menu m ON oi.menu_id = m.id
+      GROUP BY drink_name, time_label
+      ORDER BY time_label, drink_name`,
+      [interval]
+    );
+          // Needs implementing: WHERE o.order_time >= ? AND o.order_time < ?
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching sales report:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // --- POST ---
 
 router.post('/menu/add', async (req, res) => {
