@@ -1,10 +1,34 @@
-export default async function fetchSalesReport(dateFmt, range, dateStr) {
-  try {
-    const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/sales-report?dateFmt=${dateFmt}&range=${range}&dateStr=${dateStr}`);
-    const data = await response.json()
-    return data;                           
-  } catch (err) {
-    console.error("Error fetching menu:", err);
-    return [];
-  }
+import { useEffect, useState } from "react";
+import Table from "../manager-components/table";
+
+export default function SalesReportPage() {
+
+  const [ salesReportItems , setSalesReportItems ] = useState([]);
+
+  
+    const SALES_REPORT_HEADERS = [
+      { display: "Order ID", key: "id" },
+      { display: "Subtotal", key: "subtotal" },
+      { display: "Tax", key: "tax" },
+      { display: "Total", key: "total"},
+      { display: "Order Time", key: "order_time"},
+    ];
+
+    useEffect(() => {
+      async function getSalesReport() {
+        try {
+         const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/sales-report?dateFmt=${dateFmt}&range=${range}&dateStr=${dateStr}`);
+         const data = await response.json();
+         setSalesReportItems(data);                           
+        } catch (err) {
+          console.error("Error fetching menu:", err);
+        }
+      }
+      getSalesReport();
+    }, []); 
+
+  return (
+    <Table headers={SALES_REPORT_HEADERS} data={salesReportItems} />
+  )
 }
+

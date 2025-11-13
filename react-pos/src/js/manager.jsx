@@ -5,6 +5,7 @@ import MenuPage from "./manager-pages/menu.jsx";
 import EmployeePage from "./manager-pages/employees.jsx";
 import InventoryPage from "./manager-pages/inventory.jsx";
 import OrdersPage from "./manager-pages/orders.jsx";
+import SalesReportPage from "./manager-pages/sales-report.jsx";
 
 export default function Manager() {
 
@@ -21,7 +22,7 @@ export default function Manager() {
           <Route path="/sales-trends" element={<div></div>} />
           <Route path="/restock" element={<div></div>} />
           <Route path="/product-usage" element={<div></div>} />
-          <Route path="/sales-report" element={<div></div>} />
+          <Route path="/sales-report" element={<SalesReportPage />} />
           <Route path="/x-report" element={<div></div>} />
           <Route path="/z-report" element={<div></div>} />
         </Routes>

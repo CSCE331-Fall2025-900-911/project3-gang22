@@ -7,26 +7,11 @@ import "../../styles.css"
 
 export default function Navbar() {
 
-    const SALES_HEADERS = [
-        { display: "Order ID", key: "id" },
-        { display: "Subtotal", key: "subtotal" },
-        { display: "Tax", key: "tax" },
-        { display: "Total", key: "total"},
-        { display: "Order Time", key: "order_time"},
-    ];
-
     const navigate = useNavigate();
     const [showChart, setShowChart] = useState(false);
     const [chartData, setChartData] = useState([]);
     const [tableHeaders, setTableHeaders] = useState([]);
     const [tableItems, setTableItems] = useState([]);
-    
-    const handleSalesClick = async () => {
-        const data = await fetchSales(date);
-        setTableItems(data);
-        setTableHeaders(SALES_HEADERS);
-    }
-
 
     return (
         <div className="page-container">
@@ -42,8 +27,6 @@ export default function Navbar() {
                 <button className="nav-btn" onClick={() => { navigate("/x-report"); setShowChart(true);}}>X-Report</button>
                 <button className="nav-btn" onClick={() => { navigate("/z-report"); setShowChart(true);}}>Z-Report</button>
             </nav>
-
-            {/* <Table headers={tableHeaders} data={tableItems}/> */}
 
             {showChart && <Chart xaxis="stuff" yaxis="value" data={chartData} showChart />}
         </div>
