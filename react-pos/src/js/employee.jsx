@@ -96,6 +96,7 @@ export default function Employee() {
           <button id="posClear" className="btn">Void</button>
           <button id="posCheckout" className="btn primary">Charge (Enter)</button>
         </div>
+                <p className="mt-sm"><a href="/">Back</a></p>
       </aside>
     </main>
   );
