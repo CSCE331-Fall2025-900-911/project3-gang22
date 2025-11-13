@@ -16,6 +16,7 @@ export default function Navbar() {
     return (
         <div className="page-container">
             <nav className="navbar">
+                <button className="nav-btn" onClick={() => { window.location.pathname = '/'; }}>Back to Home</button>
                 <button className="nav-btn" onClick={() => { navigate("/menu"); setShowChart(false);}}>Menu</button>
                 <button className="nav-btn" onClick={() => { navigate("/employees"); setShowChart(false);}}>Employees</button>
                 <button className="nav-btn" onClick={() => { navigate("/inventory"); setShowChart(false);}}>Inventory</button>
