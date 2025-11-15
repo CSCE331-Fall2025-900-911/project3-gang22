@@ -6,13 +6,14 @@ export default function Employee() {
 
    const [ menuItems, setMenuItems ] = useState([]);
   
-    useEffect(() => {
-        async function loadMenuOnStart() {
-          const data = await fetchMenu();
-          setMenuItems(data);             
-        }
-        loadMenuOnStart();
-    }, [])
+  // Fetches menu data whenever component is mounted
+  useEffect(() => {
+      async function loadMenuOnStart() {
+        const data = await fetchMenu();
+        setMenuItems(data);             
+      }
+      loadMenuOnStart();
+  }, [])
 
   useEffect(() => {
     const $ = (s, c = document) => c.querySelector(s);

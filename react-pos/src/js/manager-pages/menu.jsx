@@ -13,6 +13,7 @@ export default function MenuPage() {
       { display: "Image", key: "picture_url" }
   ];
 
+  // Fetches menu data from backend when component is mounted and stores it for use inside the table
   useEffect(() => {
     async function getMenu() {
       try {
@@ -26,6 +27,7 @@ export default function MenuPage() {
     getMenu();
   }, []); 
 
+  // Returns table containing stored menu data
   return (
     <Table headers={MENU_HEADERS} data={menuItems} />
   )

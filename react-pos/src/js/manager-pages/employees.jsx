@@ -12,6 +12,7 @@ export default function EmployeePage() {
       { display: "Schedule", key: 'schedule'},
     ];
 
+  // Fetches employee data from backend when component is mounted and stores it for use inside the table
     useEffect(() => {
       async function getEmployees() {
         try {
@@ -25,6 +26,7 @@ export default function EmployeePage() {
       getEmployees();
     }, []); 
 
+  // Returns table containing stored employee data
   return (
     <Table headers={EMPLOYEE_HEADERS} data={employeeItems} />
   )

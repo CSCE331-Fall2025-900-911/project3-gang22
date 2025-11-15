@@ -14,19 +14,21 @@ export default function InventoryPage() {
       { display: "Reorder Threshold", key: 'reorder_threshold'},
     ];
 
-    useEffect(() => {
-      async function getInventory() {
-        try {
-          const response = await fetch("https://project3-gang22-backend.onrender.com/api/managers/inventory");
-          const data = await response.json(); 
-          setInventoryItems(data);                           
-        } catch (err) {
-          console.error("Error fetching menu:", err);
-        }
+  // Fetches inventory data from backend when component is mounted and stores it for use inside the table
+  useEffect(() => {
+    async function getInventory() {
+      try {
+        const response = await fetch("https://project3-gang22-backend.onrender.com/api/managers/inventory");
+        const data = await response.json(); 
+        setInventoryItems(data);                           
+      } catch (err) {
+        console.error("Error fetching menu:", err);
       }
-      getInventory();
-    }, []); 
+    }
+    getInventory();
+  }, []); 
 
+  // Returns table containing stored inventory data
   return (
     <Table headers={INVENTORY_HEADERS} data={inventoryItems} />
   )

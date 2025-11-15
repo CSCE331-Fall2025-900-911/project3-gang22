@@ -15,19 +15,21 @@ export default function SalesReportPage() {
       { display: "Order Time", key: "order_time"},
     ];
 
-    useEffect(() => {
-      async function getSalesReport() {
-        try {
-         const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/sales-report?interval=${encodeURIComponent(interval)}`);
-         const data = await response.json();
-         setSalesReportItems(data);                           
-        } catch (err) {
-          console.error("Error fetching menu:", err);
-        }
+  // Fetches sales report data from backend when component is mounted and stores it for use inside the table
+  useEffect(() => {
+    async function getSalesReport() {
+      try {
+        const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/sales-report?interval=${encodeURIComponent(interval)}`);
+        const data = await response.json();
+        setSalesReportItems(data);                           
+      } catch (err) {
+        console.error("Error fetching menu:", err);
       }
-      getSalesReport();
-    }, []); 
+    }
+    getSalesReport();
+  }, []); 
 
+  // Returns table containing stored sales report data
   return (
     <Table headers={SALES_REPORT_HEADERS} data={salesReportItems} />
   )

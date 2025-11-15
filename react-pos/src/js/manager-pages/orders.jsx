@@ -16,22 +16,24 @@ export default function OrdersPage() {
       { display: "Order Time", key: "order_time"},
     ];
 
-    useEffect(() => {
-      async function getOrders() {
-        setLoading(true);
-        try {
-          const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/orders?date=${encodeURIComponent(date)}`);
-          const data = await response.json()
-          setOrderItems(data);                           
-        } catch (err) {
-          console.error("Error fetching menu:", err);
-        } finally {
-          setLoading(false);
-        }
+  // Fetches order data from backend when component is mounted and stores it for use inside the table
+  useEffect(() => {
+    async function getOrders() {
+      setLoading(true);
+      try {
+        const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/orders?date=${encodeURIComponent(date)}`);
+        const data = await response.json()
+        setOrderItems(data);                           
+      } catch (err) {
+        console.error("Error fetching menu:", err);
+      } finally {
+        setLoading(false);
       }
-      getOrders();
-    }, [date]); 
+    }
+    getOrders();
+  }, [date]); 
 
+  // Returns table containing stored order data
   return (
     <div style={{ padding: "1rem" }}>
       <h2>Orders by Date</h2>

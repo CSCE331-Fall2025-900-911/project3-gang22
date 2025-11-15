@@ -1,5 +1,6 @@
 import React from "react";
 
+// Dynamically populates table with passed in headers and data
 export default function Table({ headers, data }) {
   return (
     <table className="menu">
