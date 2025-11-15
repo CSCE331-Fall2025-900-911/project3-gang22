@@ -9,6 +9,7 @@ import SalesReportPage from "./manager-pages/sales-report.jsx";
 
 export default function Manager() {
 
+  // Renders appropriate page when Navbar updates the URL
   return (
     <div>
       <BrowserRouter>

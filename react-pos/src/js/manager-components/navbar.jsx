@@ -13,6 +13,7 @@ export default function Navbar() {
     const [tableHeaders, setTableHeaders] = useState([]);
     const [tableItems, setTableItems] = useState([]);
 
+// Handles navigation between manager pages by setting url to specified roots
     return (
         <div className="page-container">
             <nav className="navbar">
