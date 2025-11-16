@@ -1,5 +1,8 @@
+import React from "react";
 import { useEffect, useState } from "react";
-import Table from "../manager-components/table";
+import { Virtuoso } from "react-virtuoso";
+import "../../styles.css";
+
 
 export default function MenuPage() {
 
@@ -19,7 +22,7 @@ export default function MenuPage() {
       try {
       const response = await fetch("https://project3-gang22-backend.onrender.com/api/managers/menu");
       const data = await response.json(); 
-      setMenuItems(data);                           
+      setMenuItems(data); 
       } catch (err) {
       console.error("Error fetching menu:", err);
       }
@@ -29,6 +32,24 @@ export default function MenuPage() {
 
   // Returns table containing stored menu data
   return (
-    <Table headers={MENU_HEADERS} data={menuItems} />
+    <div className="page-content-container">
+       <div className="header-row">
+        {MENU_HEADERS.map((header) => (
+          <p key={header.key}>{header.display}</p>
+        ))}
+      </div>
+      <Virtuoso
+        data={menuItems}
+        itemContent={(index, item) => (
+          <div className="grid-row">
+            <p>{item.id}</p>
+            <p>{item.drink_name}</p>
+            <p>{item.price}</p>
+            <p>{item.category}</p>
+            <p>{item.picture_url}</p>
+          </div>
+        )}
+      />
+    </div>
   )
 }

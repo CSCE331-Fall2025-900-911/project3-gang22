@@ -56,7 +56,11 @@ h1{margin:0 0 12px; font-size:2rem}
 #empTable th,#empTable td{padding:.6rem .8rem; border-bottom:1px solid #f1f1f1; text-align:left}
 #empTable thead th{background:#fafafa}
 
-.navbar{display:flex; margin: 10px 10px; align-items:center; gap: 10px;}
-.menu{display: block; margin: 20px 20px; border-collapse: collapse; td, th {padding: 5px; border: 2px solid black;}}
+.navbar{display:flex; margin:10px 10px; align-items:center; gap: 10px}
+.header-row{display:grid; height:50px; grid-template-columns: repeat(7, 300px); column-gap:5px; font-weight:bold; margin-bottom: 10px}
+.header-row p{display: flex;  box-sizing: border-box; border:2px solid black; border-radius: 10px; padding:8px}
+.grid-row{display:grid; height:50px; grid-template-columns: repeat(7, 300px); column-gap:5px}
+.grid-row p{display: flex;  box-sizing: border-box; border:1px solid black; border-radius: 10px; padding:8px}
 
-.page-container{display: flex; flex-direction: column; align-items: center; justify-content: center;}
+.page-container{display:flex; flex-direction:column; align-items:center; justify-content:center}
+.page-content-container{display:flex; flex-direction:column; height:100vh; align-items: stretch; overflow-x: auto}

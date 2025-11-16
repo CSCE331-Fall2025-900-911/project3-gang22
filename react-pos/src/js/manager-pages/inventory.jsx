@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Table from "../manager-components/table";
+import { Virtuoso } from "react-virtuoso";
 
 export default function InventoryPage() {
 
@@ -30,6 +30,24 @@ export default function InventoryPage() {
 
   // Returns table containing stored inventory data
   return (
-    <Table headers={INVENTORY_HEADERS} data={inventoryItems} />
+    <div className="page-content-container">
+      <div className="header-row">
+        {INVENTORY_HEADERS.map((header) => (
+          <p key={header.key}>{header.display}</p>
+        ))}
+      </div>
+      <Virtuoso
+        data={inventoryItems}
+        itemContent={(index, item) => (
+          <div className="grid-row">
+            <p>{item.id}</p>
+            <p>{item.name}</p>
+            <p>{item.unit}</p>
+            <p>{item.quantity}</p>
+            <p>{item.reorder_threshold}</p>
+          </div>
+        )}
+      />
+    </div>
   )
 }

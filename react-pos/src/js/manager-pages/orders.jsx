@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import Table from "../manager-components/table";
-
+import { Virtuoso } from "react-virtuoso";
 export default function OrdersPage() {
 
   const [ orderItems , setOrderItems ] = useState([]);
-  const [ date , setDate] = useState("10-25-2024");
+  const [ date , setDate] = useState("2024-10-25");
   const [loading, setLoading] = useState(false);
 
 
@@ -52,7 +51,25 @@ export default function OrdersPage() {
       {loading && <p>Loading orders...</p>}
 
       {/* Orders Table */}
-      <Table headers={ORDER_HEADERS} data={orderItems} />
+      <div className="page-content-container">
+          <div className="header-row">
+            {ORDER_HEADERS.map((header) => (
+              <p key={header.key}>{header.display}</p>
+            ))}
+          </div>
+          <Virtuoso
+            data={orderItems}
+            itemContent={(index, item) => (
+              <div className="grid-row">
+                <p>{item.id}</p>
+                <p>{item.subtotal}</p>
+                <p>{item.tax}</p>
+                <p>{item.total}</p>
+                <p>{item.order_time}</p>
+              </div>
+            )}
+          />
+        </div>
     </div>
   );
 }
