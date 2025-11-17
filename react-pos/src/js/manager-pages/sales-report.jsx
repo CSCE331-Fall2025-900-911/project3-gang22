@@ -11,11 +11,10 @@ export default function SalesReportPage() {
   const [ salesReportItems , setSalesReportItems ] = useState([]);
 
     const SALES_REPORT_HEADERS = [
-      { display: "Order ID", key: "id" },
-      { display: "Subtotal", key: "subtotal" },
-      { display: "Tax", key: "tax" },
-      { display: "Total", key: "total"},
-      { display: "Order Time", key: "order_time"},
+      { display: "Drink", key: "drink_name" },
+      { display: "Time", key: "time_label" },
+      { display: "Quantity Sold", key: "total_qty" },
+      { display: "Total Sales", key: "total_sales" },
     ];
 
 
@@ -57,11 +56,11 @@ export default function SalesReportPage() {
       <h2>Sales Report</h2>
 
       {/* Filter Bar */}
-      <div style={{display: "flex"}}>
-        <DatePicker label="Start Date" value={startDate} onChange={setStartDate} />
-        <DatePicker label="End Date" value={endDate} onChange={setEndDate} />
+      <div style={{display: "flex", gap:"1rem"}}>
+        <DatePicker label="Start Date: " value={startDate} onChange={setStartDate} />
+        <DatePicker label="End Date: " value={endDate} onChange={setEndDate} />
         <div>
-          <label>Interval</label>
+          <label>Interval: </label>
           <span>{interval || "—"}</span>
         </div>
       </div>
