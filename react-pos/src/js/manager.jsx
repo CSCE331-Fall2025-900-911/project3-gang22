@@ -10,7 +10,7 @@ import SalesTrendsPage from "./manager-pages/sales-trends.jsx";
 import ProductUsagePage from "./manager-pages/product-usage.jsx";
 import InventoryRestockPage from "./manager-pages/restock.jsx";
 
-export const MANAGER_BASE_URL = "https://project3-gang22-backend.onrender.com/api/managers";
+export const MANAGER_BASE_URL = "http://localhost:3000/api/managers";
 
 export default function Manager() {
 

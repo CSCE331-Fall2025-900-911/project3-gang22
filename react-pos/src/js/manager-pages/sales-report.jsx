@@ -43,11 +43,20 @@ export default function SalesReportPage() {
   
   async function getSalesReport(start, end, interval) {
     try {
-      const response = await fetch(`${MANAGER_BASE_URL}/sales-report?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}&interval=${encodeURIComponent(interval)}`);
+      const url = `${MANAGER_BASE_URL}/sales-report?startDate=${encodeURIComponent(start)}&endDate=${encodeURIComponent(end)}&interval=${encodeURIComponent(interval)}`;
+      console.log(url); 
+      const response = await fetch(`${MANAGER_BASE_URL}/sales-report?startDate=${encodeURIComponent(start)}&endDate=${encodeURIComponent(end)}&interval=${encodeURIComponent(interval)}`);
       const data = await response.json();
-      setSalesReportItems(data);                           
+      
+      if (Array.isArray(data)) {
+        setSalesReportItems(data);
+      } else {
+        console.error("Unexpected response format:", data);
+        setSalesReportItems([]); // fallback to empty array
+      }                           
     } catch (err) {
       console.error("Error fetching sales report:", err);
+      setSalesReportItems([]); // prevent crash in Chart/Table
     }
   }
 
