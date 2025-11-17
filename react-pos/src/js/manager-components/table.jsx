@@ -12,13 +12,16 @@ export default function Table({ headers, data }) {
         </tr>
       </thead>
       <tbody>
-        {data.map((row, rowIndex) => (
-          <tr key={rowIndex}>
-            {headers.map((header, colIndex) => (
-              <td key={colIndex}>{row[header.key]}</td>
-            ))}
-          </tr>
-        ))}
+        {Array.isArray(data) ? data.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {headers.map((header, colIndex) => (
+                <td key={colIndex}>
+                  {header.render ? header.render(row) : row[header.key]}
+                </td>
+              ))}
+            </tr>
+          ))
+          : null}
       </tbody>
     </table>
   );
