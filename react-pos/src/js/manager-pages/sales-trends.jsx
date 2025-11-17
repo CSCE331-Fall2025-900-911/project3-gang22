@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import DatePicker from "../manager-components/datepicker.jsx";
 import Chart from "../manager-components/chart.jsx";
 import Table from "../manager-components/table.jsx";
+import RangeDateToolBar from "../manager-components/range-datepicker.jsx"
 
 export default function SalesTrendsPage() {
   const [selectedDate, setSelectedDate] = useState("");
@@ -51,23 +52,24 @@ export default function SalesTrendsPage() {
     }
   }
 
-  
+  // FIXME: Do we add the clickable pop-up window for more order information details?
   return (
     <>
       <h2>Sales Trends</h2>
 
       {/*Range and Date Selection*/}
-      <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", alignItems: "center" }}>
-        <button onClick={() => setViewRange("day")}>Day</button>
-        <button onClick={() => setViewRange("week")}>Week</button>
-        <button onClick={() => setViewRange("month")}>Month</button>
-        <button onClick={() => setViewRange("year")}>Year</button>
-        <DatePicker label="Select Date: " value={selectedDate} onChange={setSelectedDate} />
-      </div>
+      <RangeDateToolBar selectedDate={selectedDate} setSelectedDate={setSelectedDate} viewRange={viewRange} setViewRange={setViewRange}/>
+
 
       {/* Chart + Side Table */}
-      <Chart xaxis="label" yaxis="total_sales" data={salesData} />
-      <Table headers={SALES_TRENDS_HEADERS} data={salesData} />
+      <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start" }}>
+        <div style={{ flex: 1 }}>
+          <Chart xaxis="label" yaxis="total_sales" data={salesData} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <Table headers={SALES_TRENDS_HEADERS} data={salesData} />
+        </div>
+      </div>
 
       {/* Order History Table */}
       <h3 style={{ marginTop: "2rem" }}>Order History</h3>
