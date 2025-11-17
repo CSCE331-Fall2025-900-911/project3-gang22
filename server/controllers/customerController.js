@@ -1,12 +1,19 @@
 const { query } = require('../db');
 const menuModel = require('../models/menuModel');
 const orderModel = require('../models/orderModel');
+require("dotenv").config();
 const { TranslationServiceClient } = require("@google-cloud/translate").v3;
 
-const client = new TranslationServiceClient();
+const client = new TranslationServiceClient({
+  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+  projectId: process.env.GOOGLE_PROJECT_ID
+});
+
+
 const projectId = process.env.GOOGLE_PROJECT_ID;
 
 module.exports = {
+
   async translate(text, target) {
     const request = {
       parent: `projects/${projectId}/locations/global`,
@@ -17,6 +24,23 @@ module.exports = {
 
     const [response] = await client.translateText(request);
     return response.translations[0].translatedText;
+  },
+
+  async translateText(req, res) {
+    try {
+      const { text, target } = req.query;
+
+      if (!text || !target) {
+        return res.status(400).json({ error: "Missing 'text' or 'target'" });
+      }
+
+      const translated = await module.exports.translate(text, target);
+      res.json({ translated });
+
+    } catch (err) {
+      console.error("Error translating text:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
   },
 
   async getMenu(req, res) {
