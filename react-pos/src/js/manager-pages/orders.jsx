@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Table from "../manager-components/table";
+import DatePicker from "../manager-components/datepicker.jsx";
 
 export default function OrdersPage() {
 
@@ -39,14 +40,7 @@ export default function OrdersPage() {
       <h2>Orders by Date</h2>
 
       {/* Date Picker */}
-      <label>
-        Select Date:{" "}
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
-      </label>
+      <DatePicker label="Select Date: " value={date} onChange={setDate} />
 
       {/* Optional Loading Indicator */}
       {loading && <p>Loading orders...</p>}
