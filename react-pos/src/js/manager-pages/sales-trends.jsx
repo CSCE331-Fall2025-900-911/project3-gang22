@@ -63,7 +63,7 @@ export default function SalesTrendsPage() {
 
       {/* Chart + Side Table */}
       <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start" }}>
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 2 }}>
           <Chart xaxis="label" yaxis="total_sales" data={salesData} />
         </div>
         <div style={{ flex: 1 }}>
