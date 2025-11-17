@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Table from "../manager-components/table";
+import { MANAGER_BASE_URL } from "../manager";
 
 export default function InventoryPage() {
 
@@ -18,7 +19,7 @@ export default function InventoryPage() {
   useEffect(() => {
     async function getInventory() {
       try {
-        const response = await fetch("https://project3-gang22-backend.onrender.com/api/managers/inventory");
+        const response = await fetch(`${MANAGER_BASE_URL}/inventory`);
         const data = await response.json(); 
         setInventoryItems(data);                           
       } catch (err) {

@@ -3,6 +3,7 @@ import Table from "../manager-components/table";
 import Navbar from "../manager-components/navbar.jsx";
 import Chart from "../manager-components/chart.jsx";
 import DatePicker from "../manager-components/datepicker.jsx";
+import { MANAGER_BASE_URL } from "../manager";
 
 export default function SalesReportPage() {
   const [startDate, setStartDate] = useState("");
@@ -42,7 +43,7 @@ export default function SalesReportPage() {
   
   async function getSalesReport(start, end, interval) {
     try {
-      const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/sales-report?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}&interval=${encodeURIComponent(interval)}`);
+      const response = await fetch(`${MANAGER_BASE_URL}/sales-report?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}&interval=${encodeURIComponent(interval)}`);
       const data = await response.json();
       setSalesReportItems(data);                           
     } catch (err) {

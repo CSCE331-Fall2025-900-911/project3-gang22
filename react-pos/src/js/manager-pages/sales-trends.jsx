@@ -3,6 +3,7 @@ import DatePicker from "../manager-components/datepicker.jsx";
 import Chart from "../manager-components/chart.jsx";
 import Table from "../manager-components/table.jsx";
 import RangeDateToolBar from "../manager-components/range-datepicker.jsx"
+import { MANAGER_BASE_URL } from "../manager.jsx";
 
 export default function SalesTrendsPage() {
   const [selectedDate, setSelectedDate] = useState("");
@@ -33,7 +34,7 @@ export default function SalesTrendsPage() {
   // Get data for the chart and table
   async function getSalesData(range, date) {
     try {
-      const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/sales-trends?range=${encodeURIComponent(range)}&date=${encodeURIComponent(date)}`);
+      const response = await fetch(`${MANAGER_BASE_URL}/sales-trends?range=${encodeURIComponent(range)}&date=${encodeURIComponent(date)}`);
       const data = await response.json();
       setSalesData(data);
     } catch (err) {
@@ -44,7 +45,7 @@ export default function SalesTrendsPage() {
   // Get data for the Order table
   async function getOrderData(range, date) {
     try {
-      const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/orders-by-range?range=${encodeURIComponent(range)}&date=${encodeURIComponent(date)}`);
+      const response = await fetch(`${MANAGER_BASE_URL}/orders-by-range?range=${encodeURIComponent(range)}&date=${encodeURIComponent(date)}`);
       const data = await response.json();
       setOrderData(data);
     } catch (err) {

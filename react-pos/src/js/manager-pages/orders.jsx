@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Table from "../manager-components/table";
 import DatePicker from "../manager-components/datepicker.jsx";
+import { MANAGER_BASE_URL } from "../manager.jsx";
 
 export default function OrdersPage() {
 
@@ -22,7 +23,7 @@ export default function OrdersPage() {
     async function getOrders() {
       setLoading(true);
       try {
-        const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/orders?date=${encodeURIComponent(date)}`);
+        const response = await fetch(`${MANAGER_BASE_URL}/orders?date=${encodeURIComponent(date)}`);
         const data = await response.json()
         setOrderItems(data);                           
       } catch (err) {

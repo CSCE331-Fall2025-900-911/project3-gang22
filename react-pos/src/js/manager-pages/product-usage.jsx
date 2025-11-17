@@ -3,6 +3,7 @@ import DatePicker from "../manager-components/datepicker.jsx";
 import Chart from "../manager-components/chart.jsx";
 import Table from "../manager-components/table.jsx";
 import RangeDateToolbar from "../manager-components/range-datepicker.jsx";
+import { MANAGER_BASE_URL } from "../manager";
 
 export default function ProductUsagePage() {
     const [selectedDate, setSelectedDate] = useState("");
@@ -28,7 +29,7 @@ export default function ProductUsagePage() {
 
     async function getUsageData(range, date) {
         try {
-        const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/product-usage?range=${encodeURIComponent(range)}&date=${encodeURIComponent(date)}`);
+        const response = await fetch(`${MANAGER_BASE_URL}/product-usage?range=${encodeURIComponent(range)}&date=${encodeURIComponent(date)}`);
         const data = await response.json();
         setUsageData(data);
         } catch (err) {

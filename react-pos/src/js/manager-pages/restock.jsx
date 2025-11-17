@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Table from "../manager-components/table.jsx";
 import RestockInputPanel from "../manager-components/restockInputPanel.jsx"
 import RestockOrderPanel from "../manager-components/restockOrdersPanel.jsx"
+import { MANAGER_BASE_URL } from "../manager.jsx";
 
 export default function InventoryRestockPage() {
     const [inventoryData, setInventoryData] = useState([]);
@@ -35,7 +36,7 @@ export default function InventoryRestockPage() {
 
     async function fetchInventoryData() {
         try {
-        const response = await fetch("https://project3-gang22-backend.onrender.com/api/managers/inventory");
+        const response = await fetch(`${MANAGER_BASE_URL}/inventory`);
         const data = await response.json();
         setInventoryData(data);
         } catch (err) {
@@ -99,7 +100,7 @@ export default function InventoryRestockPage() {
         });
 
         Promise.all(updatedItems.map(item =>
-            fetch("https://project3-gang22-backend.onrender.com/api/managers/inventory/update", {
+            fetch(`${MANAGER_BASE_URL}/inventory/update`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

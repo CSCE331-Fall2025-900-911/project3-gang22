@@ -10,6 +10,8 @@ import SalesTrendsPage from "./manager-pages/sales-trends.jsx";
 import ProductUsagePage from "./manager-pages/product-usage.jsx";
 import InventoryRestockPage from "./manager-pages/restock.jsx";
 
+export const MANAGER_BASE_URL = "https://project3-gang22-backend.onrender.com/api/managers";
+
 export default function Manager() {
 
   // Renders appropriate page when Navbar updates the URL

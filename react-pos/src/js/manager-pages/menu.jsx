@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Table from "../manager-components/table";
+import { MANAGER_BASE_URL } from "../manager";
 
 export default function MenuPage() {
 
@@ -17,7 +18,7 @@ export default function MenuPage() {
   useEffect(() => {
     async function getMenu() {
       try {
-      const response = await fetch("https://project3-gang22-backend.onrender.com/api/managers/menu");
+      const response = await fetch(`${MANAGER_BASE_URL}/menu`);
       const data = await response.json(); 
       setMenuItems(data);                           
       } catch (err) {
