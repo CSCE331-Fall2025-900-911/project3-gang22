@@ -1,8 +1,24 @@
 const { query } = require('../db');
 const menuModel = require('../models/menuModel');
 const orderModel = require('../models/orderModel');
+const { TranslationServiceClient } = require("@google-cloud/translate").v3;
+
+const client = new TranslationServiceClient();
+const projectId = process.env.GOOGLE_PROJECT_ID;
 
 module.exports = {
+  async translate(text, target) {
+    const request = {
+      parent: `projects/${projectId}/locations/global`,
+      contents: [text],
+      mimeType: "text/plain",
+      targetLanguageCode: target,
+    };
+
+    const [response] = await client.translateText(request);
+    return response.translations[0].translatedText;
+  },
+
   async getMenu(req, res) {
     try {
       res.json(await menuModel.getAll());

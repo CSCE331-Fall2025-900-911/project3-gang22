@@ -26,10 +26,13 @@ router.get('/', (req, res) => {
   return res.status(200);
 });
 
+// --- Trans ---
+router.post('/translate', customer.translate)
+
 // --- GET ---
 router.get('/menu', customer.getMenu);
 
 // --- POST ---
-router.post('/Order', customer.createOrder);
+router.post('/order', customer.createOrder);
 
 module.exports = router;
