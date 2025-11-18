@@ -10,6 +10,7 @@ export default function SalesReportPage() {
   const [endDate, setEndDate] = useState("");
   const [interval, setInterval] = useState("");
   const [ salesReportItems , setSalesReportItems ] = useState([]);
+  const [yaxis, setYaxis] = useState("total_sales");
 
     const SALES_REPORT_HEADERS = [
       { display: "Drink", key: "drink_name" },
@@ -73,10 +74,14 @@ export default function SalesReportPage() {
           <label>Interval: </label>
           <span>{interval || "—"}</span>
         </div>
+        <select value={yaxis} onChange={(e) => setYaxis(e.target.value)}>
+          <option value="total_sales">Revenue ($)</option>
+          <option value="total_qty">Quantity Sold</option>
+        </select>
       </div>
 
       {/* Chart and Table */}
-      <Chart xaxis="order_time" yaxis="total" data={salesReportItems} />
+      <Chart xaxis="time_label" yaxis={yaxis} data={salesReportItems} />
       <Table headers={SALES_REPORT_HEADERS} data={salesReportItems} />
     </>
   );

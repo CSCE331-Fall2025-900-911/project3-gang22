@@ -6,7 +6,7 @@ import { MANAGER_BASE_URL } from "../manager.jsx";
 export default function OrdersPage() {
 
   const [ orderItems , setOrderItems ] = useState([]);
-  const [ date , setDate] = useState("10-25-2024");
+  const [ date , setDate] = useState("2024-10-25");
   const [loading, setLoading] = useState(false);
 
 
