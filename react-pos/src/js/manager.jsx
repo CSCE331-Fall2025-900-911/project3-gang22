@@ -9,6 +9,7 @@ import SalesReportPage from "./manager-pages/sales-report.jsx";
 import SalesTrendsPage from "./manager-pages/sales-trends.jsx";
 import ProductUsagePage from "./manager-pages/product-usage.jsx";
 import InventoryRestockPage from "./manager-pages/restock.jsx";
+import XReportPage from "./manager-pages/xreport.jsx";
 
 export const MANAGER_BASE_URL = "http://localhost:3000/api/managers";
 
@@ -29,7 +30,7 @@ export default function Manager() {
           <Route path="/restock" element={<InventoryRestockPage />} />
           <Route path="/product-usage" element={<ProductUsagePage />} />
           <Route path="/sales-report" element={<SalesReportPage />} />
-          <Route path="/x-report" element={<div></div>} />
+          <Route path="/x-report" element={<XReportPage />} />
           <Route path="/z-report" element={<div></div>} />
         </Routes>
       </BrowserRouter>
