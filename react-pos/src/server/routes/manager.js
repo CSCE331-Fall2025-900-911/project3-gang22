@@ -82,8 +82,7 @@ router.get('/orders', async (req, res) => {
 });
 
 router.get('/sales-report', async (req, res) => {
-
-  const { interval } = req.query;
+  const { startDate, endDate, interval } = req.query;
 
    let timeFormat;
    
@@ -113,11 +112,11 @@ router.get('/sales-report', async (req, res) => {
       FROM p2_order_items oi
       JOIN p2_orders o ON oi.order_id = o.id
       JOIN p2_menu m ON oi.menu_id = m.id
+      WHERE o.order_time >= $1::timestamp AND o.order_time < $2::timestamp
       GROUP BY drink_name, time_label
       ORDER BY time_label, drink_name`,
-      [interval]
+      [startDate, endDate]
     );
-          // Needs implementing: WHERE o.order_time >= ? AND o.order_time < ?
 
     res.json(result.rows);
   } catch (err) {
