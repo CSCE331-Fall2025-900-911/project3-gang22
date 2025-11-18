@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Navbar from "./manager-components/navbar.jsx";
 import MenuPage from "./manager-pages/menu.jsx";
@@ -9,11 +9,13 @@ import SalesReportPage from "./manager-pages/sales-report.jsx";
 
 export default function Manager() {
 
+    const [ darkMode , setDarkMode ] = useState(false);
+
   // Renders appropriate page when Navbar updates the URL
   return (
     <div>
       <BrowserRouter>
-        <Navbar />       
+        <Navbar /> 
          <Routes>
           <Route path="/" element={<Navigate to="/menu" replace />} />
           <Route path="/menu" element={<MenuPage />} />

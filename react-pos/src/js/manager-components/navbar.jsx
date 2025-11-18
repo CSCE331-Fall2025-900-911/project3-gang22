@@ -5,7 +5,7 @@ import { useState , useEffect } from "react";
 import "../../styles.css"
 
 
-export default function Navbar() {
+export default function Navbar({darkMode}) {
 
     const navigate = useNavigate();
     const [showChart, setShowChart] = useState(false);
@@ -15,7 +15,7 @@ export default function Navbar() {
 
 // Handles navigation between manager pages by setting url to specified roots
     return (
-        <div className="page-container">
+        <div className="page-container"     >
             <nav className="navbar">
                 <button className="nav-btn" onClick={() => { window.location.pathname = '/'; }}>Back to Home</button>
                 <button className="nav-btn" onClick={() => { navigate("/menu"); setShowChart(false);}}>Menu</button>

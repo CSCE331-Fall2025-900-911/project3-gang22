@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Table from "../manager-components/table";
+import { Virtuoso } from "react-virtuoso";
 
 export default function EmployeePage() {
 
@@ -28,6 +28,23 @@ export default function EmployeePage() {
 
   // Returns table containing stored employee data
   return (
-    <Table headers={EMPLOYEE_HEADERS} data={employeeItems} />
+    <div className="page-content-container">
+      <div className="header-row">
+        {EMPLOYEE_HEADERS.map((header) => (
+          <p key={header.key}>{header.display}</p>
+        ))}
+      </div>
+      <Virtuoso
+        data={employeeItems}
+        itemContent={(index, item) => (
+          <div className="grid-row">
+            <p>{item.id}</p>
+            <p>{item.name}</p>
+            <p>{item.role}</p>
+            <p>{item.schedule}</p>
+          </div>
+        )}
+      />
+    </div>
   )
 }
