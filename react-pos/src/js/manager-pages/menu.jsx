@@ -4,7 +4,7 @@ import { Virtuoso } from "react-virtuoso";
 import "../../styles.css";
 
 
-export default function MenuPage() {
+export default function MenuPage({darkMode}) {
 
   const [ menuItems , setMenuItems ] = useState([]);
 
