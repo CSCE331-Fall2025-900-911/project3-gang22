@@ -33,6 +33,7 @@ router.get('/employee', manager.getEmployees);
 router.get('/inventory', manager.getInventory);
 router.get('/menu_inventory', manager.getMenuInventory);
 router.get('/orders', manager.getOrders);
+router.get('/order_report', manager.getOrderReport);
 
 // --- POST ---
 

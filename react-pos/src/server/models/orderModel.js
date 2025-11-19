@@ -30,5 +30,23 @@ module.exports = {
       [subtotal, tax, total, order_time, employee_id]
     );
     return rows[0].id;
+  },
+
+  async getOrderReport(timeFormat, start, end) {
+     const result = await query(`
+      SELECT m.drink_name AS drink_name,
+        TO_CHAR(o.order_time, '${timeFormat}') AS time_label,
+        SUM(oi.quantity) AS total_qty,
+        SUM(oi.total) AS total_sales
+      FROM p2_order_items oi
+      JOIN p2_orders o ON oi.order_id = o.id
+      JOIN p2_menu m ON oi.menu_id = m.id
+      WHERE o.order_time >= $1 AND o.order_time < $2
+      GROUP BY drink_name, time_label
+      ORDER BY time_label, drink_name`,
+      [start, end]
+    );
+    return result.rows;
   }
-};
+
+}

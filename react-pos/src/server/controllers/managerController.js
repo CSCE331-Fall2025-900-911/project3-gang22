@@ -2,6 +2,7 @@ const menuModel = require('../models/menuModel');
 const employeeModel = require('../models/employeeModel');
 const inventoryModel = require('../models/inventoryModel');
 const menuInventoryModel = require('../models/menuInventoryModel');
+const orderModel = require('../models/orderModel');
 
 module.exports = {
   // --- Menu ---
@@ -127,14 +128,45 @@ module.exports = {
           return res.status(400).json({ error: 'Date range must contain exactly two dates' });
         }
 
-        orders = await OrderModel.getOrdersByDateRange(date[0], date[1]);
+        orders = await orderModel.getOrdersByDateRange(date[0], date[1]);
       } else {
-        orders = await OrderModel.getOrdersBySingleDate(date);
+        orders = await orderModel.getOrdersBySingleDate(date);
       }
 
       res.json(orders);
     } catch (err) {
       console.error('Error fetching orders:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  },
+
+  async getOrderReport(req, res) {
+    const { interval, start, end } = req.query;
+
+    let dateStart = Date.parse(start);
+    let dateEnd = Date.parse(end);
+    if ( isNaN(dateStart) || isNaN(dateEnd) ) {
+      res.status(400).json({ error: 'start or end date are invalid dateStrings' });
+    }
+    if ( dateStart > dateEnd ) {
+      res.status(400).json({ error: 'start date is greater than end date' });
+    }
+
+    let timeFormat;
+   switch (interval.toLowerCase()) {
+      case "hour": timeFormat = "YYYY-MM-DD HH24:00"; break;
+      case "day": timeFormat = "YYYY-MM-DD"; break;
+      case "week": timeFormat = "IYYY-IW"; break;
+      case "month": timeFormat ="YYYY-MM"; break;
+      default: timeFormat = "YYYY-MM-DD";
+    }
+
+    try {
+      report = await orderModel.getOrderReport(timeFormat, start, end);
+
+      res.json(report);
+    } catch (err) {
+      console.error('Error fetching sales report:', err);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
