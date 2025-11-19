@@ -1,7 +1,7 @@
 const { query } = require('../db');
 const menuModel = require('../models/menuModel');
 const orderModel = require('../models/orderModel');
-require("dotenv").config();
+require("dotenv").config({path:'../.env'});
 const { TranslationServiceClient } = require("@google-cloud/translate").v3;
 
 const client = new TranslationServiceClient({

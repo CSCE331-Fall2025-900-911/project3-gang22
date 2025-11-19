@@ -1,8 +1,7 @@
-// react-pos/src/server/index.js
 const fs = require('fs');
 const Table = require('cli-table3');
 
-require('dotenv').config('.env');
+require('dotenv').config({path:'.env'});
 
 const express = require('express');
 const session = require('express-session');
@@ -99,7 +98,7 @@ app.use('/auth', authRouter);
 /* -------------------- Application routes -------------------- */
 app.use('/customer', userRoutes);
 app.use('/cashier', requireAnyRole(['cashier', 'manager']), employeeRoutes);
-app.use('/manager', managerRoutes);
+app.use('/manager', requireAnyRole(['manager']), managerRoutes);
 
 /* -------------------- Health checks -------------------- */
 app.get('/dbz', async (_, res) => {

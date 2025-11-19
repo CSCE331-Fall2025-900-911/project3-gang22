@@ -1,5 +1,4 @@
-// react-pos/src/server/routes/auth.js
-require('dotenv').config('../.env');
+require('dotenv').config({path:'../.env'});
 
 const express = require('express');
 const passport = require('passport');
