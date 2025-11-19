@@ -111,8 +111,6 @@ function buildAuth() {
   );
 
   /* ---------- Sessions ---------- */
-  if (isProd) router.set('trust proxy', 1);
-
   router.use(
     session({
       secret: SESSION_SECRET || 'dev-secret',
