@@ -9,6 +9,8 @@ export default function MenuPage() {
 
       // FIXME: talk with Alex about the required fields
       requiredFields={[0,1,2,3,4,5]}
+      numericFields={[1]}
+      defaultValues={{5:"/images/placeholder.png"}}
       headers={[
         { display: "ID", key: "id" },
         { display: "Drink", key: "drink_name" },

@@ -44,9 +44,8 @@ export default function SalesReportPage() {
   
   async function getSalesReport(start, end, interval) {
     try {
-      const url = `${MANAGER_BASE_URL}/sales-report?startDate=${encodeURIComponent(start)}&endDate=${encodeURIComponent(end)}&interval=${encodeURIComponent(interval)}`;
-      console.log(url); 
-      const response = await fetch(`${MANAGER_BASE_URL}/sales-report?startDate=${encodeURIComponent(start)}&endDate=${encodeURIComponent(end)}&interval=${encodeURIComponent(interval)}`);
+      const url = `${MANAGER_BASE_URL}/order_report?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}&interval=${encodeURIComponent(interval.toLowerCase())}`;
+      const response = await fetch(url);
       const data = await response.json();
       
       if (Array.isArray(data)) {

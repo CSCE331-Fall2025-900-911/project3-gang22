@@ -3,7 +3,7 @@ import Table from "./table";
 import EditDialog from "./editDialog";
 import { MANAGER_BASE_URL } from "../manager";
 
-export default function Editor({ title, fields, headers, basePath, extractValues, buildPayload, requiredFields, numericFields }) {
+export default function Editor({ title, fields, headers, basePath, extractValues, buildPayload, requiredFields = [], numericFields = [], defaultValues = {} }) {
   const [items, setItems] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
   const [dialogMode, setDialogMode] = useState("new");
@@ -53,8 +53,15 @@ export default function Editor({ title, fields, headers, basePath, extractValues
 
   function openNewDialog() {
     setDialogMode("new");
-    setSelectedItem(null);
     setErrorMessage("");
+
+    const values = Array(fields.length).fill("");
+
+    // Apply default values by index
+    for (const [index, value] of Object.entries(defaultValues)) {
+      values[parseInt(index)] = value;
+    }
+    setSelectedItem({__prefill: true, values });
     setShowDialog(true);
   }
 
@@ -72,7 +79,10 @@ export default function Editor({ title, fields, headers, basePath, extractValues
     }
 
     // Check for missing required fields
-    const missingFields = requiredFields.filter(i => !values[i] || values[i].trim() === "");
+    const missingFields = requiredFields.filter(i => {
+      const val = values[i];
+      return val === undefined || val === null || (typeof val === "string" && val.trim() === "");
+    });
 
     // Check for invalid numeric fields
     const invalidNumericFields = numericFields.filter(i => isNaN(parseFloat(values[i])));
@@ -104,6 +114,9 @@ export default function Editor({ title, fields, headers, basePath, extractValues
     const method = dialogMode === "new" ? "POST" : "PUT";
     const endpoint = dialogMode === "new" ? "add" : "update";
 
+    // DELETE WHEN DONE
+    // console.log("Received payload:", req.body);
+    // (END DELETE)
     try {
       const res = await fetch(`${MANAGER_BASE_URL}/${basePath}/${endpoint}`, {
         method,
@@ -148,7 +161,7 @@ export default function Editor({ title, fields, headers, basePath, extractValues
           title={dialogMode === "new" ? `New ${title}` : `Edit ${title}`}
           fields={fields}
           requiredFields={requiredFields}
-          initialValues={dialogMode === "edit" ? extractValues(selectedItem) : []}
+          initialValues={dialogMode === "edit" ? extractValues(selectedItem) : selectedItem?.__prefill ? selectedItem.values : []}
           onSubmit={handleDialogSubmit}
           onClose={() => setShowDialog(false)}
           errorMessage={errorMessage}

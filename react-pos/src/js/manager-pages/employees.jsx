@@ -7,6 +7,7 @@ export default function EmployeePage() {
       basePath="employee"
       fields={["Name", "Role", "Schedule"]}
       requiredFields={[0, 1, 2]}
+      numericFields={[1,2]}
       headers={[
         { display: "Employee ID", key: "id" },
         { display: "Name", key: "name" },
