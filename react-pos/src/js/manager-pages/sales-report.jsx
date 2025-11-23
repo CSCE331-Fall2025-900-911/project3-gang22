@@ -45,7 +45,7 @@ export default function SalesReportPage() {
   async function getSalesReport(start, end, interval) {
     try {
       const url = `${MANAGER_BASE_URL}/order_report?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}&interval=${encodeURIComponent(interval.toLowerCase())}`;
-      const response = await fetch(url);
+      const response = await fetch(url, {credentials: 'include'});
       const data = await response.json();
       
       if (Array.isArray(data)) {

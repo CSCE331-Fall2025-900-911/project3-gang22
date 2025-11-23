@@ -29,7 +29,7 @@ export default function ProductUsagePage() {
 
     async function getUsageData(range, date) {
         try {
-        const response = await fetch(`${MANAGER_BASE_URL}/product-usage?range=${encodeURIComponent(range)}&date=${encodeURIComponent(date)}`);
+        const response = await fetch(`${MANAGER_BASE_URL}/product-usage?range=${encodeURIComponent(range)}&date=${encodeURIComponent(date)}`, {credentials: 'include'});
         const data = await response.json();
         setUsageData(data);
         } catch (err) {
