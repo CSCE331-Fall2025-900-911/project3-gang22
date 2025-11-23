@@ -31,7 +31,7 @@ export default function XReportPage() {
     if (!reportDate) return;
 
     // Chart data
-    fetch(`${MANAGER_BASE_URL}/xreport-chart?date=${reportDate}`)
+    fetch(`${MANAGER_BASE_URL}/xreport-chart?date=${reportDate}`, {credentials: 'include'})
       .then(res => res.json())
       .then(data => {
         const series = data.map(record => ({
@@ -46,7 +46,7 @@ export default function XReportPage() {
       });
 
     // Table data
-    fetch(`${MANAGER_BASE_URL}/xreport-table?date=${reportDate}`)
+    fetch(`${MANAGER_BASE_URL}/xreport-table?date=${reportDate}`, {credentials: 'include'})
       .then(res => res.json())
       .then(data => {
         setTableData(Array.isArray(data) ? data : []);

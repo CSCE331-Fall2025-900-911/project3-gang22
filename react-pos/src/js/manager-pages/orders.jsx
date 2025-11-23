@@ -23,11 +23,11 @@ export default function OrdersPage() {
     async function getOrders() {
       setLoading(true);
       try {
-        const response = await fetch(`${MANAGER_BASE_URL}/orders?date=${encodeURIComponent(date)}`);
+        const response = await fetch(`${MANAGER_BASE_URL}/orders?date=${encodeURIComponent(date)}`, {credentials: 'include'});
         const data = await response.json()
         setOrderItems(data);                           
       } catch (err) {
-        console.error("Error fetching menu:", err);
+        console.error("Error fetching orders:", err);
       } finally {
         setLoading(false);
       }

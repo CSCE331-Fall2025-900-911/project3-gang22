@@ -30,7 +30,9 @@ export default function Editor({ title, fields, headers, basePath, extractValues
 
   async function fetchItems() {
     try {
-      const res = await fetch(`${MANAGER_BASE_URL}/${basePath}`);
+      const res = await fetch(`${MANAGER_BASE_URL}/${basePath}`, {
+        credentials: 'include'
+      });
       const data = await res.json();
       setItems(Array.isArray(data) ? data : []);
     } catch (err) {

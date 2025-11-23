@@ -36,7 +36,7 @@ export default function InventoryRestockPage() {
 
     async function fetchInventoryData() {
         try {
-        const response = await fetch(`${MANAGER_BASE_URL}/inventory`);
+        const response = await fetch(`${MANAGER_BASE_URL}/inventory`, {credentials: 'include'});
         const data = await response.json();
         setInventoryData(data);
         } catch (err) {
