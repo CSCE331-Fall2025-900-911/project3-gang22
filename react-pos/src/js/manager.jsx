@@ -11,7 +11,7 @@ import ProductUsagePage from "./manager-pages/product-usage.jsx";
 import InventoryRestockPage from "./manager-pages/restock.jsx";
 import XReportPage from "./manager-pages/xreport.jsx";
 
-export const MANAGER_BASE_URL = "http://localhost:3000/api/managers";
+export const MANAGER_BASE_URL = "https://project3-gang22-backend.onrender.com/managers";
 
 export default function Manager() {
 
