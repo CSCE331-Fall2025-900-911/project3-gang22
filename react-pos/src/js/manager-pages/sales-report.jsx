@@ -1,37 +1,88 @@
 import { useEffect, useState } from "react";
 import Table from "../manager-components/table";
+import Navbar from "../manager-components/navbar.jsx";
+import Chart from "../manager-components/chart.jsx";
+import DatePicker from "../manager-components/datepicker.jsx";
+import { MANAGER_BASE_URL } from "../manager";
 
 export default function SalesReportPage() {
-
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [interval, setInterval] = useState("");
   const [ salesReportItems , setSalesReportItems ] = useState([]);
-  let interval = "day";
+  const [yaxis, setYaxis] = useState("total_sales");
 
-  
     const SALES_REPORT_HEADERS = [
-      { display: "Order ID", key: "id" },
-      { display: "Subtotal", key: "subtotal" },
-      { display: "Tax", key: "tax" },
-      { display: "Total", key: "total"},
-      { display: "Order Time", key: "order_time"},
+      { display: "Drink", key: "drink_name" },
+      { display: "Time", key: "time_label" },
+      { display: "Quantity Sold", key: "total_qty" },
+      { display: "Total Sales", key: "total_sales" },
     ];
+
+
+  // Determine interval based on date range
+  useEffect(() => {
+    if (startDate && endDate && new Date(endDate) >= new Date(startDate)) {
+      const conversion = 1000 * 60 * 60 * 24;
+      const daysBetween = (new Date(endDate) - new Date(startDate)) / conversion;
+
+      if (daysBetween < 7) setInterval("Hour");
+      else if (daysBetween < 31) setInterval("Day");
+      else if (daysBetween < 180) setInterval("Week");
+      else setInterval("Month");
+    } else {
+      setInterval("");
+    }
+  }, [startDate, endDate]);
 
   // Fetches sales report data from backend when component is mounted and stores it for use inside the table
   useEffect(() => {
-    async function getSalesReport() {
-      try {
-        const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/sales-report?interval=${encodeURIComponent(interval)}`);
-        const data = await response.json();
-        setSalesReportItems(data);                           
-      } catch (err) {
-        console.error("Error fetching menu:", err);
-      }
+    if (startDate && endDate && interval) {
+      getSalesReport(startDate, endDate, interval)
     }
-    getSalesReport();
-  }, []); 
+  }, [startDate, endDate, interval]); 
+  
+  async function getSalesReport(start, end, interval) {
+    try {
+      const url = `${MANAGER_BASE_URL}/order_report?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}&interval=${encodeURIComponent(interval.toLowerCase())}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (Array.isArray(data)) {
+        setSalesReportItems(data);
+      } else {
+        console.error("Unexpected response format:", data);
+        setSalesReportItems([]); // fallback to empty array
+      }                           
+    } catch (err) {
+      console.error("Error fetching sales report:", err);
+      setSalesReportItems([]); // prevent crash in Chart/Table
+    }
+  }
 
   // Returns table containing stored sales report data
   return (
-    <Table headers={SALES_REPORT_HEADERS} data={salesReportItems} />
-  )
+    <>
+      <h2>Sales Report</h2>
+
+      {/* Filter Bar */}
+      <div style={{display: "flex", gap:"1rem"}}>
+        <DatePicker label="Start Date: " value={startDate} onChange={setStartDate} />
+        <DatePicker label="End Date: " value={endDate} onChange={setEndDate} />
+        <div>
+          <label>Interval: </label>
+          <span>{interval || "—"}</span>
+        </div>
+        <select value={yaxis} onChange={(e) => setYaxis(e.target.value)}>
+          <option value="total_sales">Revenue ($)</option>
+          <option value="total_qty">Quantity Sold</option>
+        </select>
+      </div>
+
+      {/* Chart and Table */}
+      <Chart xaxis="time_label" yaxis={yaxis} data={salesReportItems} />
+      <Table headers={SALES_REPORT_HEADERS} data={salesReportItems} />
+    </>
+  );
 }
 

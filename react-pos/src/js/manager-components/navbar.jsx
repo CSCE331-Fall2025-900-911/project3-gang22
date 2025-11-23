@@ -29,8 +29,6 @@ export default function Navbar() {
                 <button className="nav-btn" onClick={() => { navigate("/x-report"); setShowChart(true);}}>X-Report</button>
                 <button className="nav-btn" onClick={() => { navigate("/z-report"); setShowChart(true);}}>Z-Report</button>
             </nav>
-
-            {showChart && <Chart xaxis="stuff" yaxis="value" data={chartData} showChart />}
         </div>
     )
 }

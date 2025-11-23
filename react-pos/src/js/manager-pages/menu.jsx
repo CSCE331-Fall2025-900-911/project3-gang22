@@ -1,34 +1,45 @@
-import { useEffect, useState } from "react";
-import Table from "../manager-components/table";
+import Editor from "../manager-components/editor";
 
 export default function MenuPage() {
-
-  const [ menuItems , setMenuItems ] = useState([]);
-
-  const MENU_HEADERS = [
-      { display: "Menu ID", key: "id" },
-      { display: "Drink Name", key: "drink_name" },
-      { display: "Price", key: "price" },
-      { display: "Category", key: 'category'},
-      { display: "Image", key: "picture_url" }
-  ];
-
-  // Fetches menu data from backend when component is mounted and stores it for use inside the table
-  useEffect(() => {
-    async function getMenu() {
-      try {
-      const response = await fetch("https://project3-gang22-backend.onrender.com/api/managers/menu");
-      const data = await response.json(); 
-      setMenuItems(data);                           
-      } catch (err) {
-      console.error("Error fetching menu:", err);
-      }
-    }
-    getMenu();
-  }, []); 
-
-  // Returns table containing stored menu data
   return (
-    <Table headers={MENU_HEADERS} data={menuItems} />
-  )
+    <Editor
+      title="Menu"
+      basePath="menu"
+      fields={["Drink", "Price", "Category", "Tea", "Milk", "Picture URL"]}
+
+      // FIXME: talk with Alex about the required fields
+      requiredFields={[0,1,2,3,4,5]}
+      numericFields={[1]}
+      defaultValues={{5:"/images/placeholder.png"}}
+      headers={[
+        { display: "ID", key: "id" },
+        { display: "Drink", key: "drink_name" },
+        { display: "Price", key: "price" },
+        { display: "Category", key: "category" },
+        { display: "Tea", key: "tea_type" },
+        { display: "Milk", key: "milk_type" },
+        { display: "Image", key: "picture_url" }
+      ]}
+      extractValues={(item) => [
+        item.drink_name,
+        item.price,
+        item.category,
+        item.tea_type,
+        item.milk_type,
+        item.picture_url
+      ]}
+      buildPayload={(values, id) => {
+        const pictureUrl = values[5] && values[5].trim() !== "" ? values[5] : "/images/placeholder.png";
+        return {
+          id,
+          drink_name: values[0],
+          price: parseFloat(values[1]),
+          category: values[2],
+          tea_type: values[3],
+          milk_type: values[4],
+          picture_url: pictureUrl
+        };
+      }}
+    />
+  );
 }

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import Table from "../manager-components/table";
+import DatePicker from "../manager-components/datepicker.jsx";
+import { MANAGER_BASE_URL } from "../manager.jsx";
 
 export default function OrdersPage() {
 
   const [ orderItems , setOrderItems ] = useState([]);
-  const [ date , setDate] = useState("10-25-2024");
+  const [ date , setDate] = useState("2024-10-25");
   const [loading, setLoading] = useState(false);
 
 
@@ -21,7 +23,7 @@ export default function OrdersPage() {
     async function getOrders() {
       setLoading(true);
       try {
-        const response = await fetch(`https://project3-gang22-backend.onrender.com/api/managers/orders?date=${encodeURIComponent(date)}`);
+        const response = await fetch(`${MANAGER_BASE_URL}/orders?date=${encodeURIComponent(date)}`);
         const data = await response.json()
         setOrderItems(data);                           
       } catch (err) {
@@ -39,14 +41,7 @@ export default function OrdersPage() {
       <h2>Orders by Date</h2>
 
       {/* Date Picker */}
-      <label>
-        Select Date:{" "}
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
-      </label>
+      <DatePicker label="Select Date: " value={date} onChange={setDate} />
 
       {/* Optional Loading Indicator */}
       {loading && <p>Loading orders...</p>}
