@@ -1,35 +1,36 @@
-import { useEffect, useState } from "react";
-import Table from "../manager-components/table";
+import Editor from "../manager-components/editor";
 
 export default function InventoryPage() {
-
-  const [ inventoryItems , setInventoryItems ] = useState([]);
-
-  
-    const INVENTORY_HEADERS = [
-      { display: "Item ID", key: "id" },
-      { display: "Item Name", key: "name" },
-      { display: "Unit", key: "unit" },
-      { display: "Quantity", key: 'quantity'},
-      { display: "Reorder Threshold", key: 'reorder_threshold'},
-    ];
-
-  // Fetches inventory data from backend when component is mounted and stores it for use inside the table
-  useEffect(() => {
-    async function getInventory() {
-      try {
-        const response = await fetch("https://project3-gang22-backend.onrender.com/api/managers/inventory");
-        const data = await response.json(); 
-        setInventoryItems(data);                           
-      } catch (err) {
-        console.error("Error fetching menu:", err);
-      }
-    }
-    getInventory();
-  }, []); 
-
-  // Returns table containing stored inventory data
   return (
-    <Table headers={INVENTORY_HEADERS} data={inventoryItems} />
-  )
+    <Editor
+      title="Inventory"
+      basePath="inventory"
+      fields={["Item Name", "Unit", "Quantity", "Reorder Threshold", "Unit Cost"]}
+      requiredFields={[0, 1, 2, 3, 4]} 
+      numericFields={[2,3,4]}
+      headers={[
+        { display: "Item ID", key: "id" },
+        { display: "Item Name", key: "name" },
+        { display: "Unit", key: "unit" },
+        { display: "Quantity", key: "quantity" },
+        { display: "Reorder Threshold", key: "reorder_threshold" },
+        { display: "Unit Cost", key: "unit_cost"}
+      ]}
+      extractValues={(item) => [
+        item.name,
+        item.unit,
+        item.quantity,
+        item.reorder_threshold,
+        item.unit_cost
+      ]}
+      buildPayload={(values, id) => ({
+        id,
+        name: values[0],
+        unit: values[1],
+        quantity: parseFloat(values[2]),
+        reorder_threshold: parseFloat(values[3]),
+        unit_cost: parseFloat(values[4])
+      })}
+    />
+  );
 }

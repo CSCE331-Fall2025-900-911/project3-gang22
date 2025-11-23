@@ -6,6 +6,12 @@ import EmployeePage from "./manager-pages/employees.jsx";
 import InventoryPage from "./manager-pages/inventory.jsx";
 import OrdersPage from "./manager-pages/orders.jsx";
 import SalesReportPage from "./manager-pages/sales-report.jsx";
+import SalesTrendsPage from "./manager-pages/sales-trends.jsx";
+import ProductUsagePage from "./manager-pages/product-usage.jsx";
+import InventoryRestockPage from "./manager-pages/restock.jsx";
+import XReportPage from "./manager-pages/xreport.jsx";
+
+export const MANAGER_BASE_URL = "https://project3-gang22-backend.onrender.com/managers";
 
 export default function Manager() {
 
@@ -20,11 +26,11 @@ export default function Manager() {
           <Route path="/employees" element={<EmployeePage />} />
           <Route path="/inventory" element={<InventoryPage />} />
           <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/sales-trends" element={<div></div>} />
-          <Route path="/restock" element={<div></div>} />
-          <Route path="/product-usage" element={<div></div>} />
+          <Route path="/sales-trends" element={<SalesTrendsPage />} />
+          <Route path="/restock" element={<InventoryRestockPage />} />
+          <Route path="/product-usage" element={<ProductUsagePage />} />
           <Route path="/sales-report" element={<SalesReportPage />} />
-          <Route path="/x-report" element={<div></div>} />
+          <Route path="/x-report" element={<XReportPage />} />
           <Route path="/z-report" element={<div></div>} />
         </Routes>
       </BrowserRouter>
