@@ -171,6 +171,23 @@ module.exports = {
     }
   },
 
+ async getXReport(req, res) {
+  try {
+    const { range, dateStr, dateFormat } = req.query;
+
+    if (!range || !dateStr || !dateFormat) {
+      return res.status(400).json({ error: 'Missing required parameters: range, dateStr, or dateFormat' });
+    }
+
+    const result = await orderModel.getAggregatedOrders(dateFormat, range, dateStr);
+
+    return res.json(result);
+  } catch (error) {
+    console.error('Error fetching X report:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+},
+
   // --- Inventory ---
   async getMenuInventory(req, res) {
     try {

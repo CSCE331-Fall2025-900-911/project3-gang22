@@ -47,6 +47,19 @@ module.exports = {
       [start, end]
     );
     return result.rows;
+  },
+
+  async getAggregatedOrders(dateFormat, range, dateStr) {
+      const result = await query(`
+    SELECT TO_CHAR(order_time, '${dateFormat}') AS label, SUM(total) AS total_sales
+    FROM p2_orders
+    WHERE DATE_TRUNC($1, order_time) = DATE_TRUNC($1, CAST($2 AS DATE))
+    GROUP BY label
+    ORDER BY MIN(order_time)
+    `,
+    [range, dateStr]
+  );
+    return result.rows;
   }
 
 }
