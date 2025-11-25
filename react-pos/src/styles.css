@@ -64,11 +64,10 @@ h1 {
 }
 
 #backBtn {
-    margin-right: 16px;
     width: 64px;
 }
 
-.input {
+.search-input {
     width: calc(100% - 80px);
     padding: .6rem .8rem;
     border: 1px solid var(--border);
@@ -352,6 +351,111 @@ h1 {
     border-top-right-radius: inherit;
 }
 
-#cartHeading {
+/* --- Modal Overlay --- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+}
 
+.hidden {
+    display: none !important;
+}
+
+.modal-panel {
+    width: 420px;
+    height: 55vh;
+    background: #fff;
+    border: 1px solid var(--border);
+    /* border: 1px solid black; */
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modal-panel h2 {
+    margin: 0;
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    background-color: rgb(247, 247, 247);
+    text-align: center;
+}
+
+.modal-body {
+    padding: 16px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-footer {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.modal-panel.large {
+    width: 560px;
+    max-height: 85vh;
+}
+
+.review-table th,
+.review-table td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.mb {
+    margin-bottom: 16px;
+}
+
+
+.card-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
+.card-field label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--fg);
+}
+
+.card-input {
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 1rem;
+    color: var(--fg);
+    background: #fff;
+}
+
+.card-input:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+}
+
+.card-row {
+    display: flex;
+    gap: 8px;
+}
+
+.card-row .card-input {
+    flex: 1;
+}
+
+.card-exp-small {
+    max-width: 80px;
+}
+
+.gap-right {
+    margin-right: 16px;
 }
