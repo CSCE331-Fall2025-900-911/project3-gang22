@@ -83,7 +83,7 @@ export default function Employee() {
     // Opens review modal
     function openReview() {
       // Prevent opening if cart is empty
-      if (cart.size === 0) {
+      if (document.querySelectorAll('.cart-row').length == 0) {
         alert("Your cart is empty!");
         return;
       }
