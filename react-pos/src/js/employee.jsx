@@ -2,6 +2,9 @@ import React from "react";
 import { useEffect, useState } from "react";
 import fetchMenu from "./employee-pages/menu";
 
+// export const EMPLOYEE_BASE_URL = ""https://project3-gang22-backend.onrender.com/cashier";
+export const EMPLOYEE_BASE_URL = "http://localhost:3000/cashier";
+
 export default function Employee() {
 
    const [ menuItems, setMenuItems ] = useState([]);

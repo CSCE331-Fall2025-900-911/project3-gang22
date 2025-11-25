@@ -12,8 +12,8 @@ import InventoryRestockPage from "./manager-pages/restock.jsx";
 import XReportPage from "./manager-pages/xreport.jsx";
 import ZReportPage from "./manager-pages/zreport.jsx";
 
-export const MANAGER_BASE_URL = "https://project3-gang22-backend.onrender.com/manager";
-// export const MANAGER_BASE_URL = "http://localhost:3000/manager";
+// export const MANAGER_BASE_URL = "https://project3-gang22-backend.onrender.com/manager";
+export const MANAGER_BASE_URL = "http://localhost:3000/manager";
 
 export default function Manager() {
 
