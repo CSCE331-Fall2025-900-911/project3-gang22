@@ -34,7 +34,24 @@ export default function SalesTrendsPage() {
   // Get data for the chart and table
   async function getSalesData(range, date) {
     try {
-      const response = await fetch(`${MANAGER_BASE_URL}/sales-trends?range=${encodeURIComponent(range)}&date=${encodeURIComponent(date)}`, {credentials: 'include'});
+      let dateFormat;
+      switch (range) {
+        case "day":
+          dateFormat = "HH24"; // hourly
+          break;
+        case "week":
+          dateFormat = "Dy"; // daily by weekday
+          break;
+        case "month":
+          dateFormat = "DD"; // daily by day of month
+          break;
+        case "year":
+          dateFormat = "Mon"; // monthly
+          break;
+        default:
+          dateFormat = "YYYY-MM-DD"; // fallback
+      }
+      const response = await fetch(`${MANAGER_BASE_URL}/x_report?range=${encodeURIComponent(range)}&dateStr=${encodeURIComponent(date)}&dateFormat=${encodeURIComponent(dateFormat)}`, {credentials: 'include'});
       const data = await response.json();
       setSalesData(data);
     } catch (err) {
@@ -45,7 +62,7 @@ export default function SalesTrendsPage() {
   // Get data for the Order table
   async function getOrderData(range, date) {
     try {
-      const response = await fetch(`${MANAGER_BASE_URL}/orders-by-range?range=${encodeURIComponent(range)}&date=${encodeURIComponent(date)}`, {credentials: 'include'});
+      const response = await fetch(`${MANAGER_BASE_URL}/orders?date=${encodeURIComponent(date)}`, {credentials: 'include'});
       const data = await response.json();
       setOrderData(data);
     } catch (err) {
