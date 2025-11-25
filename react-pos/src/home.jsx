@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import "./styles.css";
+import Login from "./js/login.jsx";
 import Customer from "./js/customer.jsx"
 import Employee from "./js/employee.jsx";
 import Manager from "./js/manager.jsx";
@@ -8,7 +9,9 @@ import Manager from "./js/manager.jsx";
 export default function Home() {
 
     const [ currentScreen, setScreen ] = useState();
+    const [ authenticated, setAuthentication ] = useState(false);
 
+    if (authenticated === false) return <Login setAuthentication={setAuthentication}/>
     if (currentScreen === "Customer") return <Customer />;
     if (currentScreen === "Employee") return <Employee />;
     if (currentScreen === "Manager") return <Manager />;

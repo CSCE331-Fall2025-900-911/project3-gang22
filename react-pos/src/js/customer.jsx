@@ -2,9 +2,13 @@ import React, { } from "react";
 import { useEffect , useState } from "react";
 import fetchMenu from "./customer-pages/menu.jsx";
 
+// export const CUSTOMER_BASE_URL = ""https://project3-gang22-backend.onrender.com/customer";
+export const CUSTOMER_BASE_URL = "http://localhost:3000/customer";
+
 export default function Customer() {
 
     const [ menuItems, setMenuItems ] = useState([]);
+
 
   // Fetches menu data whenever component is mounted
   useEffect(() => {
