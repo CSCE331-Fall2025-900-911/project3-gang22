@@ -1,6 +1,8 @@
 const { query } = require('../db');
 const menuModel = require('../models/menuModel');
 const orderModel = require('../models/orderModel');
+const orderItemModel = require('../models/orderItemModel');
+const transactionModel = require('../models/transactionModel');
 
 module.exports = {
   async getMenu(req, res) {
@@ -60,14 +62,14 @@ module.exports = {
       });
 
       for (let i = 0; i < menu_ids.length; i++) {
-        await orderModel.addOrderItem(order_id, {
+        await orderItemModel.addOrderItem(order_id, {
           menu_id: menu_ids[i],
           quantity: quantities[i],
           total: totals[i],
         });
       }
 
-      await orderModel.addTransaction(order_id, {
+      await transactionModel.addTransaction(order_id, {
         card_number,
         card_expr_m,
         card_expr_y,

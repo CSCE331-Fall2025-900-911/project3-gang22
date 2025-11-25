@@ -97,8 +97,15 @@ app.use('/auth', authRouter);
 
 /* -------------------- Application routes -------------------- */
 app.use('/customer', userRoutes);
-app.use('/cashier', requireAnyRole(['cashier', 'manager']), employeeRoutes);
-app.use('/manager', requireAnyRole(['manager']), managerRoutes);
+
+const useAuth = true;
+if (useAuth) {
+  app.use('/cashier', requireAnyRole(['cashier', 'manager']), employeeRoutes);
+  app.use('/manager', requireAnyRole(['manager']), managerRoutes);
+} else {
+  app.use('/cashier', employeeRoutes);
+  app.use('/manager', managerRoutes);
+}
 
 /* -------------------- Health checks -------------------- */
 app.get('/dbz', async (_, res) => {
