@@ -101,8 +101,6 @@ module.exports = {
         employee_id,
       });
 
-      console.log(order_id);
-
       for (let i = 0; i < menu_ids.length; i++) {
         await orderItemModel.addOrderItem(order_id, {
           menu_id: menu_ids[i],

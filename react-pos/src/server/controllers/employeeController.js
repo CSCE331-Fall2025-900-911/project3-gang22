@@ -53,8 +53,6 @@ module.exports = {
       const tax = subtotal * 0.0625;
       const total = subtotal + tax;
 
-      console.log("Yo!");
-
       const order_id = await orderModel.createOrder({
         subtotal,
         tax,
