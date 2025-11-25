@@ -60,3 +60,4 @@ h1{margin:0 0 12px; font-size:2rem}
 .menu{display: block; margin: 20px 20px; border-collapse: collapse; td, th {padding: 5px; border: 2px solid black;}}
 
 .page-container{display: flex; flex-direction: column; align-items: center; justify-content: center;}
+.login-page{display: flex; flex-direction: column; height: 100vh; width: 100vw; justify-content: center; align-items: center; gap: 20px; font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; font-size: 2rem; color:var(--fg); background:var(--bg)}
