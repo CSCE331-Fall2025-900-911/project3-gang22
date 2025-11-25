@@ -88,7 +88,7 @@ module.exports = {
     try {
       await query('BEGIN');
 
-      const employee_id = -1; // customer order
+      const employee_id = 999; // customer order
       const subtotal = totals.reduce((acc, x) => acc + x, 0);
       const tax = subtotal * 0.0625;
       const total = subtotal + tax;
@@ -100,6 +100,8 @@ module.exports = {
         order_time,
         employee_id,
       });
+
+      console.log(order_id);
 
       for (let i = 0; i < menu_ids.length; i++) {
         await orderItemModel.addOrderItem(order_id, {
