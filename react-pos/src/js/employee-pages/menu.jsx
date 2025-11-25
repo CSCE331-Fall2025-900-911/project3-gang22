@@ -1,7 +1,7 @@
 import { API_BASE } from '../apibase';
 
 // Fetches menu data for cashier interface and returns it
-export default async function fetchMenu() {
+export async function fetchMenu() {
   try {
     const response = await fetch(API_BASE + "/cashier/menu", {credentials: 'include'});
     const data = await response.json(); 
