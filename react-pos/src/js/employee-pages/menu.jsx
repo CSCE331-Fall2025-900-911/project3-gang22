@@ -29,7 +29,7 @@ export async function fetchMenu() {
  */
 export async function createOrder(orderData) {
   try {
-    const response = await fetch(API_BASE + "/employee/order", {
+    const response = await fetch(API_BASE + "/cashier/order", {
       method: "POST",
       credentials: "include",
       headers: {
