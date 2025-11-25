@@ -98,7 +98,7 @@ app.use('/auth', authRouter);
 /* -------------------- Application routes -------------------- */
 app.use('/customer', userRoutes);
 
-const useAuth = false;
+const useAuth = true;
 if (useAuth) {
   app.use('/cashier', requireAnyRole(['cashier', 'manager']), employeeRoutes);
   app.use('/manager', requireAnyRole(['manager']), managerRoutes);
