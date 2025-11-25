@@ -11,7 +11,7 @@ export default function XReportPage() {
 
   const XREPORT_HEADERS = [
     { display: "Hour", key: "label" },
-    { display: "Sales", key: "sales" },
+    { display: "Sales", key: "total_sales" },
     { display: "Returns", key: "returns" },
     { display: "Voids", key: "voids" },
     { display: "Discards", key: "discards" },
@@ -30,29 +30,41 @@ export default function XReportPage() {
   useEffect(() => {
     if (!reportDate) return;
 
-    // Chart data
-    fetch(`${MANAGER_BASE_URL}/xreport-chart?date=${reportDate}`, {credentials: 'include'})
-      .then(res => res.json())
-      .then(data => {
-        const series = data.map(record => ({
+    const url = `${MANAGER_BASE_URL}/x_report?range=day&dateStr=${encodeURIComponent(
+      reportDate
+    )}&dateFormat=HH12 AM`;
+
+    fetch(url, { credentials: "include" })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        // Chart expects x/y pairs
+        const series = data.map((record) => ({
           x: record.label,
-          y: record.sales
+          y: record.total_sales,
         }));
         setChartData(series);
-      })
-      .catch(err => {
-        console.error("Chart fetch failed:", err);
-        setChartData([]);
-      });
 
-    // Table data
-    fetch(`${MANAGER_BASE_URL}/xreport-table?date=${reportDate}`, {credentials: 'include'})
-      .then(res => res.json())
-      .then(data => {
-        setTableData(Array.isArray(data) ? data : []);
+        // // Table expects array of objects
+        // setTableData(Array.isArray(data) ? data : []);
+        // Table: normalize to include all fields
+      const normalized = data.map((record) => ({
+        label: record.label,
+        total_sales: record.total_sales, // optional if you want a separate "Sales" column
+        returns: 0,
+        voids: 0,
+        discards: 0,
+        cash: 0,
+        card: record.total_sales, // put all totals here
+        other: 0,
+      }));
+      setTableData(normalized);
       })
-      .catch(err => {
-        console.error("Table fetch failed:", err);
+      .catch((err) => {
+        console.error("X Report fetch failed:", err);
+        setChartData([]);
         setTableData([]);
       });
   }, [reportDate]);
