@@ -1,14 +1,15 @@
 import { useEffect } from "react";
 import "../styles.css"
 
-export default function Login({setAuthentication}) {
+export default function Login({setCurrentUser}) {
+
 
     useEffect(() => {
         async function checkAuth() {
             try {
                 const response = await fetch("http://localhost:3000/auth/me", {credentials: "include"});
                 const data = await response.json();
-                setAuthentication(data.authenticated);
+                setCurrentUser(data);
                 console.log(data);
             
             }
@@ -20,7 +21,7 @@ export default function Login({setAuthentication}) {
     }, []);
 
     return (
-        <div className="page-container">
+        <div className="login-page">
             <div>Log In</div>
             <button className="btn" onClick={() => window.location.href = "http://localhost:3000/auth/google"}>Log In</button>
         </div>
