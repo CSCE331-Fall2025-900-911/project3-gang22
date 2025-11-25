@@ -13,8 +13,8 @@ export default function Home() {
 
     if (!currentUser || currentUser.authenticated !== true) return <Login setCurrentUser={setCurrentUser}/>
     if (currentScreen === "Customer") return <Customer />;
-    if (currentScreen === "Employee" && (currentUser.role === "cashier" || currentUser.role === "manager")) return <Employee />;
-    if (currentScreen === "Manager" && currentUser.role === "manager") return <Manager />;
+    if (currentScreen === "Employee" && (currentUser.user.role === "cashier" || currentUser.user.role === "manager")) return <Employee />;
+    if (currentScreen === "Manager" && currentUser.user.role === "manager") return <Manager />;
 
     return (
         <div>
@@ -22,8 +22,8 @@ export default function Home() {
                 <h1>Bubble Tea POS</h1>
                 <nav className="nav">
                 <button className="nav-btn" onClick={() => setScreen("Customer")}>Customer Kiosk</button>
-                {(currentUser.role === "cashier" || currentUser.role === "manager") && <button className="nav-btn" onClick={() => setScreen("Employee")}>Cashier POS</button>}
-                {(currentUser.role === "manager") && <button className="nav-btn" onClick={() => setScreen("Manager")}>Manager Dashboard</button>}
+                {(currentUser.user.role === "cashier" || currentUser.user.role === "manager") && <button className="nav-btn" onClick={() => setScreen("Employee")}>Cashier POS</button>}
+                {(currentUser.user.role === "manager") && <button className="nav-btn" onClick={() => setScreen("Manager")}>Manager Dashboard</button>}
                 </nav>
             </main>
         </div>
