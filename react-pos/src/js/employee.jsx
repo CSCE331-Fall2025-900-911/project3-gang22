@@ -4,15 +4,15 @@ import fetchMenu from "./employee-pages/menu";
 
 export default function Employee() {
 
-   const [ menuItems, setMenuItems ] = useState([]);
-  
+  const [menuItems, setMenuItems] = useState([]);
+
   // Fetches menu data whenever component is mounted
   useEffect(() => {
-      async function loadMenuOnStart() {
-        const data = await fetchMenu();
-        setMenuItems(data);             
-      }
-      loadMenuOnStart();
+    async function loadMenuOnStart() {
+      const data = await fetchMenu();
+      setMenuItems(data);
+    }
+    loadMenuOnStart();
   }, [])
 
   useEffect(() => {
@@ -20,58 +20,58 @@ export default function Employee() {
     const TAX = 0.0825;
     const money = n => `$${Number(n).toFixed(2)}`;
     const cart = new Map();
-    function add(item){ const c=cart.get(item.id)||{item,qty:0}; c.qty++; cart.set(item.id,c); renderCart(); }
-    function dec(id){ const c=cart.get(id); if(!c) return; c.qty--; if(c.qty<=0) cart.delete(id); renderCart(); }
+    function add(item) { const c = cart.get(item.id) || { item, qty: 0 }; c.qty++; cart.set(item.id, c); renderCart(); }
+    function dec(id) { const c = cart.get(id); if (!c) return; c.qty--; if (c.qty <= 0) cart.delete(id); renderCart(); }
 
-    function totals(){ let s=0; cart.forEach(({item,qty})=> s+=item.price*qty); const t=s*TAX; return {s,t,tt:s+t}; }
+    function totals() { let s = 0; cart.forEach(({ item, qty }) => s += item.price * qty); const t = s * TAX; return { s, t, tt: s + t }; }
 
-    function renderCart(){
-      const box=$('#posCartItems'); box.innerHTML='';
-      cart.forEach(({item,qty})=>{
-        const row=document.createElement('div'); row.className='cart-row';
-        row.innerHTML=`<div class="cart-row-name">${item.drink_name}</div>
+    function renderCart() {
+      const box = $('#posCartItems'); box.innerHTML = '';
+      cart.forEach(({ item, qty }) => {
+        const row = document.createElement('div'); row.className = 'cart-row';
+        row.innerHTML = `<div class="cart-row-name">${item.drink_name}</div>
         <div class="cart-row-qty"><button class="btn sm" data-a="dec">−</button>
         <span class="qty">${qty}</span><button class="btn sm" data-a="inc">+</button></div>
-        <div class="cart-row-price">${money(item.price*qty)}</div>`;
-        row.querySelector('[data-a="dec"]').onclick=()=>dec(item.id);
-        row.querySelector('[data-a="inc"]').onclick=()=>add(item);
+        <div class="cart-row-price">${money(item.price * qty)}</div>`;
+        row.querySelector('[data-a="dec"]').onclick = () => dec(item.id);
+        row.querySelector('[data-a="inc"]').onclick = () => add(item);
         box.appendChild(row);
       });
-      const {s,t,tt}=totals();
-      $('#posSubtotal').textContent=money(s);
-      $('#posTax').textContent=money(t);
-      $('#posTotal').textContent=money(tt);
+      const { s, t, tt } = totals();
+      $('#posSubtotal').textContent = money(s);
+      $('#posTax').textContent = money(t);
+      $('#posTotal').textContent = money(tt);
     }
 
-    function renderMenu(items){
-      const grid=$('#posMenuGrid'); grid.innerHTML='';
-      items.forEach((it,i)=>{
-        const b=document.createElement('button'); b.type='button'; b.className='card';
-        b.innerHTML=`
+    function renderMenu(items) {
+      const grid = $('#posMenuGrid'); grid.innerHTML = '';
+      items.forEach((it, i) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'card';
+        b.innerHTML = `
         <img class="card-img" src="/images/drink${it.id}.jpg" alt="${it.drink_name}" onerror="this.src='/images/placeholder.png'">
         <div class="card-body">
-          <div class="card-name">${i<9?`${i+1}. `:''}${it.drink_name}</div>
+          <div class="card-name">${i < 9 ? `${i + 1}. ` : ''}${it.drink_name}</div>
           <div class="card-price">${money(it.price)}</div>
         </div>`;
-        b.addEventListener('click',()=>add(it)); grid.appendChild(b);
+        b.addEventListener('click', () => add(it)); grid.appendChild(b);
       });
     }
 
-    function bindShortcuts(items){
-      const input=$('#posSearch');
-      document.addEventListener('keydown',e=>{
-        if(e.key==='/'){ e.preventDefault(); input.focus(); }
-        if(e.key>='1'&&e.key<='9'){ const idx=Number(e.key)-1; if(items[idx]) add(items[idx]); }
-        if(e.key==='Enter') $('#posCheckout').click();
+    function bindShortcuts(items) {
+      const input = $('#posSearch');
+      document.addEventListener('keydown', e => {
+        if (e.key === '/') { e.preventDefault(); input.focus(); }
+        if (e.key >= '1' && e.key <= '9') { const idx = Number(e.key) - 1; if (items[idx]) add(items[idx]); }
+        if (e.key === 'Enter') $('#posCheckout').click();
       });
-      input.addEventListener('input',()=>{
-        const q=input.value.toLowerCase();
-        renderMenu(items.filter(it=>it.drink_name.toLowerCase().includes(q)));
+      input.addEventListener('input', () => {
+        const q = input.value.toLowerCase();
+        renderMenu(items.filter(it => it.drink_name.toLowerCase().includes(q)));
       });
     }
 
-    $('#posClear').addEventListener('click',()=>{ cart.clear(); renderCart(); });
-    $('#posCheckout').addEventListener('click',()=>{ alert('Paid (stub)'); cart.clear(); renderCart(); });
+    $('#posClear').addEventListener('click', () => { cart.clear(); renderCart(); });
+    $('#posCheckout').addEventListener('click', () => { alert('Paid (stub)'); cart.clear(); renderCart(); });
 
     renderMenu(menuItems); renderCart(); bindShortcuts(menuItems);
   }, [menuItems]);
@@ -97,7 +97,7 @@ export default function Employee() {
           <button id="posClear" className="btn">Void</button>
           <button id="posCheckout" className="btn primary">Charge (Enter)</button>
         </div>
-                <p className="mt-sm"><a href="/">Back</a></p>
+        <p className="mt-sm"><a href="/">Back</a></p>
       </aside>
     </main>
   );
