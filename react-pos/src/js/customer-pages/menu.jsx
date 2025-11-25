@@ -1,12 +1,45 @@
+import { API_BASE } from '../apibase';
+
 // Fetches menu data for kiosk interface and returns it
-export default async function fetchMenu() {
+export async function fetchMenu() {
   try {
-    const response = await fetch("https://project3-gang22-backend.onrender.com/api/user/menu", {credentials: 'include'});
+    const response = await fetch(API_BASE + "/customer/menu", {credentials: 'include'});
     const data = await response.json(); 
     console.log(data);
     return data;                           
   } catch (err) {
     console.error("Error fetching menu:", err);
     return [];
+  }
+}
+
+/*
+ * param orderData must include:
+ *
+ *   order_time: string,
+ *   menu_ids: number[],
+ *   quantities: number[],
+ *   totals: number[],
+ *   card_number: string,
+ *   card_expr_m: number,
+ *   card_expr_y: number,
+ *   card_holder: string
+ */
+export async function createOrder(orderData) {
+  try {
+    const response = await fetch(API_BASE + "/customer/order", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(orderData)
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("Error creating order:", err);
+    return { error: "Network error" };
   }
 }
