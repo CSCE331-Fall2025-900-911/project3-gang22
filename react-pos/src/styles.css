@@ -280,6 +280,7 @@ h1 {
 }
 
 .page-container{display: flex; flex-direction: column; align-items: center; justify-content: center;}
+.page-container-alt{display: flex; height: 100vh; flex-direction: column; align-items: center; justify-content: center;}
 .login-page{display: flex; flex-direction: column; height: 100vh; width: 100vw; justify-content: center; align-items: center; gap: 20px; font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; font-size: 2rem; color:var(--fg); background:var(--bg)}
 
 .sr-only {

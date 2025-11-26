@@ -1,17 +1,37 @@
-import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./styles.css";
 import Login from "./js/login.jsx";
 import Customer from "./js/customer.jsx"
 import Employee from "./js/employee.jsx";
 import Manager from "./js/manager.jsx";
+import { API_BASE } from "./js/apibase.js";
 
 export default function Home() {
 
+    
     const [ currentScreen, setScreen ] = useState();
     const [ currentUser, setCurrentUser ] = useState(null);
+    const [ validatingUser, setValidatingUser ] = useState(true);
 
-    if (!currentUser || currentUser.authenticated !== true) return <Login setCurrentUser={setCurrentUser}/>
+    useEffect(() => {
+            async function checkAuth() {
+                try {
+                    const response = await fetch(`${API_BASE}/auth/me`, {credentials: "include"});
+                    const data = await response.json();
+                    setCurrentUser(data);
+                    console.log(data);
+                }
+                catch (err) {
+                    console.error("Error validating authentication", err);
+                }
+                finally {
+                    setValidatingUser(false);
+                }
+            }
+            checkAuth();
+        }, []);
+
+    if (!currentUser || currentUser.authenticated !== true) return <Login validatingUser={validatingUser}/>
     if (currentScreen === "Customer") return <Customer />;
     if (currentScreen === "Employee" && (currentUser.user.role === "cashier" || currentUser.user.role === "manager")) return <Employee />;
     if (currentScreen === "Manager" && currentUser.user.role === "manager") return <Manager />;
