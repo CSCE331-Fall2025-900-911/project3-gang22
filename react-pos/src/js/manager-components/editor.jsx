@@ -114,7 +114,7 @@ export default function Editor({ title, fields, headers, basePath, extractValues
     const payload = buildPayload(values, dialogMode === "edit" ? selectedItem.id : null);
     
     // Determine 
-    const method = dialogMode === "new" ? "POST" : "PUT";
+    const method = "POST";
     const endpoint = dialogMode === "new" ? "add" : "update";
 
     // DELETE WHEN DONE
