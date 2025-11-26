@@ -108,7 +108,7 @@ export default function ZReportPage() {
   }
 
   return (
-    <>
+    <div style={{ marginLeft: "20px"}}>
       <h2>Z Report</h2>
 
       <div style={{ marginBottom: "1rem" }}>
@@ -121,6 +121,6 @@ export default function ZReportPage() {
       <button onClick={generateZReport} disabled={zReportDone}>
         Generate Z-Report
       </button>
-    </>
+    </div>
   );
 }

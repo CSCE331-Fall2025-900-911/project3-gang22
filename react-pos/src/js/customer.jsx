@@ -1,10 +1,9 @@
-import React, { } from "react";
 import { useEffect, useState } from "react";
 import { fetchMenu, createOrder } from "./customer-pages/menu.jsx";
+import { API_BASE } from "./apibase.js";
 
 
-// export const CUSTOMER_BASE_URL = ""https://project3-gang22-backend.onrender.com/customer";
-export const CUSTOMER_BASE_URL = "http://localhost:3000/customer";
+export const CUSTOMER_BASE_URL = `${API_BASE}/customer`;
 
 export default function Customer() {
 

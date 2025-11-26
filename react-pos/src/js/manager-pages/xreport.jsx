@@ -70,7 +70,7 @@ export default function XReportPage() {
   }, [reportDate]);
 
   return (
-    <>
+    <div style={{ marginLeft: "20px"}}>
       <h2>X Report</h2>
 
       {/* Date Picker */}
@@ -83,6 +83,6 @@ export default function XReportPage() {
 
       {/* Table */}
       <Table headers={XREPORT_HEADERS} data={tableData} />
-    </>
+    </div>
   );
 }

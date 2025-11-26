@@ -1,4 +1,3 @@
-import React from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Navbar from "./manager-components/navbar.jsx";
 import MenuPage from "./manager-pages/menu.jsx";
@@ -11,9 +10,9 @@ import ProductUsagePage from "./manager-pages/product-usage.jsx";
 import InventoryRestockPage from "./manager-pages/restock.jsx";
 import XReportPage from "./manager-pages/xreport.jsx";
 import ZReportPage from "./manager-pages/zreport.jsx";
+import { API_BASE } from "./apibase.js";
 
-// export const MANAGER_BASE_URL = "https://project3-gang22-backend.onrender.com/manager";
-export const MANAGER_BASE_URL = "http://localhost:3000/manager";
+export const MANAGER_BASE_URL = `${API_BASE}/manager`;
 
 export default function Manager() {
 

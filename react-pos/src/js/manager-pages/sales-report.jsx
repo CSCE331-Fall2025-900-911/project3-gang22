@@ -62,7 +62,7 @@ export default function SalesReportPage() {
 
   // Returns table containing stored sales report data
   return (
-    <>
+    <div style={{ marginLeft: "20px"}}>
       <h2>Sales Report</h2>
 
       {/* Filter Bar */}
@@ -82,7 +82,7 @@ export default function SalesReportPage() {
       {/* Chart and Table */}
       <Chart xaxis="time_label" yaxis={yaxis} data={salesReportItems} />
       <Table headers={SALES_REPORT_HEADERS} data={salesReportItems} />
-    </>
+    </div>
   );
 }
 

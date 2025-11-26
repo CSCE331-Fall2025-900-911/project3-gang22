@@ -72,7 +72,7 @@ export default function SalesTrendsPage() {
 
   // FIXME: Do we add the clickable pop-up window for more order information details?
   return (
-    <>
+    <div style={{ marginLeft: "20px"}}>
       <h2>Sales Trends</h2>
 
       {/*Range and Date Selection*/}
@@ -92,7 +92,7 @@ export default function SalesTrendsPage() {
       {/* Order History Table */}
       <h3 style={{ marginTop: "2rem" }}>Order History</h3>
       <Table headers={ORDER_HEADERS} data={orderData} />
-    </>
+    </div>
   );
   
 }
