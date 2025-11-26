@@ -45,6 +45,7 @@ export default function Editor({ title, fields, headers, basePath, extractValues
       await fetch(`${MANAGER_BASE_URL}/${basePath}/del`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ id })
       });
       setItems(items.filter(item => item.id !== id));
@@ -123,6 +124,7 @@ export default function Editor({ title, fields, headers, basePath, extractValues
       const res = await fetch(`${MANAGER_BASE_URL}/${basePath}/${endpoint}`, {
         method,
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(payload)
       });
 
