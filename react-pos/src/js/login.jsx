@@ -8,7 +8,7 @@ export default function Login({setCurrentUser}) {
     useEffect(() => {
         async function checkAuth() {
             try {
-                const response = await fetch(`${API_BASE}}/auth/me`, {credentials: "include"});
+                const response = await fetch(`${API_BASE}/auth/me`, {credentials: "include"});
                 const data = await response.json();
                 setCurrentUser(data);
                 console.log(data);

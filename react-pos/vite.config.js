@@ -10,6 +10,10 @@ export default defineConfig({
     allowedHosts: [
       'project3-gang22-frontend.onrender.com',  // allow Render host
       'localhost'
-    ]
+    ],
+    define: {
+    'process.env.NODE_ENV': '"production"'
+}
+    
   }
 })
