@@ -16,7 +16,9 @@ const {
   FRONTEND_ORIGIN,
   NODE_ENV,
 } = process.env;
-console.log(FRONTEND_ORIGIN);
+console.log("Frontend_Orgin", FRONTEND_ORIGIN);
+console.log("Google Callback URL:", process.env.GOOGLE_CALLBACK_URL);
+
 
 if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !GOOGLE_CALLBACK_URL) {
   console.error('[AUTH] Missing Google OAuth env vars:', {
