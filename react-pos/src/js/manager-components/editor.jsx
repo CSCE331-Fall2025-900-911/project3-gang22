@@ -43,7 +43,7 @@ export default function Editor({ title, fields, headers, basePath, extractValues
   async function handleDelete(id) {
     try {
       await fetch(`${MANAGER_BASE_URL}/${basePath}/del`, {
-        method: "DELETE",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ id })
