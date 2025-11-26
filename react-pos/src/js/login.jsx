@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import "../styles.css"
+import { API_BASE } from "./apibase";
 
 export default function Login({setCurrentUser}) {
 
@@ -7,7 +8,7 @@ export default function Login({setCurrentUser}) {
     useEffect(() => {
         async function checkAuth() {
             try {
-                const response = await fetch("http://localhost:3000/auth/me", {credentials: "include"});
+                const response = await fetch(`${API_BASE}}/auth/me`, {credentials: "include"});
                 const data = await response.json();
                 setCurrentUser(data);
                 console.log(data);
@@ -23,7 +24,7 @@ export default function Login({setCurrentUser}) {
     return (
         <div className="login-page">
             <div>Log In</div>
-            <button className="btn" onClick={() => window.location.href = "http://localhost:3000/auth/google"}>Log In</button>
+            <button className="btn" onClick={() => window.location.href = `${API_BASE}/auth/google`}>Log In</button>
         </div>
     )
 }

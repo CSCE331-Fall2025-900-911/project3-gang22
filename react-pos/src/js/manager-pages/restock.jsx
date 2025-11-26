@@ -122,7 +122,7 @@ export default function InventoryRestockPage() {
     }
 
     return (
-        <div style={{ padding: "2rem" }}>
+        <div style={{ marginLeft: "20px"}}>
             <h2>Current Inventory Levels</h2>
             <Table headers={INVENTORY_HEADERS} data={inventoryData} />
 

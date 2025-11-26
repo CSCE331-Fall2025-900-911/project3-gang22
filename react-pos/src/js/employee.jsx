@@ -1,6 +1,7 @@
 import React, { } from "react";
 import { useEffect, useState } from "react";
 import { fetchMenu, createOrder } from "./employee-pages/menu.jsx";
+import { API_BASE } from "./apibase.js";
 
 
 // function bindShortcuts(items){
@@ -16,8 +17,7 @@ import { fetchMenu, createOrder } from "./employee-pages/menu.jsx";
 //   });
 // }
 
-// export const EMPLOYEE_BASE_URL = ""https://project3-gang22-backend.onrender.com/cashier";
-export const EMPLOYEE_BASE_URL = "http://localhost:3000/cashier";
+export const EMPLOYEE_BASE_URL = `${API_BASE}/cashier`;
 
 export default function Employee() {
 

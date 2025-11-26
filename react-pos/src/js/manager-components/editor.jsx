@@ -154,7 +154,7 @@ export default function Editor({ title, fields, headers, basePath, extractValues
   }
 
   return (
-    <>
+    <div style={{marginLeft: "20px" }}>
       <h2>{title} Editor</h2>
       <button onClick={openNewDialog}>+ New {title}{title === "Employee" ? "" : " Item"}</button>
       <Table headers={TABLE_HEADERS} data={items} />
@@ -169,6 +169,6 @@ export default function Editor({ title, fields, headers, basePath, extractValues
           errorMessage={errorMessage}
         />
       )}
-    </>
+    </div>
   );
 }

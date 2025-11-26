@@ -38,7 +38,7 @@ export default function ProductUsagePage() {
     }
 
     return (
-        <>
+        <div style={{ marginLeft: "20px"}}>
         <h2>Inventory Usage Report</h2>
 
         {/* Toolbar */}
@@ -57,6 +57,6 @@ export default function ProductUsagePage() {
         {/* Detail Table */}
         <h3 style={{ marginTop: "2rem" }}>Detailed Usage Records</h3>
         <Table headers={DETAIL_HEADERS} data={usageData} />
-        </>
+        </div>
     );
 }
