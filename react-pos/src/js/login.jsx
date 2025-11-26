@@ -2,24 +2,9 @@ import { useEffect } from "react";
 import "../styles.css"
 import { API_BASE } from "./apibase";
 
-export default function Login({setCurrentUser}) {
+export default function Login({validatingUser}) {
 
-
-    useEffect(() => {
-        async function checkAuth() {
-            try {
-                const response = await fetch(`${API_BASE}/auth/me`, {credentials: "include"});
-                const data = await response.json();
-                setCurrentUser(data);
-                console.log(data);
-            
-            }
-            catch (err) {
-                console.error("Error validating authentication", err);
-            }
-        }
-        checkAuth();
-    }, []);
+    if (validatingUser) return <div className="page-container-alt"><img src="/images/loading.gif" alt="Loading"/></div>
 
     return (
         <div className="login-page">
