@@ -1,3 +1,5 @@
+
+// Controller for public/customer-facing routes, providng endpoints to fetch the menu and submit customer orders.
 const { query } = require('../db');
 const menuModel = require('../models/menuModel');
 const orderModel = require('../models/orderModel');

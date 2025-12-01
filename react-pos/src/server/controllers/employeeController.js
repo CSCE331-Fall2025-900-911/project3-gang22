@@ -1,3 +1,5 @@
+
+// Controller for cashier/employee routes, providing endpoints used by cashiers to access the menu and create orders
 const { query } = require('../db');
 const menuModel = require('../models/menuModel');
 const orderModel = require('../models/orderModel');

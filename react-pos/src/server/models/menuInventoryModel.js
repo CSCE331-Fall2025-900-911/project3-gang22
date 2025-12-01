@@ -1,3 +1,5 @@
+
+// Maps menu items to inventory ingredients
 const { query } = require('../db');
 
 module.exports = {

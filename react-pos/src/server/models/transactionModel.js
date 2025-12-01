@@ -1,3 +1,5 @@
+
+// Functions used by controllers to create transaction records for an order
 const { query } = require('../db');
 
 module.exports = {

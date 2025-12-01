@@ -1,3 +1,5 @@
+
+// Provides CRUD functions for inventory records
 const { query } = require('../db');
 
 module.exports = {
