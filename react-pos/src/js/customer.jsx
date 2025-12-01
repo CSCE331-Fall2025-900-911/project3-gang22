@@ -7,7 +7,8 @@ export const CUSTOMER_BASE_URL = `${API_BASE}/customer`;
 
 export default function Customer() {
 
-  const [menuItems, setMenuItems] = useState([]);
+  const [ menuItems, setMenuItems ] = useState([]);
+  const [ orderInProgress, setOrderInProgress ] = useState(false);
 
 
   // Fetches menu data whenever component is mounted
@@ -18,7 +19,6 @@ export default function Customer() {
     }
     loadMenuOnStart();
   }, [])
-
 
   useEffect(() => {
 
@@ -146,6 +146,7 @@ export default function Customer() {
         orderModal.classList.add("hidden");
         cart.clear();
         renderCart();
+        setOrderInProgress(false);
       } catch (err) {
         alert("Error submitting order.");
         console.error(err);
@@ -258,129 +259,135 @@ export default function Customer() {
     renderCart();
   }, [menuItems]);
 
+
+
   return (
-    <main className="wrap grid-2">
-      <section>
-        <div className="toolbar">
-          <button id="backBtn" className="btn gap-right">Back</button>
-          <label htmlFor="search" className="sr-only">Search menu</label>
-          <input id="search" className="search-input" type="search" placeholder="Search drinks…" />
-        </div>
-        <div id="menuGrid" className="grid-cards" aria-live="polite"></div>
-      </section>
+    <>
+      {!orderInProgress && <div className="kiosk-entry">Place Order<button className="btn" onClick={() => setOrderInProgress(true)}>Begin</button></div>}
 
-      <aside className="panel" aria-labelledby="cartHeading">
-        <div id="cartHeadingBox">
-          <h2 id="cartHeading">Your Cart</h2>
-        </div>
+      <main className="wrap grid-2">
+        <section>
+          <div className="toolbar">
+            <button id="backBtn" className="btn gap-right">Back</button>
+            <label htmlFor="search" className="sr-only">Search menu</label>
+            <input id="search" className="search-input" type="search" placeholder="Search drinks…" />
+          </div>
+          <div id="menuGrid" className="grid-cards" aria-live="polite"></div>
+        </section>
 
-        <div className="cart-table-wrap">
-          <table className="cart-table">
-            <colgroup>
-              <col style={{ width: "52%" }} />   {/* Item */}
-              <col style={{ width: "8%" }} />    {/* – */}
-              <col style={{ width: "8%" }} />    {/* qty */}
-              <col style={{ width: "8%" }} />    {/* + */}
-              <col style={{ width: "24%" }} />   {/* price */}
-            </colgroup>
-
-            <tbody id="cartItems"></tbody>
-          </table>
-        </div>
-
-        <div className="totals">
-          <div className="row gap-md"><span>Subtotal</span><strong id="subtotal">$0.00</strong></div>
-          <div className="row gap-sm"><span>Tax</span><strong id="tax">$0.00</strong></div>
-          <div className="row gap-sm total"><span>Total</span><strong id="total">$0.00</strong></div>
-        </div>
-
-        <div className="row gap-lg">
-          <button id="clearCart" className="btn">Clear</button>
-          <button id="checkout" className="btn primary">Checkout</button>
-          {/* <button id="reviewBtn" className="btn primary">Review Cart</button> */}
-        </div>
-      </aside>
-
-      <div id="customModal" className="modal-overlay hidden">
-        <div className="modal-panel">
-          <h2>Customizations</h2>
-
-          <div className="modal-body">
-            <p>Customization options will go here…</p>
+        <aside className="panel" aria-labelledby="cartHeading">
+          <div id="cartHeadingBox">
+            <h2 id="cartHeading">Your Cart</h2>
           </div>
 
-          <div className="modal-footer">
-            <button id="customOk" className="btn primary">Done</button>
-          </div>
-        </div>
-      </div>
+          <div className="cart-table-wrap">
+            <table className="cart-table">
+              <colgroup>
+                <col style={{ width: "52%" }} />   {/* Item */}
+                <col style={{ width: "8%" }} />    {/* – */}
+                <col style={{ width: "8%" }} />    {/* qty */}
+                <col style={{ width: "8%" }} />    {/* + */}
+                <col style={{ width: "24%" }} />   {/* price */}
+              </colgroup>
 
-
-      {/* --- Review Cart Modal --- */}
-      <div id="reviewModal" className="modal-overlay hidden">
-        <div className="modal-panel large">
-          <h2>Review Your Order</h2>
-
-          <div className="modal-body">
-            <table className="cart-table review-table">
-              <thead>
-                <tr>
-                  <th>Item</th>
-                  <th>Qty</th>
-                  <th>Price</th>
-                </tr>
-              </thead>
-              <tbody id="reviewTableBody"></tbody>
+              <tbody id="cartItems"></tbody>
             </table>
           </div>
 
-          <div className="modal-footer row gap">
-            <button id="reviewCancel" className="btn gap-right">Cancel</button>
-            <button id="reviewConfirm" className="btn primary">Confirm</button>
+          <div className="totals">
+            <div className="row gap-md"><span>Subtotal</span><strong id="subtotal">$0.00</strong></div>
+            <div className="row gap-sm"><span>Tax</span><strong id="tax">$0.00</strong></div>
+            <div className="row gap-sm total"><span>Total</span><strong id="total">$0.00</strong></div>
+          </div>
+
+          <div className="row gap-lg">
+            <button id="clearCart" className="btn">Clear</button>
+            <button id="checkout" className="btn primary">Checkout</button>
+            {/* <button id="reviewBtn" className="btn primary">Review Cart</button> */}
+          </div>
+        </aside>
+
+        <div id="customModal" className="modal-overlay hidden">
+          <div className="modal-panel">
+            <h2>Customizations</h2>
+
+            <div className="modal-body">
+              <p>Customization options will go here…</p>
+            </div>
+
+            <div className="modal-footer">
+              <button id="customOk" className="btn primary">Done</button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* --- Place Order Modal --- */}
-      <div id="orderModal" className="modal-overlay hidden">
-        <div className="modal-panel large">
-          <h2>Payment Details</h2>
 
-          <div className="modal-body">
+        {/* --- Review Cart Modal --- */}
+        <div id="reviewModal" className="modal-overlay hidden">
+          <div className="modal-panel large">
+            <h2>Review Your Order</h2>
 
-            <div className="totals mb">
-              <div className="row"><span>Subtotal</span><strong id="paySubtotal">$0.00</strong></div>
-              <div className="row"><span>Tax</span><strong id="payTax">$0.00</strong></div>
-              <div className="row total"><span>Total</span><strong id="payTotal">$0.00</strong></div>
+            <div className="modal-body">
+              <table className="cart-table review-table">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                  </tr>
+                </thead>
+                <tbody id="reviewTableBody"></tbody>
+              </table>
             </div>
 
-            <div className="card-field">
-              <label>Card Number</label>
-              <input id="cardNumber" className="card-input" placeholder="1234 5678 9012 3456" />
+            <div className="modal-footer row gap">
+              <button id="reviewCancel" className="btn gap-right">Cancel</button>
+              <button id="reviewConfirm" className="btn primary">Confirm</button>
             </div>
+          </div>
+        </div>
 
-            <div className="card-field">
-              <label>Expiration (MM / YY)</label>
-              <div className="card-row">
-                <input id="cardExpM" className="card-input card-exp-small" placeholder="MM" />
-                <input id="cardExpY" className="card-input card-exp-small" placeholder="YY" />
+        {/* --- Place Order Modal --- */}
+        <div id="orderModal" className="modal-overlay hidden">
+          <div className="modal-panel large">
+            <h2>Payment Details</h2>
+
+            <div className="modal-body">
+
+              <div className="totals mb">
+                <div className="row"><span>Subtotal</span><strong id="paySubtotal">$0.00</strong></div>
+                <div className="row"><span>Tax</span><strong id="payTax">$0.00</strong></div>
+                <div className="row total"><span>Total</span><strong id="payTotal">$0.00</strong></div>
               </div>
+
+              <div className="card-field">
+                <label>Card Number</label>
+                <input id="cardNumber" className="card-input" placeholder="1234 5678 9012 3456" />
+              </div>
+
+              <div className="card-field">
+                <label>Expiration (MM / YY)</label>
+                <div className="card-row">
+                  <input id="cardExpM" className="card-input card-exp-small" placeholder="MM" />
+                  <input id="cardExpY" className="card-input card-exp-small" placeholder="YY" />
+                </div>
+              </div>
+
+              <div className="card-field">
+                <label>Cardholder Name</label>
+                <input id="cardHolder" className="card-input" placeholder="Name on card" />
+              </div>
+
             </div>
 
-            <div className="card-field">
-              <label>Cardholder Name</label>
-              <input id="cardHolder" className="card-input" placeholder="Name on card" />
+            <div className="modal-footer row gap">
+              <button id="orderCancel" className="btn gap-right">Back</button>
+              <button id="orderConfirm" className="btn primary">Submit Order</button>
             </div>
-
-          </div>
-
-          <div className="modal-footer row gap">
-            <button id="orderCancel" className="btn gap-right">Back</button>
-            <button id="orderConfirm" className="btn primary">Submit Order</button>
           </div>
         </div>
-      </div>
 
-    </main>
+      </main>
+    </>
   );
 }
