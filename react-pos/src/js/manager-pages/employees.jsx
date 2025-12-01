@@ -1,6 +1,8 @@
 import Editor from "../manager-components/editor";
 
 export default function EmployeePage() {
+
+  //Returns editor component containing employee information
   return (
     <Editor
       title="Employee"

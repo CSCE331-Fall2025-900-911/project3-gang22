@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 
+//Displays panel which allows user to select an item from inventory and add a selected amount of stock to cart
 export default function RestockInputPanel({ inventoryData, onAddItem }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [amount, setAmount] = useState("");

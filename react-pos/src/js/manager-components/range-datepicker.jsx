@@ -1,6 +1,7 @@
 import React from "react";
 import DatePicker from "./datepicker.jsx";
 
+//Displays buttons that allows the user to change the selected date or range of dates
 export default function RangeDateToolbar({ selectedDate, setSelectedDate, viewRange, setViewRange }) {
   return (
     <div style={{ display: "flex", gap: ".5rem", marginBottom: "1rem", alignItems: "center" }}>
