@@ -31,8 +31,8 @@ export default function Home() {
             checkAuth();
         }, []);
 
-    if (!currentUser || currentUser.authenticated !== true) return <Login validatingUser={validatingUser}/>
-    if (currentScreen === "Customer") return <Customer />;
+    if (!currentUser || currentUser.authenticated !== true) return <Login validatingUser={validatingUser} setCurrentUser={setCurrentUser}/>
+    if (currentScreen === "Customer" || currentUser.user.display_name === "Guest") return <Customer />;
     if (currentScreen === "Employee" && (currentUser.user.role === "cashier" || currentUser.user.role === "manager")) return <Employee />;
     if (currentScreen === "Manager" && currentUser.user.role === "manager") return <Manager />;
 
@@ -46,6 +46,7 @@ export default function Home() {
                 {(currentUser.user.role === "manager") && <button className="nav-btn" onClick={() => setScreen("Manager")}>Manager Dashboard</button>}
                 </nav>
             </main>
+            <button className="logout-btn" onClick={() => (setCurrentUser(null), fetch(`${API_BASE}/auth/logout`, {credentials: "include", method: "POST"}))}>Log Out</button>
         </div>
     )
 }
