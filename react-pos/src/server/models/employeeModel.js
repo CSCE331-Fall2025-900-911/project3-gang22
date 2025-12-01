@@ -1,3 +1,5 @@
+
+// Provides CRUD functions for employee records
 const { query } = require('../db');
 
 module.exports = {

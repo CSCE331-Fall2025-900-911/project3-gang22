@@ -1,3 +1,5 @@
+
+// Controller for manager-only routes, providing CRUD operations for menu items and inventory. Also provides employee and sales/order endpoints.
 const menuModel = require('../models/menuModel');
 const employeeModel = require('../models/employeeModel');
 const inventoryModel = require('../models/inventoryModel');

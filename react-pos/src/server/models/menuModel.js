@@ -1,3 +1,5 @@
+
+// Provides CRUD functions for the menu
 const { query } = require('../db');
 
 module.exports = {

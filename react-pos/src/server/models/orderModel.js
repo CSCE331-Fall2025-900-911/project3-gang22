@@ -1,3 +1,5 @@
+
+// Functions to fetch orders by date, create orders, and generate aggregated reports
 const { query } = require('../db');
 
 module.exports = {

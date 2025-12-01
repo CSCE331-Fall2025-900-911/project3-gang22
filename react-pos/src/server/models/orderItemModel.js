@@ -1,3 +1,5 @@
+
+// Used for inserting individual order items associated with an order
 const { query } = require('../db');
 
 module.exports = {
