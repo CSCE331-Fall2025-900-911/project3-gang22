@@ -37,6 +37,7 @@ export default function ProductUsagePage() {
         }
     }
 
+    //Returns a chart and table containing product usage data
     return (
         <div style={{ marginLeft: "20px"}}>
         <h2>Inventory Usage Report</h2>

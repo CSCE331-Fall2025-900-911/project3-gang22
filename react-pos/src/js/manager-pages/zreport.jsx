@@ -107,6 +107,7 @@ export default function ZReportPage() {
       .catch(err => console.error("Z-report generation failed:", err));
   }
 
+  //Returns a chart and table containing the generated z-report
   return (
     <div style={{ marginLeft: "20px"}}>
       <h2>Z Report</h2>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Table from "../manager-components/table.jsx"
 
+//Displays a panel which contains the quantity and price of selected items for restocking order
 export default function RestockOrderPanel({ restockList, onPlaceOrder }) {
   const totalCost = restockList.reduce((sum, item) => sum + item.totalCost, 0).toFixed(2);
 

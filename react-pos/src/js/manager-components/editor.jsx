@@ -3,6 +3,7 @@ import Table from "./table";
 import EditDialog from "./editDialog";
 import { MANAGER_BASE_URL } from "../manager";
 
+//Displays default manager page which contains a table and buttons to add or edit the table data
 export default function Editor({ title, fields, headers, basePath, extractValues, buildPayload, requiredFields = [], numericFields = [], defaultValues = {} }) {
   const [items, setItems] = useState([]);
   const [showDialog, setShowDialog] = useState(false);

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./managerStyles.css";
 
+//Displays modal that contains passed fields for the user to edit and returns data for use
 export default function EditDialog({ title, fields, initialValues = [], onSubmit, onClose, requiredFields, errorMessage }) {
   const [values, setValues] = useState(
     fields.map((_, i) => initialValues[i] ?? "")
