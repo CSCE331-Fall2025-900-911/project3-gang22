@@ -5,6 +5,7 @@ const menuModel = require('../models/menuModel');
 const orderModel = require('../models/orderModel');
 const orderItemModel = require('../models/orderItemModel');
 const transactionModel = require('../models/transactionModel');
+const weatherModel =  require('../models/weatherModel');
 
 require("dotenv").config({path:'../.env'});
 const { TranslationServiceClient } = require("@google-cloud/translate").v3;
@@ -126,4 +127,31 @@ module.exports = {
       res.status(500).json({ error: 'Internal server error' });
     }
   },
+
+  async getWeather(req, res) {
+    try {
+      const { latitude, longitude } = req.query;
+
+      const lat = Number(latitude);
+      const lon = Number(longitude);
+
+      if (isNaN(lat) || isNaN(lon)) {
+        return res.status(400).json({ error: "Lat or Lon is not a number" });
+      }
+
+      if (lat < -90 || lat > 90) {
+        return res.status(400).json({ error: "Lat not on earth" });
+      }
+      if (lon < -180 || lon > 180) {
+        return res.status(400).json({ error: "Lon not on earth" });
+      }
+
+      return res.status(200).json( await weatherModel.getWeather(lat, lon));
+
+    } catch (err) {
+      console.error("Error fetching weather:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
 };

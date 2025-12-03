@@ -32,6 +32,8 @@ router.get('/translate', customer.translateText)
 // --- GET ---
 router.get('/menu', customer.getMenu);
 
+router.get('/weather', customer.getWeather);
+
 // --- POST ---
 router.post('/order', customer.createOrder);
 

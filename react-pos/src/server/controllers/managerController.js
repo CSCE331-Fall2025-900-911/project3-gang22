@@ -19,7 +19,7 @@ module.exports = {
 
   async addMenu(req, res) {
     const required = ['drink_name', 'price', 'category', 'picture_url', 'tea_type', 'milk_type'];
-    if (!required.every(k => req.body[k])) return res.status(400).json({ error: 'Missing required fields' });
+    if (!required.every(k => req.body[k] != null)) return res.status(400).json({ error: 'Missing required fields' });
     try {
       res.json(await menuModel.add(req.body));
     } catch (err) {
@@ -63,7 +63,7 @@ module.exports = {
   async addEmployee(req, res) {
     const { name, role, schedule } = req.body;
 
-    if (!name || !role || !schedule) {
+    if (name == null || role == null || schedule == null) {
       return res.status(400).json({
         error: 'Missing required fields: name, role, schedule'
       });
@@ -215,7 +215,7 @@ module.exports = {
     const { name, unit, quantity, reorder_threshold, unit_cost } = req.body;
 
     // Validate fields
-    if (!name || !unit || quantity == null || reorder_threshold == null || unit_cost == null) {
+    if (name == null || unit == null || quantity == null || reorder_threshold == null || unit_cost == null){
       return res.status(400).json({
         error: 'Missing required fields: name, unit, quantity, reorder_threshold, unit_cost'
       });
@@ -240,7 +240,7 @@ module.exports = {
     const { id, name, unit, quantity, reorder_threshold, unit_cost } = req.body;
 
     // Validate required fields
-    if (!id) {
+    if (id == null) {
       return res.status(400).json({ error: 'Missing id' });
     }
 
