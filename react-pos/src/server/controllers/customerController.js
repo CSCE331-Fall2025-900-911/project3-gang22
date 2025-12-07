@@ -6,6 +6,7 @@ const orderModel = require('../models/orderModel');
 const orderItemModel = require('../models/orderItemModel');
 const transactionModel = require('../models/transactionModel');
 const weatherModel =  require('../models/weatherModel');
+const couponModel = require('../models/couponModel');
 
 require("dotenv").config({path:'../.env'});
 const { TranslationServiceClient } = require("@google-cloud/translate").v3;
@@ -151,6 +152,20 @@ module.exports = {
     } catch (err) {
       console.error("Error fetching weather:", err);
       return res.status(500).json({ error: "Internal server error" });
+    }
+  },
+
+  async getCouponCodes(req, res) {
+     try {
+      const {code} = req.query;
+      if (!code) {
+        return res.status(400).json({ error: 'Missing coupon code' });
+      }
+      const data = await couponModel.getOne(code);
+      res.json(data);
+    } catch (err) {
+      console.error('Error fetching menu_inventory:', err);
+      res.status(500).json({ error: 'Internal server error' });
     }
   }
 

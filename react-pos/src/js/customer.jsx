@@ -1,65 +1,68 @@
-import { useEffect, useState } from "react";
-import { fetchMenu, createOrder } from "./customer-pages/menu.jsx";
+import { useEffect, useState, useRef } from "react";
+import { fetchMenu, createOrder, getCouponCode } from "./customer-pages/menu.jsx";
 import { API_BASE } from "./apibase.js";
-
 
 export const CUSTOMER_BASE_URL = `${API_BASE}/customer`;
 
 export default function Customer() {
 
-  const [ menuItems, setMenuItems ] = useState([]);
-  const [ orderInProgress, setOrderInProgress ] = useState(false);
+  const [menuItems, setMenuItems] = useState([]);
+  const [orderInProgress, setOrderInProgress] = useState(false);
 
+  // Coupon state
+  const [couponDiscount, setCouponDiscount] = useState(0); // like 0.15 = 15%
+  const [couponApplied, setCouponApplied] = useState(false);
 
-  // Fetches menu data whenever component is mounted
+  // Persistent cart (critical fix)
+  const cartRef = useRef(new Map());
+  const cart = cartRef.current;
+
+  // Fetch menu on mount
   useEffect(() => {
     async function loadMenuOnStart() {
       const data = await fetchMenu();
       setMenuItems(data);
     }
     loadMenuOnStart();
-  }, [])
+  }, []);
 
+
+  // =========================
+  // MAIN DOM EFFECT
+  // =========================
   useEffect(() => {
 
     const $ = (s, c = document) => c.querySelector(s);
     const TAX = 0.0825;
     const money = (n) => `$${Number(n).toFixed(2)}`;
 
-    const cart = new Map();
 
     // =====================
     // Customization Modal 
     // =====================
-
     const modal = $('#customModal');
     const okBtn = $('#customOk');
 
     function openCustomization(item) {
       modal.classList.remove('hidden');
 
-      // OPTIONAL: Replace placeholder text later
-      // $('.modal-body').innerHTML = `<p>Customize ${item.drink_name}</p>`;
-
       okBtn.onclick = () => {
         modal.classList.add('hidden');
-        add(item); // now actually add the item
+        add(item);
       };
     }
 
-    // clicking outside the panel closes modal without adding
-    modal.addEventListener('click', e => {
-      if (e.target === modal) {
-        modal.classList.add('hidden');
-      }
-    });
+    modal.onclick = (e) => {
+      if (e.target === modal) modal.classList.add('hidden');
+    };
 
 
     // =====================
-    // Review & Order Popups
+    // Review & Order Modals
     // =====================
     const reviewModal = $('#reviewModal');
     const reviewBody = $('#reviewTableBody');
+
     const reviewCancel = $('#reviewCancel');
     const reviewConfirm = $('#reviewConfirm');
 
@@ -67,33 +70,106 @@ export default function Customer() {
     const paySubtotal = $('#paySubtotal');
     const payTax = $('#payTax');
     const payTotal = $('#payTotal');
+
     const orderCancel = $('#orderCancel');
     const orderConfirm = $('#orderConfirm');
 
-    // Opens review modal
+
+    // =====================
+    // Update Totals Helpers
+    // =====================
+
+    function totals(_couponApplied, _couponDiscount) {
+      // weird hack to override these optionally
+      if (!_couponApplied) _couponApplied = couponApplied;
+      if (!_couponDiscount) _couponDiscount = couponDiscount;
+      let sub = 0;
+      cart.forEach(({ item, qty }) => (sub += item.price * qty));
+
+      // apply coupon if active
+      if (_couponApplied && _couponDiscount > 0) {
+        sub = sub * (1 - _couponDiscount);
+      }
+
+      const tax = sub * TAX;
+      return { sub, tax, total: sub + tax };
+    }
+
+    function updateReviewTotals(_couponApplied, _couponDiscount) {
+      const { sub, tax, total } = totals(_couponApplied, _couponDiscount);
+      $('#revSubtotal').textContent = money(sub);
+      $('#revTax').textContent = money(tax);
+      $('#revTotal').textContent = money(total);
+    }
+
+
+    // =====================
+    // Review modal open
+    // =====================
     function openReview() {
-      // Prevent opening if cart is empty
-      if (document.querySelectorAll('.cart-row').length == 0) {
+
+      // if cart empty — don't open
+      if (cart.size === 0) {
         alert("Your cart is empty!");
         return;
       }
 
       reviewModal.classList.remove("hidden");
 
-      // Fill review table
+      // fill review rows
       reviewBody.innerHTML = "";
       cart.forEach(({ item, qty }) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-      <td>${item.drink_name}</td>
-      <td>${qty}</td>
-      <td>${money(item.price * qty)}</td>
-    `;
+          <td>${item.drink_name}</td>
+          <td>${qty}</td>
+          <td>${money(item.price * qty)}</td>
+        `;
         reviewBody.appendChild(tr);
       });
+
+      updateReviewTotals();
     }
 
-    // Opens payment modal
+
+    // =====================
+    // Coupon Apply Handler
+    // =====================
+    $('#applyCouponBtn').onclick = async () => {
+
+      if (couponApplied) {
+        alert("A coupon is already applied.");
+        return;
+      }
+
+      const code = $('#couponInput').value.trim();
+      if (!code) {
+        alert("Please enter a code.");
+        return;
+      }
+
+      try {
+        const pct = await getCouponCode(code);
+        if (pct && pct > 0) {
+          setCouponDiscount(pct);
+          setCouponApplied(true);
+          updateReviewTotals(true, pct);
+
+          alert(`Coupon applied! ${pct * 100}% off`);
+
+        } else {
+          alert("Invalid coupon code.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Invalid coupon code.");
+      }
+    };
+
+
+    // =====================
+    // Payment Modal
+    // =====================
     function openPayment() {
       reviewModal.classList.add("hidden");
       orderModal.classList.remove("hidden");
@@ -104,20 +180,21 @@ export default function Customer() {
       payTotal.textContent = money(total);
     }
 
-    // Cancel review modal
     reviewCancel.onclick = () => reviewModal.classList.add("hidden");
-
-    // Confirm review → payment
     reviewConfirm.onclick = openPayment;
 
-    // Cancel payment → return to review modal
     orderCancel.onclick = () => {
       orderModal.classList.add("hidden");
       reviewModal.classList.remove("hidden");
+      updateReviewTotals();
     };
 
-    // Confirm payment → SUBMIT ORDER
+
+    // =====================
+    // Submit order
+    // =====================
     orderConfirm.onclick = async () => {
+
       const order_time = new Date().toISOString();
       const menu_ids = [];
       const quantities = [];
@@ -153,29 +230,29 @@ export default function Customer() {
       }
     };
 
-    // =====================
-    // Render Menu and Inline Cart
-    // =====================
 
+    // =====================
+    // Menu + Cart Rendering
+    // =====================
     function renderMenu(items) {
       const grid = $('#menuGrid');
-      grid.innerHTML = '';
+      grid.innerHTML = "";
       items.forEach(it => {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'card';
-        card.setAttribute('aria-label', `${it.drink_name} ${money(it.price)}`);
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "card";
         card.innerHTML = `
-          <img class="card-img" src="/images/drink${it.id}.jpg" alt="${it.drink_name}" onerror="this.src='/images/placeholder.png'">
+          <img class="card-img" src="/images/drink${it.id}.jpg" onerror="this.src='/images/placeholder.png'">
           <div class="card-body">
-              <div class="card-name">${it.drink_name}</div>
-              <div class="card-price">${money(it.price)}</div>
-          </div>`;
-        // card.addEventListener('click', () => add(it));
-        card.addEventListener('click', () => openCustomization(it));
+            <div class="card-name">${it.drink_name}</div>
+            <div class="card-price">${money(it.price)}</div>
+          </div>
+        `;
+        card.onclick = () => openCustomization(it);
         grid.appendChild(card);
       });
     }
+
 
     function add(item) {
       const cur = cart.get(item.id) || { item, qty: 0 };
@@ -192,38 +269,21 @@ export default function Customer() {
       renderCart();
     }
 
-    function totals() {
-      let sub = 0;
-      cart.forEach(({ item, qty }) => (sub += item.price * qty));
-      const tax = sub * TAX;
-      return { sub, tax, total: sub + tax };
-    }
 
     function renderCart() {
       const box = $('#cartItems');
-      box.innerHTML = '';
+      box.innerHTML = "";
 
       cart.forEach(({ item, qty }) => {
-        const tr = document.createElement('tr');
-        tr.className = 'cart-row';
+        const tr = document.createElement("tr");
+        tr.className = "cart-row";
         tr.innerHTML = `
-  <td>${item.drink_name}</td>
-
-  <td class="td-btn">
-    <button class="btn sm" data-a="dec">−</button>
-  </td>
-
-  <td class="td-qty">
-    ${qty}
-  </td>
-
-  <td class="td-btn">
-    <button class="btn sm" data-a="inc">+</button>
-  </td>
-
-  <td>${money(item.price * qty)}</td>
-`;
-
+          <td>${item.drink_name}</td>
+          <td class="td-btn"><button class="btn sm" data-a="dec">−</button></td>
+          <td class="td-qty">${qty}</td>
+          <td class="td-btn"><button class="btn sm" data-a="inc">+</button></td>
+          <td>${money(item.price * qty)}</td>
+        `;
 
         tr.querySelector('[data-a="dec"]').onclick = () => dec(item.id);
         tr.querySelector('[data-a="inc"]').onclick = () => add(item);
@@ -237,117 +297,138 @@ export default function Customer() {
       $('#total').textContent = money(total);
     }
 
-    $('#search').addEventListener('input', (e) => {
+
+    // =====================
+    // Event Listeners
+    // =====================
+    $('#search').oninput = (e) => {
       const q = e.target.value.toLowerCase();
       const filtered = menuItems.filter(it => it.drink_name.toLowerCase().includes(q));
       renderMenu(filtered);
-    });
+    };
 
-    $('#clearCart').addEventListener('click', () => {
+    $('#clearCart').onclick = () => {
       cart.clear();
       renderCart();
-    });
+    };
 
-    $('#checkout').addEventListener('click', openReview);
+    // IMPORTANT: this avoids multiple handlers
+    $('#checkout').onclick = openReview;
+
+    $('#backBtn').onclick = () => (window.location.href = "/");
 
 
-    $('#backBtn').addEventListener('click', () => {
-      window.location.href = '/';
-    })
-
+    // Initial renders
     renderMenu(menuItems);
     renderCart();
-  }, [menuItems]);
+
+  }, [menuItems, couponApplied, couponDiscount]); // include coupon states
 
 
-
+  // =====================
+  // JSX Render
+  // =====================
   return (
     <>
-      {!orderInProgress && <div className="kiosk-entry">Place Order<button className="btn" onClick={() => setOrderInProgress(true)}>Begin</button></div>}
+      {!orderInProgress && (
+        <div className="kiosk-entry">
+          Place Order
+          <button className="btn" onClick={() => setOrderInProgress(true)}>Begin</button>
+        </div>
+      )}
 
       <main className="wrap grid-2">
+
+        {/* MENU SECTION */}
+
         <section>
           <div className="toolbar">
             <button id="backBtn" className="btn gap-right">Back</button>
-            <label htmlFor="search" className="sr-only">Search menu</label>
             <input id="search" className="search-input" type="search" placeholder="Search drinks…" />
           </div>
-          <div id="menuGrid" className="grid-cards" aria-live="polite"></div>
+          <div id="menuGrid" className="grid-cards"></div>
         </section>
 
-        <aside className="panel" aria-labelledby="cartHeading">
-          <div id="cartHeadingBox">
-            <h2 id="cartHeading">Your Cart</h2>
-          </div>
+
+        {/* CART SIDEBAR */}
+
+        <aside className="panel">
+          <h2>Your Cart</h2>
 
           <div className="cart-table-wrap">
             <table className="cart-table">
-              <colgroup>
-                <col style={{ width: "52%" }} />   {/* Item */}
-                <col style={{ width: "8%" }} />    {/* – */}
-                <col style={{ width: "8%" }} />    {/* qty */}
-                <col style={{ width: "8%" }} />    {/* + */}
-                <col style={{ width: "24%" }} />   {/* price */}
-              </colgroup>
-
               <tbody id="cartItems"></tbody>
             </table>
           </div>
 
           <div className="totals">
-            <div className="row gap-md"><span>Subtotal</span><strong id="subtotal">$0.00</strong></div>
-            <div className="row gap-sm"><span>Tax</span><strong id="tax">$0.00</strong></div>
-            <div className="row gap-sm total"><span>Total</span><strong id="total">$0.00</strong></div>
+            <div className="row"><span>Subtotal</span><strong id="subtotal">$0.00</strong></div>
+            <div className="row"><span>Tax</span><strong id="tax">$0.00</strong></div>
+            <div className="row total"><span>Total</span><strong id="total">$0.00</strong></div>
           </div>
 
           <div className="row gap-lg">
             <button id="clearCart" className="btn">Clear</button>
             <button id="checkout" className="btn primary">Checkout</button>
-            {/* <button id="reviewBtn" className="btn primary">Review Cart</button> */}
           </div>
         </aside>
 
-        <div id="customModal" className="modal-overlay hidden">
-          <div className="modal-panel">
-            <h2>Customizations</h2>
+          <div id="customModal" className="modal-overlay hidden">
+        <div className="modal-panel">
+          <h2>Customizations</h2>
 
-            <div className="modal-body">
-              <p>Customization options will go here…</p>
-            </div>
+          <div className="modal-body">
+            <p>Customization options will go here…</p>
+          </div>
 
-            <div className="modal-footer">
-              <button id="customOk" className="btn primary">Done</button>
-            </div>
+          <div className="modal-footer">
+            <button id="customOk" className="btn primary">Done</button>
           </div>
         </div>
+      </div>
 
 
-        {/* --- Review Cart Modal --- */}
+
+        {/* ============================
+            REVIEW MODAL
+        ============================ */}
         <div id="reviewModal" className="modal-overlay hidden">
           <div className="modal-panel large">
             <h2>Review Your Order</h2>
 
             <div className="modal-body">
+
+              <div className="coupon-row row gap" style={{ marginBottom: "12px" }}>
+                <input id="couponInput" className="card-input" placeholder="Enter coupon code…" />
+                <button id="applyCouponBtn" className="btn">Apply</button>
+              </div>
+
               <table className="cart-table review-table">
                 <thead>
-                  <tr>
-                    <th>Item</th>
-                    <th>Qty</th>
-                    <th>Price</th>
-                  </tr>
+                  <tr><th>Item</th><th>Qty</th><th>Price</th></tr>
                 </thead>
                 <tbody id="reviewTableBody"></tbody>
               </table>
+
+              <div id="reviewTotals" className="totals mb">
+                <div className="row"><span>Subtotal</span><strong id="revSubtotal">$0.00</strong></div>
+                <div className="row"><span>Tax</span><strong id="revTax">$0.00</strong></div>
+                <div className="row total"><span>Total</span><strong id="revTotal">$0.00</strong></div>
+              </div>
+
             </div>
 
-            <div className="modal-footer row gap">
-              <button id="reviewCancel" className="btn gap-right">Cancel</button>
+            <div className="modal-footer row">
+              <button id="reviewCancel" className="btn">Cancel</button>
               <button id="reviewConfirm" className="btn primary">Confirm</button>
             </div>
           </div>
         </div>
 
-        {/* --- Place Order Modal --- */}
+
+        {/* ============================
+            PAYMENT MODAL
+        ============================ */}
         <div id="orderModal" className="modal-overlay hidden">
           <div className="modal-panel large">
             <h2>Payment Details</h2>
@@ -362,30 +443,31 @@ export default function Customer() {
 
               <div className="card-field">
                 <label>Card Number</label>
-                <input id="cardNumber" className="card-input" placeholder="1234 5678 9012 3456" />
+                <input id="cardNumber" className="card-input" />
               </div>
 
               <div className="card-field">
                 <label>Expiration (MM / YY)</label>
                 <div className="card-row">
-                  <input id="cardExpM" className="card-input card-exp-small" placeholder="MM" />
-                  <input id="cardExpY" className="card-input card-exp-small" placeholder="YY" />
+                  <input id="cardExpM" className="card-input card-exp-small" />
+                  <input id="cardExpY" className="card-input card-exp-small" />
                 </div>
               </div>
 
               <div className="card-field">
                 <label>Cardholder Name</label>
-                <input id="cardHolder" className="card-input" placeholder="Name on card" />
+                <input id="cardHolder" className="card-input" />
               </div>
 
             </div>
 
-            <div className="modal-footer row gap">
-              <button id="orderCancel" className="btn gap-right">Back</button>
+            <div className="modal-footer row">
+              <button id="orderCancel" className="btn">Back</button>
               <button id="orderConfirm" className="btn primary">Submit Order</button>
             </div>
           </div>
         </div>
+
 
       </main>
     </>
