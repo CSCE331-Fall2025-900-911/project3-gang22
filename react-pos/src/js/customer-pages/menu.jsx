@@ -70,3 +70,19 @@ export async function getCouponCode(code) {
 
 
 }
+
+export async function getWeather(latitude, longitude) {
+  try {
+    const response = await fetch(
+      `${API_BASE}/customer/weather?latitude=${latitude}&longitude=${longitude}`,
+      { credentials: "include" }
+    );
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("Error fetching weather:", err);
+    return { error: "Network error" };
+  }
+}
+

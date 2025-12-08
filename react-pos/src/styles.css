@@ -185,6 +185,50 @@ h1 {
     max-height: 50vh;
 }
 
+.weather-box {
+  margin-top: 0px;
+  margin-bottom: 4px;
+  padding: 0px 16px;
+  border-radius: 14px;
+
+  color:black;
+ border: 1px solid var(--border);
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  /* box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25); */
+  font-size: 1rem;
+  height: 100px;
+}
+
+.weather-box h3 {
+    margin-top: 14px;
+    margin-bottom: -4px;
+    text-align: center;
+}
+
+/* Weather Text Lines */
+.weather-box p {
+  margin: 0;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Headline */
+.weather-box strong {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* Subtle Icon Styling */
+.weather-box span {
+  opacity: 0.85;
+}
+
 #cartItems {
     overflow-y: auto;
     margin-top: 12px;
@@ -604,7 +648,7 @@ h1 {
     /* padding: 1.5rem 2.5rem; */
     padding: .4rem;
     font-size: .80rem;
-    background: black;
+    background: rgb(116, 27, 27);
     color: white;
     cursor: pointer;
 }
@@ -697,4 +741,10 @@ h1 {
     margin-top: 20px;
     margin-left: 50vw;
     transform: translateX(-50%);
+}
+
+.cart-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;   /* clean spacing between Weather & Cart */
 }
