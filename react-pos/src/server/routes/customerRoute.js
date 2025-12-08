@@ -27,7 +27,7 @@ router.get('/', (req, res) => {
 });
 
 // --- Trans ---
-router.get('/translate', customer.translateText)
+router.post('/translate', customer.translateText)
 
 // --- GET ---
 router.get('/menu', customer.getMenu);

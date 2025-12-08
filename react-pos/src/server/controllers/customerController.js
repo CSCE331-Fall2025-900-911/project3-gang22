@@ -6,7 +6,7 @@ const orderModel = require('../models/orderModel');
 const orderItemModel = require('../models/orderItemModel');
 const transactionModel = require('../models/transactionModel');
 const weatherModel =  require('../models/weatherModel');
-const { getCustomizations } = require('../models/customizationsModel');
+// const getCustomizations = require('../models/customizationsModel');
 const customizationsModel = require('../models/customizationsModel');
 const couponModel = require('../models/couponModel');
 
@@ -23,34 +23,34 @@ const projectId = process.env.GOOGLE_PROJECT_ID;
 
 module.exports = {
 
-  async translate(text, target) {
-    const request = {
-      parent: `projects/${projectId}/locations/global`,
-      contents: [text],
-      mimeType: "text/plain",
-      targetLanguageCode: target,
-    };
+    async translate(text, target) {
+      const request = {
+        parent: `projects/${projectId}/locations/global`,
+        contents: [text],
+        mimeType: "text/plain",
+        targetLanguageCode: target,
+      };
 
-    const [response] = await client.translateText(request);
-    return response.translations[0].translatedText;
-  },
+      const [response] = await client.translateText(request);
+      return response.translations[0].translatedText;
+    },
 
-  async translateText(req, res) {
-    try {
-      const { text, target } = req.query;
+    async translateText(req, res) {
+      try {
+        const { text, target } = req.body;
 
-      if (!text || !target) {
-        return res.status(400).json({ error: "Missing 'text' or 'target'" });
+        if (!text || !target) {
+          return res.status(400).json({ error: "Missing 'text' or 'target'" });
+        }
+
+        const translated = await module.exports.translate(text, target);
+        res.json({ translated });
+
+      } catch (err) {
+        console.error("Error translating text:", err);
+        res.status(500).json({ error: "Internal server error" });
       }
-
-      const translated = await module.exports.translate(text, target);
-      res.json({ translated });
-
-    } catch (err) {
-      console.error("Error translating text:", err);
-      res.status(500).json({ error: "Internal server error" });
-    }
-  },
+    },
 
   async getMenu(req, res) {
     try {

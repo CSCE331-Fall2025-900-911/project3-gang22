@@ -9,9 +9,13 @@ import ReviewModal from "./customer-components/reviewModal.jsx";
 import OrderModal from "./customer-components/orderModal.jsx";
 import PaymentModal from "./customer-components/paymentModal.jsx";
 import CategoryButtons from "./customer-components/categoryButtons.jsx";
+import LanguageSelector from "./customer-components/languageSelector.jsx";
+import { en } from '../locales/en.js';
+import { es } from '../locales/es.js';
 
 
 export const CUSTOMER_BASE_URL = `${API_BASE}/customer`;
+const locales = { en, es };
 
 export default function Customer() {
 
@@ -22,12 +26,17 @@ export default function Customer() {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [currentMenuItem, setCurrentMenuItem] = useState(null);
+  const [originalMenuItems, setOriginalMenuItems] = useState(null);
   const [customizationSubtotals, setCustomizationSubtotals] = useState([]);
   const [subtotal, setSubtotal] = useState(0.00);
   const [tax, setTax] = useState(0.00);
   const [total, setTotal] = useState(0.00);
+    const [ currentLanguage, setCurrentLanguage ] = useState('en');
 
   const money = (n) => `$${Number(n).toFixed(2)}`;
+  const t = (key) => {
+ return locales[currentLanguage]?.[key] || key;
+ };
 
   // Coupon state
   const [couponDiscount, setCouponDiscount] = useState(0); // like 0.15 = 15%
@@ -51,6 +60,7 @@ export default function Customer() {
     async function loadMenuOnStart() {
       const data = await fetchMenu();
       setMenuItems(data);
+      setOriginalMenuItems(data);
     }
     loadMenuOnStart();
   }, []);
@@ -134,7 +144,7 @@ export default function Customer() {
   function openReview() {
     // Prevent opening if cart is empty
     if (cartItems.length === 0) {
-      alert("Your cart is empty!");
+      alert(t('alert_cart_empty'))  ;
       return;
     }
     setShowReviewModal(true);
@@ -170,7 +180,7 @@ export default function Customer() {
 
   async function applyCoupon(code) {
     if (couponApplied) {
-      alert("A coupon is already applied.");
+      alert(t('alert_coupon_applied'));
       return false;
     }
 
@@ -179,15 +189,15 @@ export default function Customer() {
       if (pct && pct > 0) {
         setCouponDiscount(pct);
         setCouponApplied(true);
-        alert(`Coupon applied! ${pct * 100}% off`);
+        alert(t('coupon_placeholder_applied') + `${pct * 100}% ` + t('off'));
         return true;
       } else {
-        alert("Invalid coupon code.");
+        alert(t('alert_invalid_coupon'));
         return false;
       }
     } catch (err) {
       console.error(err);
-      alert("Invalid coupon code.");
+      alert(t('alert_invalid_coupon'));
       return false;
     }
   }
@@ -235,6 +245,66 @@ export default function Customer() {
 
 
     // =====================
+  async function translateMenuItems(texts, target) {
+    const textStr = texts.join('|||');
+    
+    try {
+        const response = await fetch(`${API_BASE}/customer/translate`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: textStr, target })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Translation API failed with status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Split the translated string back into an array of individual translated names
+        const translatedArray = data.translated.split('|||');
+        
+        return translatedArray;
+
+    } catch (err) {
+        console.error("Error batch translating text:", err);
+
+        throw err; 
+    }
+}
+
+  async function switchLanguage(targetLang) {
+    if (targetLang === currentLanguage) return;
+
+      if (targetLang === 'en') {
+        setMenuItems(originalMenuItems);
+        setCurrentLanguage('en');
+        return;
+      }
+
+    try {
+      // 1. Extract all drink names from the original menu
+      const textsToTranslate = originalMenuItems.map(item => item.drink_name);
+      
+      const translatedTexts = await translateMenuItems(textsToTranslate, targetLang);
+      
+      // 3. Create a new menu array with translated names
+      const newMenuItems = originalMenuItems.map((item, index) => ({
+          ...item,
+          drink_name: translatedTexts[index] // Assuming 1:1 order
+        }));
+
+        setMenuItems(newMenuItems);
+        setCurrentLanguage(targetLang);
+      } 
+      catch (err) {
+        console.error("Error translating menu:", err);
+        alert(t('alert_translation_failed'));
+        }
+      }
+
+ // =====================
   // JSX Render
   // =====================
   return (
@@ -246,6 +316,8 @@ export default function Customer() {
         </div>
       )} */}
 
+      <LanguageSelector currentLanguage={currentLanguage} switchLanguage={switchLanguage} />
+
       <main className="wrap grid-2">
         <MenuDisplay
           menuItems={menuItems}
@@ -254,11 +326,12 @@ export default function Customer() {
           setCurrentMenuItem={setCurrentMenuItem}
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
+          t={t}
         />
 
         <div className="cart-stack">
           <Weather></Weather>
-          <Cart openReview={openReview} setCartItems={setCartItems} cartItems={cartItems} money={money} increaseQty={increaseQty} decreaseQty={decreaseQty} subtotal={subtotal} tax={tax} total={total} />
+          <Cart openReview={openReview} setCartItems={setCartItems} cartItems={cartItems} money={money} increaseQty={increaseQty} decreaseQty={decreaseQty} subtotal={subtotal} tax={tax} total={total} t={t}/>
         </div>
 
         {showCustomizationModal &&
@@ -283,6 +356,7 @@ export default function Customer() {
             subtotal={subtotal}
             tax={tax}
             total={total}
+            t={t}
           />}
 
         <OrderModal />
