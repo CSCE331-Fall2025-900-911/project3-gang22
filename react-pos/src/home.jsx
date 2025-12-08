@@ -39,22 +39,21 @@ export default function Home() {
     }, [holidayMode]);
 
     useEffect(() => {
-            async function checkAuth() {
-                try {
-                    const response = await fetch(`${API_BASE}/auth/me`, {credentials: "include"});
-                    const data = await response.json();
-                    setCurrentUser(data);
-                    console.log(data);
-                }
-                catch (err) {
-                    console.error("Error validating authentication", err);
-                }
-                finally {
-                    setValidatingUser(false);
-                }
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_BASE}/auth/me`, {credentials: "include"});
+                const data = await response.json();
+                setCurrentUser(data);
             }
-            checkAuth();
-        }, []);
+            catch (err) {
+                console.error("Error validating authentication", err);
+            }
+            finally {
+                setValidatingUser(false);
+            }
+        }
+        checkAuth();
+    }, []);
 
     if (!currentUser || currentUser.authenticated !== true) return <Login validatingUser={validatingUser} setCurrentUser={setCurrentUser}/>
     if (currentScreen === "Customer" || currentUser.user.display_name === "Guest") return <Customer />;
