@@ -14,6 +14,30 @@ export default function Home() {
     const [ currentUser, setCurrentUser ] = useState(null);
     const [ validatingUser, setValidatingUser ] = useState(true);
 
+    const [holidayMode, setHolidayMode] = useState(false);
+
+    useEffect(() => {
+        const saved = window.localStorage.getItem("holiday-mode");
+        if (saved === "on") {
+            setHolidayMode(true);
+        }
+    }, []);
+
+    useEffect(() => {
+        const root = document.documentElement; // <html>
+        const body = document.body;
+
+        if (holidayMode) {
+            root.classList.add("holiday");
+            body.classList.add("holiday-bg");
+            window.localStorage.setItem("holiday-mode", "on");
+        } else {
+            root.classList.remove("holiday");
+            body.classList.remove("holiday-bg");
+            window.localStorage.setItem("holiday-mode", "off");
+        }
+    }, [holidayMode]);
+
     useEffect(() => {
             async function checkAuth() {
                 try {
@@ -44,14 +68,66 @@ export default function Home() {
                 <h1>Welcome {currentUser.user.display_name}</h1>
                 <nav className="nav">
                     {/* If customer: only display "Place Order", otherwise use "Customer Kiosk and Cashier POS wording" */}
-                {(currentUser.user.role !== "cashier" && currentUser.user.role !== "manager") && <button className="nav-btn" onClick={() => setScreen("Customer")}>Place Order</button>}
-                {(currentUser.user.role === "cashier" || currentUser.user.role === "manager") && <button className="nav-btn" onClick={() => setScreen("Customer")}>Customer Kiosk</button>}
-                {(currentUser.user.role === "cashier" || currentUser.user.role === "manager") && <button className="nav-btn" onClick={() => setScreen("Employee")}>Cashier POS</button>}
-                {(currentUser.user.role === "manager") && <button className="nav-btn" onClick={() => setScreen("Manager")}>Manager Dashboard</button>}
-                {(currentUser.user.role === "manager") && <button className="nav-btn" onClick={() => setScreen("Menu")}>Non-Interactive Menu</button>}
+                    {(currentUser.user.role !== "cashier" && currentUser.user.role !== "manager") && (
+                        <button className="nav-btn" onClick={() => setScreen("Customer")}>
+                            Place Order
+                        </button>
+                    )}
+
+                    {(currentUser.user.role === "cashier" || currentUser.user.role === "manager") && (
+                        <button className="nav-btn" onClick={() => setScreen("Customer")}>
+                            Customer Kiosk
+                        </button>
+                    )}
+
+                    {(currentUser.user.role === "cashier" || currentUser.user.role === "manager") && (
+                        <button className="nav-btn" onClick={() => setScreen("Employee")}>
+                            Cashier POS
+                        </button>
+                    )}
+
+                    {currentUser.user.role === "manager" && (
+                        <button className="nav-btn" onClick={() => setScreen("Manager")}>
+                            Manager Dashboard
+                        </button>
+                    )}
+
+                    {currentUser.user.role === "manager" && (
+                        <button className="nav-btn" onClick={() => setScreen("Menu")}>
+                            Non-Interactive Menu
+                        </button>
+                    )}
                 </nav>
             </main>
-            <button className="logout-btn" onClick={() => (setCurrentUser(null), fetch(`${API_BASE}/auth/logout`, {credentials: "include", method: "POST"}))}>Log Out</button>
+
+            {/* Footer area with logout + holiday toggle stacked on the right */}
+            <div className="home-footer">
+                <button
+                    className="logout-btn"
+                    onClick={() => (
+                        setCurrentUser(null),
+                            fetch(`${API_BASE}/auth/logout`, {
+                                credentials: "include",
+                                method: "POST"
+                            })
+                    )}
+                >
+                    Log Out
+                </button>
+
+                <div className="holiday-toggle">
+                    <span>{holidayMode ? "Holiday Mode" : "Normal Mode"}</span>
+                    <button
+                        type="button"
+                        className={`holiday-toggle-button ${holidayMode ? "on" : ""}`}
+                        onClick={() => setHolidayMode(m => !m)}
+                    >
+                        <span className="holiday-toggle-button-knob" />
+                    </button>
+                </div>
+            </div>
         </div>
-    )
+    );
+
+
 }
