@@ -8,24 +8,33 @@ import ReviewModal from "./customer-components/reviewModal.jsx";
 import OrderModal from "./customer-components/orderModal.jsx";
 import PaymentModal from "./customer-components/paymentModal.jsx";
 import CategoryButtons from "./customer-components/categoryButtons.jsx";
+import LanguageSelector from "./customer-components/languageSelector.jsx";
+import { en } from '../locales/en.js';
+import { es } from '../locales/es.js';
 
 export const CUSTOMER_BASE_URL = `${API_BASE}/customer`;
+const locales = { en, es };
 
 export default function Customer() {
 
   const [ menuItems, setMenuItems ] = useState([]);
+  const [ originalMenuItems, setOriginalMenuItems ] = useState([]);
   const [ cartItems, setCartItems] = useState([]);
   const [ orderInProgress, setOrderInProgress ] = useState(false);
   const [ showCustomizationModal, setShowCustomizationModal ] = useState(false);
   const [ showReviewModal, setShowReviewModal ] = useState(false);
   const [ showPaymentModal, setShowPaymentModal ] = useState(false);
   const [ currentMenuItem, setCurrentMenuItem ] = useState(null);
+  const [ currentLanguage, setCurrentLanguage ] = useState('en');
   const [ customizationSubtotals, setCustomizationSubtotals ] = useState([]);
   const [ subtotal, setSubtotal ] = useState(0.00);
   const [ tax, setTax ] = useState(0.00);
   const [ total, setTotal ] = useState(0.00);
 
   const money = (n) => `$${Number(n).toFixed(2)}`;
+  const t = (key) => {
+    return locales[currentLanguage]?.[key] || key;
+  };
 
   // Coupon state
   const [couponDiscount, setCouponDiscount] = useState(0); // like 0.15 = 15%
@@ -44,6 +53,7 @@ export default function Customer() {
     async function loadMenuOnStart() {
       const data = await fetchMenu();
       setMenuItems(data);
+      setOriginalMenuItems(data);
     }
     loadMenuOnStart();
   }, []);
@@ -77,225 +87,6 @@ export default function Customer() {
     setTax(newTax);
     setTotal(newTotal);
   }, [cartItems, customizationSubtotals, couponApplied, couponDiscount]);
-
-  // useEffect(() => {
-
-  //   const $ = (s, c = document) => c.querySelector(s);
-  //   const TAX = 0.0825;  //   const money = (n) => `$${Number(n).toFixed(2)}`;
-  //   const money = (n) => `$${Number(n).toFixed(2)}`;
-
-  //   const cart = new Map();
-
-  //   // =====================
-  //   // Customization Modal 
-  //   // =====================
-
-  //   // const modal = $('#customModal');
-  //   // const okBtn = $('#customOk');
-
-  //   function openCustomization(menuItem) {
-  //     console.log("Opening the model n shi");
-  //     setShowCustomizationModal(true);
-  //     setCurrentMenuItem(menuItem);
-  //   }
-    //   modal.classList.remove('hidden');
-
-    //   // OPTIONAL: Replace placeholder text later
-    //   // $('.modal-body').innerHTML = `<p>Customize ${item.drink_name}</p>`;
-
-    //   okBtn.onclick = () => {
-    //     modal.classList.add('hidden');
-    //     add(item); // now actually add the item
-    //   };
-    // }
-
-    // clicking outside the panel closes modal without adding
-    // modal.addEventListener('click', e => {
-    //   if (e.target === modal) {
-    //     modal.classList.add('hidden');
-    //   }
-    // });
-
-
-    // =====================
-    // Review & Order Popups
-    // // =====================
-    // const reviewModal = $('#reviewModal');
-    // const reviewBody = $('#reviewTableBody');
-    // const reviewCancel = $('#reviewCancel');
-    // const reviewConfirm = $('#reviewConfirm');
-
-    // const orderModal = $('#orderModal');
-    // const paySubtotal = $('#paySubtotal');
-    // const payTax = $('#payTax');
-    // const payTotal = $('#payTotal');
-    // const orderCancel = $('#orderCancel');
-    // const orderConfirm = $('#orderConfirm');
-
-    // // Opens review modal    
-
-    // // Opens payment modal
-    // // function openPayment() {
-    // //   reviewModal.classList.add("hidden");
-    // //   orderModal.classList.remove("hidden");
-
-    // //   const { sub, tax, total } = totals();
-    // //   paySubtotal.textContent = money(sub);
-    // //   payTax.textContent = money(tax);
-    // //   payTotal.textContent = money(total);
-    // // }
-
-    // // // Cancel review modal
-    // // reviewCancel.onclick = () => reviewModal.classList.add("hidden");
-
-    // // // Confirm review → payment
-    // // reviewConfirm.onclick = openPayment;
-
-    // // // Cancel payment → return to review modal
-    // // orderCancel.onclick = () => {
-    // //   orderModal.classList.add("hidden");
-    // //   reviewModal.classList.remove("hidden");
-    // // };
-
-    // // Confirm payment → SUBMIT ORDER
-    // orderConfirm.onclick = async () => {
-    //   const order_time = new Date().toISOString();
-    //   const menu_ids = [];
-    //   const quantities = [];
-    //   const totalsArr = [];
-
-    //   cart.forEach(({ item, qty }) => {
-    //     menu_ids.push(item.id);
-    //     quantities.push(qty);
-    //     totalsArr.push(item.price * qty);
-    //   });
-
-    //   const orderData = {
-    //     order_time,
-    //     menu_ids,
-    //     quantities,
-    //     totals: totalsArr,
-    //     card_number: $('#cardNumber').value.trim(),
-    //     card_expr_m: Number($('#cardExpM').value.trim()),
-    //     card_expr_y: Number($('#cardExpY').value.trim()),
-    //     card_holder: $('#cardHolder').value.trim()
-    //   };
-
-    //   try {
-    //     await createOrder(orderData);
-    //     alert("Order submitted!");
-    //     orderModal.classList.add("hidden");
-    //     cart.clear();
-    //     renderCart();
-    //     setOrderInProgress(false);
-    //   } catch (err) {
-    //     alert("Error submitting order.");
-    //     console.error(err);
-    //   }
-    // };
-
-//     function renderMenu(items) {
-//       const grid = $('#menuGrid');
-//       grid.innerHTML = '';
-//       items.forEach(it => {
-//         const card = document.createElement('button');
-//         card.type = 'button';
-//         card.className = 'card';
-//         card.setAttribute('aria-label', `${it.drink_name} ${money(it.price)}`);
-//         card.innerHTML = `
-//           <img class="card-img" src="/images/drink${it.id}.jpg" alt="${it.drink_name}" onerror="this.src='/images/placeholder.png'">
-//           <div class="card-body">
-//               <div class="card-name">${it.drink_name}</div>
-//               <div class="card-price">${money(it.price)}</div>
-//           </div>`;
-//         // card.addEventListener('click', () => add(it));
-//         card.addEventListener('click', () => openCustomization(it.id));
-//         grid.appendChild(card);
-//       });
-//     }
-
-//     function add(item) {
-//       const cur = cart.get(item.id) || { item, qty: 0 };
-//       cur.qty++;
-//       cart.set(item.id, cur);
-//       renderCart();
-//     }
-
-//     function dec(id) {
-//       const cur = cart.get(id);
-//       if (!cur) return;
-//       cur.qty--;
-//       if (cur.qty <= 0) cart.delete(id);
-//       renderCart();
-//     }
-
-//     function totals() {
-//       let sub = 0;
-//       cart.forEach(({ item, qty }) => (sub += item.price * qty));
-//       customizationSubtotals.forEach(subtotal => {sub += subtotal;});
-//       const tax = sub * TAX;
-//       return { sub, tax, total: sub + tax };
-//     }
-
-//     function renderCart() {
-//       const box = $('#cartItems');
-//       box.innerHTML = '';
-
-//       cart.forEach(({ item, qty }) => {
-//         const tr = document.createElement('tr');
-//         tr.className = 'cart-row';
-//         tr.innerHTML = `
-//   <td>${item.drink_name}</td>
-
-//   <td class="td-btn">
-//     <button class="btn sm" data-a="dec">−</button>
-//   </td>
-
-//   <td class="td-qty">
-//     ${qty}
-//   </td>
-
-//   <td class="td-btn">
-//     <button class="btn sm" data-a="inc">+</button>
-//   </td>
-
-//   <td>${money(item.price * qty)}</td>
-// `;
-
-
-//         tr.querySelector('[data-a="dec"]').onclick = () => dec(item.id);
-//         tr.querySelector('[data-a="inc"]').onclick = () => add(item);
-
-//         box.appendChild(tr);
-//       });
-
-//       const { sub, tax, total } = totals();
-//       $('#subtotal').textContent = money(sub);
-//       $('#tax').textContent = money(tax);
-//       $('#total').textContent = money(total);
-//     }
-
-//     $('#search').addEventListener('input', (e) => {
-//       const q = e.target.value.toLowerCase();
-//       const filtered = menuItems.filter(it => it.drink_name.toLowerCase().includes(q));
-//       renderMenu(filtered);
-//     });
-
-//     $('#clearCart').addEventListener('click', () => {
-//       cart.clear();
-//       renderCart();
-//     });
-
-//     $('#checkout').addEventListener('click', openReview);
-
-
-//     $('#backBtn').addEventListener('click', () => {
-//       window.location.href = '/';
-//     })
-
-  //   renderMenu(menuItems);
-  //   renderCart();
-  // }, [menuItems]);
 
   function addItem(itemToAddID, customizations) {
    setCartItems(previousCartItems => {
@@ -333,7 +124,7 @@ export default function Customer() {
   function openReview() {
     // Prevent opening if cart is empty
     if (cartItems.length === 0) {
-      alert("Your cart is empty!");
+      alert(t('alert_cart_empty'))  ;
       return;
     }
     setShowReviewModal(true);
@@ -369,7 +160,7 @@ export default function Customer() {
 
   async function applyCoupon(code) {
     if (couponApplied) {
-      alert("A coupon is already applied.");
+      alert(t('alert_coupon_applied'));
       return false;
     }
 
@@ -378,18 +169,77 @@ export default function Customer() {
       if (pct && pct > 0) {
         setCouponDiscount(pct);
         setCouponApplied(true);
-        alert(`Coupon applied! ${pct * 100}% off`);
+        alert(t('coupon_placeholder_applied') + `${pct * 100}% ` + t('off'));
         return true;
       } else {
-        alert("Invalid coupon code.");
+        alert(t('alert_invalid_coupon'));
         return false;
       }
     } catch (err) {
       console.error(err);
-      alert("Invalid coupon code.");
+      alert(t('alert_invalid_coupon'));
       return false;
     }
   };
+
+  async function translateMenuItems(texts, target) {
+    const textStr = texts.join('|||');
+    
+    try {
+        const response = await fetch(`${API_BASE}/customer/translate`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: textStr, target })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Translation API failed with status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Split the translated string back into an array of individual translated names
+        const translatedArray = data.translated.split('|||');
+        
+        return translatedArray;
+
+    } catch (err) {
+        console.error("Error batch translating text:", err);
+
+        throw err; 
+    }
+}
+
+  async function switchLanguage(targetLang) {
+    if (targetLang === currentLanguage) return;
+
+      if (targetLang === 'en') {
+        setMenuItems(originalMenuItems);
+        setCurrentLanguage('en');
+        return;
+      }
+
+    try {
+      // 1. Extract all drink names from the original menu
+      const textsToTranslate = originalMenuItems.map(item => item.drink_name);
+      
+      const translatedTexts = await translateMenuItems(textsToTranslate, targetLang);
+      
+      // 3. Create a new menu array with translated names
+      const newMenuItems = originalMenuItems.map((item, index) => ({
+          ...item,
+          drink_name: translatedTexts[index] // Assuming 1:1 order
+        }));
+
+        setMenuItems(newMenuItems);
+        setCurrentLanguage(targetLang);
+      } 
+      catch (err) {
+        console.error("Error translating menu:", err);
+        alert(t('alert_translation_failed'));
+        }
+      }
 
  // =====================
   // JSX Render
@@ -403,10 +253,12 @@ export default function Customer() {
         </div>
       )}
 
+      <LanguageSelector currentLanguage={currentLanguage} switchLanguage={switchLanguage} />
+
       <main className="wrap grid-2">
-        <CategoryButtons setSelectedCategory={setSelectedCategory}/> 
-        <MenuDisplay menuItems={menuItems} money={money} setShowCustomizationModal={setShowCustomizationModal} setCurrentMenuItem={setCurrentMenuItem} selectedCategory={selectedCategory}/>
-        <Cart openReview={openReview} setCartItems={setCartItems} cartItems={cartItems} money={money} increaseQty={increaseQty} decreaseQty={decreaseQty} subtotal={subtotal} tax={tax} total={total} />
+        <CategoryButtons setSelectedCategory={setSelectedCategory} t={t}/> 
+        <MenuDisplay menuItems={menuItems} money={money} setShowCustomizationModal={setShowCustomizationModal} setCurrentMenuItem={setCurrentMenuItem} selectedCategory={selectedCategory} t={t}/>
+        <Cart openReview={openReview} setCartItems={setCartItems} cartItems={cartItems} money={money} increaseQty={increaseQty} decreaseQty={decreaseQty} subtotal={subtotal} tax={tax} total={total} t={t} />
         {showCustomizationModal && 
           <CustomizationModal 
             menuItemID={currentMenuItem} 
@@ -426,7 +278,8 @@ export default function Customer() {
           applyCoupon={applyCoupon} 
           subtotal={subtotal} 
           tax={tax} 
-          total={total} 
+          total={total}
+          t={t}
           />}
 
         <OrderModal />

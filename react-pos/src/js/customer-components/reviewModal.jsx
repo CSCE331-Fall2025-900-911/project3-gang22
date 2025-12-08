@@ -11,9 +11,9 @@ export default function ReviewModal(
         applyCoupon,
         subtotal,
         tax,
-        total 
+        total,
+        t
      }) {
-
     
     const couponInputRef = useRef(null);
     
@@ -22,7 +22,7 @@ export default function ReviewModal(
         if (code) {
             applyCoupon(code);
         } else {
-            alert("Please enter a coupon code.");
+            alert(t("alert_enter_coupon"));
         }
     }
 
@@ -34,14 +34,14 @@ export default function ReviewModal(
     return (
         <div id="reviewModal" className="modal-overlay">
             <div className="modal-panel large">
-                <h2>Review Your Order</h2>
+                <h2>{t('review_title')}</h2>
 
                 <div className="modal-body">
                     <div className="coupon-row row gap" style={{ marginBottom: "12px" }}>
                         <input 
                             id="couponInput" 
                             className="card-input" 
-                            placeholder={couponApplied ? `Coupon Applied: ${couponDiscount * 100}% off` : "Enter coupon code…"}
+                            placeholder={couponApplied ? `Coupon Applied: ${couponDiscount * 100}% off` : `${t('coupon_placeholder_default')}`}
                             ref={couponInputRef} 
                             disabled={couponApplied}
                         />
@@ -51,31 +51,31 @@ export default function ReviewModal(
                             onClick={handleApplyCoupon}
                             disabled={couponApplied} 
                         >
-                            {couponApplied ? "Applied" : "Apply"}
+                            {couponApplied ? t('applied_button') : t('apply_button')}
                         </button>
                     </div>
                     
                     <table className="cart-table review-table">
                         <thead>
                             <tr>
-                                <th>Item</th>
-                                <th>Qty</th>
-                                <th>Price</th>
+                                <th>{t('table_header_item')}</th>
+                                <th>{t('table_header_qty')}</th>
+                                <th>{t('table_header_price')}</th>
                             </tr>
                         </thead>
                         <tbody><ReviewBody cartItems={cartItems} money={money}/></tbody>
                     </table>
 
                     <div id="reviewTotals" className="totals mb">
-                        <div className="row"><span>Subtotal</span><strong id="revSubtotal">{subtotal}</strong></div>
+                        <div className="row"><span>{t('subtotal_label')}</span><strong id="revSubtotal">{subtotal}</strong></div>
                         {couponApplied && (
                              <div className="row discount">
-                                <span>Discount ({couponDiscount * 100}%)</span>
-                                <strong>Applied</strong> 
+                                <span>{t('discount_label')} ({couponDiscount * 100}%)</span>
+                                <strong>{t('applied_status')}</strong> 
                             </div>
                         )}
-                        <div className="row"><span>Tax</span><strong id="revTax">{tax}</strong></div>
-                        <div className="row total"><span>Total</span><strong id="revTotal">{total}</strong></div>
+                        <div className="row"><span>{t('tax_label')}</span><strong id="revTax">{tax}</strong></div>
+                        <div className="row total"><span>{t('total_label')}</span><strong id="revTotal">{total}</strong></div>
                     </div>
 
                 </div>

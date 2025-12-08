@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import MenuBody from "./menuBody";
 
-export default function MenuDisplay({ menuItems, money, setShowCustomizationModal, setCurrentMenuItem, selectedCategory }) { 
+export default function MenuDisplay({ menuItems, money, setShowCustomizationModal, setCurrentMenuItem, selectedCategory, t}) { 
     // ^^^ Correct prop name used here
     
     const [ filteredMenuItems, setFilteredMenuItems ] = useState([ ...menuItems ]);
@@ -48,9 +48,9 @@ export default function MenuDisplay({ menuItems, money, setShowCustomizationModa
     return (
         <div>
             <div className="toolbar">
-                <button id="backBtn" className="btn gap-right" onClick={() => { window.location.pathname = '/'}}>Back</button>
-                <label htmlFor="search" className="sr-only">Search menu</label>
-                <input id="search" className="search-input" type="search" placeholder="Search drinks…" onChange={(e) => filterItems(e.target.value)}/>
+                <button id="backBtn" className="btn gap-right" onClick={() => { window.location.pathname = '/'}}>{t('back_button')}</button>
+                <label htmlFor="search" className="sr-only">{t('search_menu_label')}</label>
+                <input id="search" className="search-input" type="search" placeholder={t('search_drinks_placeholder')} onChange={(e) => filterItems(e.target.value)}/>
             </div>
             <div id="menuGrid" className="grid-cards" aria-live="polite">
                 <MenuBody 
