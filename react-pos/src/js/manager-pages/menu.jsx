@@ -6,8 +6,6 @@ export default function MenuPage() {
       title="Menu"
       basePath="menu"
       fields={["Drink", "Price", "Category", "Tea", "Milk", "Picture URL"]}
-
-      // FIXME: talk with Alex about the required fields
       requiredFields={[0,1,2,5]}
       numericFields={[1]}
       defaultValues={{5:"/images/placeholder.png"}}

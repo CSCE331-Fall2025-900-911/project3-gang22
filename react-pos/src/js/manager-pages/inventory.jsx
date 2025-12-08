@@ -14,7 +14,20 @@ export default function InventoryPage() {
         { display: "Unit", key: "unit" },
         { display: "Quantity", key: "quantity" },
         { display: "Reorder Threshold", key: "reorder_threshold" },
-        { display: "Unit Cost", key: "unit_cost"}
+        { display: "Unit Cost", key: "unit_cost"},
+        { display: "Status", ket: "status", 
+          render: (row) => {
+            const quantity = parseFloat(row.quantity);
+            const threshold = parseFloat(row.reorder_threshold);
+            if (quantity === 0) {
+              return "❌ Out of Stock";
+            } else if (quantity < threshold) {
+              return "⚠️ Low Stock";
+            } else {
+              return "✅ Sufficient";
+            }
+          }
+        }
       ]}
       extractValues={(item) => [
         item.name,
