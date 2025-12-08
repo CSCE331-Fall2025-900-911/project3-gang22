@@ -1,400 +1,440 @@
-import React, { } from "react";
-import { useEffect, useState } from "react";
-import { fetchMenu, createOrder } from "./employee-pages/menu.jsx";
+import { useEffect, useState, useRef } from "react";
+import { fetchMenu, createOrder, getCouponCode } from "./customer-pages/menu.jsx";
 import { API_BASE } from "./apibase.js";
+import CustomizationModal from "./customer-components/customizationModal.jsx";
+import MenuDisplay from "./employee-components/menuDisplay.jsx";
+import Cart from "./customer-components/cart.jsx";
+import ReviewModal from "./customer-components/reviewModal.jsx";
+import OrderModal from "./customer-components/orderModal.jsx";
+import PaymentModal from "./employee-components/paymentModal.jsx";
+import CategoryButtons from "./customer-components/categoryButtons.jsx";
 
+export const CUSTOMER_BASE_URL = `${API_BASE}/customer`;
 
-// function bindShortcuts(items){
-//   const input=$('#posSearch');
-//   document.addEventListener('keydown',e=>{
-//     if(e.key==='/'){ e.preventDefault(); input.focus(); }
-//     if(e.key>='1'&&e.key<='9'){ const idx=Number(e.key)-1; if(items[idx]) add(items[idx]); }
-//     if(e.key==='Enter') $('#posCheckout').click();
-//   });
-//   input.addEventListener('input',()=>{
-//     const q=input.value.toLowerCase();
-//     renderMenu(items.filter(it=>it.drink_name.toLowerCase().includes(q)));
-//   });
-// }
+export default function Customer() {
 
-export const EMPLOYEE_BASE_URL = `${API_BASE}/cashier`;
+  const [ menuItems, setMenuItems ] = useState([]);
+  const [ cartItems, setCartItems] = useState([]);
+  const [ showCustomizationModal, setShowCustomizationModal ] = useState(false);
+  const [ showReviewModal, setShowReviewModal ] = useState(false);
+  const [ showPaymentModal, setShowPaymentModal ] = useState(false);
+  const [ currentMenuItem, setCurrentMenuItem ] = useState(null);
+  const [ customizationSubtotals, setCustomizationSubtotals ] = useState([]);
+  const [ subtotal, setSubtotal ] = useState(0.00);
+  const [ tax, setTax ] = useState(0.00);
+  const [ total, setTotal ] = useState(0.00);
 
-export default function Employee() {
+  const money = (n) => `$${Number(n).toFixed(2)}`;
 
-  const [menuItems, setMenuItems] = useState([]);
+  // Coupon state
+  const [couponDiscount, setCouponDiscount] = useState(0); // like 0.15 = 15%
+  const [couponApplied, setCouponApplied] = useState(false);
 
-  // Fetches menu data whenever component is mounted
+  // Category filter state
+  const categoryOrder = ['Milk Tea', 'Fruit Tea', 'Smoothie', 'Slush', 'Specialty'];
+  const [ selectedCategory, setSelectedCategory ] = useState('Milk Tea');
+
+  // Persistent cart (critical fix)
+  const cartRef = useRef(new Map());
+  const cart = cartRef.current;
+
+  // Fetch menu on mount
   useEffect(() => {
     async function loadMenuOnStart() {
       const data = await fetchMenu();
       setMenuItems(data);
     }
     loadMenuOnStart();
-  }, [])
+  }, []);
 
 
+  // =========================
+  // MAIN DOM EFFECT
+  // =========================
   useEffect(() => {
+    const TAX_RATE = 0.0825; 
 
-    const $ = (s, c = document) => c.querySelector(s);
-    const TAX = 0.0825;
-    const money = (n) => `$${Number(n).toFixed(2)}`;
+    let sub = 0;
 
-    const cart = new Map();
+    cartItems.forEach(item => {
+      const price = Number(item?.price) || 0;
+      const qty = Number(item?.qty) || 1;
+      sub += price * qty;
+      sub += item.customization.totalCustomizationPrice;
+    });
 
-    // =====================
-    // Customization Modal 
-    // =====================
-
-    const modal = $('#customModal');
-    const okBtn = $('#customOk');
-
-    function openCustomization(item) {
-      modal.classList.remove('hidden');
-
-      // OPTIONAL: Replace placeholder text later
-      // $('.modal-body').innerHTML = `<p>Customize ${item.drink_name}</p>`;
-
-      okBtn.onclick = () => {
-        modal.classList.add('hidden');
-        add(item); // now actually add the item
-      };
+    let discountedSub = sub;
+    if (couponApplied && couponDiscount > 0) {
+        discountedSub = sub * (1 - couponDiscount);
     }
 
+    const newSubtotal = money(discountedSub);
+    const newTax = money(discountedSub * TAX_RATE);
+    const newTotal = money(discountedSub + discountedSub * TAX_RATE);
+
+    setSubtotal(newSubtotal);
+    setTax(newTax);
+    setTotal(newTotal);
+  }, [cartItems, customizationSubtotals, couponApplied, couponDiscount]);
+
+  // useEffect(() => {
+
+  //   const $ = (s, c = document) => c.querySelector(s);
+  //   const TAX = 0.0825;  //   const money = (n) => `$${Number(n).toFixed(2)}`;
+  //   const money = (n) => `$${Number(n).toFixed(2)}`;
+
+  //   const cart = new Map();
+
+  //   // =====================
+  //   // Customization Modal 
+  //   // =====================
+
+  //   // const modal = $('#customModal');
+  //   // const okBtn = $('#customOk');
+
+  //   function openCustomization(menuItem) {
+  //     console.log("Opening the model n shi");
+  //     setShowCustomizationModal(true);
+  //     setCurrentMenuItem(menuItem);
+  //   }
+    //   modal.classList.remove('hidden');
+
+    //   // OPTIONAL: Replace placeholder text later
+    //   // $('.modal-body').innerHTML = `<p>Customize ${item.drink_name}</p>`;
+
+    //   okBtn.onclick = () => {
+    //     modal.classList.add('hidden');
+    //     add(item); // now actually add the item
+    //   };
+    // }
+
     // clicking outside the panel closes modal without adding
-    modal.addEventListener('click', e => {
-      if (e.target === modal) {
-        modal.classList.add('hidden');
-      }
-    });
+    // modal.addEventListener('click', e => {
+    //   if (e.target === modal) {
+    //     modal.classList.add('hidden');
+    //   }
+    // });
 
 
     // =====================
     // Review & Order Popups
-    // =====================
-    const reviewModal = $('#reviewModal');
-    const reviewBody = $('#reviewTableBody');
-    const reviewCancel = $('#reviewCancel');
-    const reviewConfirm = $('#reviewConfirm');
+    // // =====================
+    // const reviewModal = $('#reviewModal');
+    // const reviewBody = $('#reviewTableBody');
+    // const reviewCancel = $('#reviewCancel');
+    // const reviewConfirm = $('#reviewConfirm');
 
-    const orderModal = $('#orderModal');
-    const paySubtotal = $('#paySubtotal');
-    const payTax = $('#payTax');
-    const payTotal = $('#payTotal');
-    const orderCancel = $('#orderCancel');
-    const orderConfirm = $('#orderConfirm');
+    // const orderModal = $('#orderModal');
+    // const paySubtotal = $('#paySubtotal');
+    // const payTax = $('#payTax');
+    // const payTotal = $('#payTotal');
+    // const orderCancel = $('#orderCancel');
+    // const orderConfirm = $('#orderConfirm');
 
-    // Opens review modal
-    function openReview() {
-      // Prevent opening if cart is empty
-      if (document.querySelectorAll('.cart-row').length == 0) {
-        alert("Your cart is empty!");
-        return;
+    // // Opens review modal    
+
+    // // Opens payment modal
+    // // function openPayment() {
+    // //   reviewModal.classList.add("hidden");
+    // //   orderModal.classList.remove("hidden");
+
+    // //   const { sub, tax, total } = totals();
+    // //   paySubtotal.textContent = money(sub);
+    // //   payTax.textContent = money(tax);
+    // //   payTotal.textContent = money(total);
+    // // }
+
+    // // // Cancel review modal
+    // // reviewCancel.onclick = () => reviewModal.classList.add("hidden");
+
+    // // // Confirm review → payment
+    // // reviewConfirm.onclick = openPayment;
+
+    // // // Cancel payment → return to review modal
+    // // orderCancel.onclick = () => {
+    // //   orderModal.classList.add("hidden");
+    // //   reviewModal.classList.remove("hidden");
+    // // };
+
+    // // Confirm payment → SUBMIT ORDER
+    // orderConfirm.onclick = async () => {
+    //   const order_time = new Date().toISOString();
+    //   const menu_ids = [];
+    //   const quantities = [];
+    //   const totalsArr = [];
+
+    //   cart.forEach(({ item, qty }) => {
+    //     menu_ids.push(item.id);
+    //     quantities.push(qty);
+    //     totalsArr.push(item.price * qty);
+    //   });
+
+    //   const orderData = {
+    //     order_time,
+    //     menu_ids,
+    //     quantities,
+    //     totals: totalsArr,
+    //     card_number: $('#cardNumber').value.trim(),
+    //     card_expr_m: Number($('#cardExpM').value.trim()),
+    //     card_expr_y: Number($('#cardExpY').value.trim()),
+    //     card_holder: $('#cardHolder').value.trim()
+    //   };
+
+    //   try {
+    //     await createOrder(orderData);
+    //     alert("Order submitted!");
+    //     orderModal.classList.add("hidden");
+    //     cart.clear();
+    //     renderCart();
+    //     setOrderInProgress(false);
+    //   } catch (err) {
+    //     alert("Error submitting order.");
+    //     console.error(err);
+    //   }
+    // };
+
+//     function renderMenu(items) {
+//       const grid = $('#menuGrid');
+//       grid.innerHTML = '';
+//       items.forEach(it => {
+//         const card = document.createElement('button');
+//         card.type = 'button';
+//         card.className = 'card';
+//         card.setAttribute('aria-label', `${it.drink_name} ${money(it.price)}`);
+//         card.innerHTML = `
+//           <img class="card-img" src="/images/drink${it.id}.jpg" alt="${it.drink_name}" onerror="this.src='/images/placeholder.png'">
+//           <div class="card-body">
+//               <div class="card-name">${it.drink_name}</div>
+//               <div class="card-price">${money(it.price)}</div>
+//           </div>`;
+//         // card.addEventListener('click', () => add(it));
+//         card.addEventListener('click', () => openCustomization(it.id));
+//         grid.appendChild(card);
+//       });
+//     }
+
+//     function add(item) {
+//       const cur = cart.get(item.id) || { item, qty: 0 };
+//       cur.qty++;
+//       cart.set(item.id, cur);
+//       renderCart();
+//     }
+
+//     function dec(id) {
+//       const cur = cart.get(id);
+//       if (!cur) return;
+//       cur.qty--;
+//       if (cur.qty <= 0) cart.delete(id);
+//       renderCart();
+//     }
+
+//     function totals() {
+//       let sub = 0;
+//       cart.forEach(({ item, qty }) => (sub += item.price * qty));
+//       customizationSubtotals.forEach(subtotal => {sub += subtotal;});
+//       const tax = sub * TAX;
+//       return { sub, tax, total: sub + tax };
+//     }
+
+//     function renderCart() {
+//       const box = $('#cartItems');
+//       box.innerHTML = '';
+
+//       cart.forEach(({ item, qty }) => {
+//         const tr = document.createElement('tr');
+//         tr.className = 'cart-row';
+//         tr.innerHTML = `
+//   <td>${item.drink_name}</td>
+
+//   <td class="td-btn">
+//     <button class="btn sm" data-a="dec">−</button>
+//   </td>
+
+//   <td class="td-qty">
+//     ${qty}
+//   </td>
+
+//   <td class="td-btn">
+//     <button class="btn sm" data-a="inc">+</button>
+//   </td>
+
+//   <td>${money(item.price * qty)}</td>
+// `;
+
+
+//         tr.querySelector('[data-a="dec"]').onclick = () => dec(item.id);
+//         tr.querySelector('[data-a="inc"]').onclick = () => add(item);
+
+//         box.appendChild(tr);
+//       });
+
+//       const { sub, tax, total } = totals();
+//       $('#subtotal').textContent = money(sub);
+//       $('#tax').textContent = money(tax);
+//       $('#total').textContent = money(total);
+//     }
+
+//     $('#search').addEventListener('input', (e) => {
+//       const q = e.target.value.toLowerCase();
+//       const filtered = menuItems.filter(it => it.drink_name.toLowerCase().includes(q));
+//       renderMenu(filtered);
+//     });
+
+//     $('#clearCart').addEventListener('click', () => {
+//       cart.clear();
+//       renderCart();
+//     });
+
+//     $('#checkout').addEventListener('click', openReview);
+
+
+//     $('#backBtn').addEventListener('click', () => {
+//       window.location.href = '/';
+//     })
+
+  //   renderMenu(menuItems);
+  //   renderCart();
+  // }, [menuItems]);
+
+  function addItem(itemToAddID, customizations) {
+   setCartItems(previousCartItems => {
+      const baseItem = menuItems.find(item => item.id === itemToAddID);
+      const newCustomizationString = JSON.stringify(customizations);
+      const existingItemIndex = previousCartItems.findIndex(item => {
+      if (item.id === itemToAddID) {
+        const existingCustomizationString = JSON.stringify(item.customization);
+        return existingCustomizationString === newCustomizationString;
       }
-
-      reviewModal.classList.remove("hidden");
-
-      // Fill review table
-      reviewBody.innerHTML = "";
-      cart.forEach(({ item, qty }) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-      <td>${item.drink_name}</td>
-      <td>${qty}</td>
-      <td>${money(item.price * qty)}</td>
-    `;
-        reviewBody.appendChild(tr);
-      });
-    }
-
-    // Opens payment modal
-    function openPayment() {
-      reviewModal.classList.add("hidden");
-      orderModal.classList.remove("hidden");
-
-      const { sub, tax, total } = totals();
-      paySubtotal.textContent = money(sub);
-      payTax.textContent = money(tax);
-      payTotal.textContent = money(total);
-    }
-
-    // Cancel review modal
-    reviewCancel.onclick = () => reviewModal.classList.add("hidden");
-
-    // Confirm review → payment
-    reviewConfirm.onclick = openPayment;
-
-    // Cancel payment → return to review modal
-    orderCancel.onclick = () => {
-      orderModal.classList.add("hidden");
-      reviewModal.classList.remove("hidden");
-    };
-
-    // Confirm payment → SUBMIT ORDER
-    orderConfirm.onclick = async () => {
-      const order_time = new Date().toISOString();
-      const menu_ids = [];
-      const quantities = [];
-      const totalsArr = [];
-
-      cart.forEach(({ item, qty }) => {
-        menu_ids.push(item.id);
-        quantities.push(qty);
-        totalsArr.push(item.price * qty);
+      return false;
       });
 
-      const orderData = {
-        order_time,
-        employee_id: 1, // TODO: make the current logged in employee
-        menu_ids,
-        quantities,
-        totals: totalsArr,
-        card_number: $('#cardNumber').value.trim(),
-        card_expr_m: Number($('#cardExpM').value.trim()),
-        card_expr_y: Number($('#cardExpY').value.trim()),
-        card_holder: $('#cardHolder').value.trim()
-      };
+      if (existingItemIndex !== -1) {
+        return previousCartItems.map((item, index) => {
+          if (index === existingItemIndex) {
+              return { ...item, qty: item.qty + 1 };
+          }
+          return item;
+        });
 
-      try {
-        await createOrder(orderData);
-        alert("Order submitted!");
-        orderModal.classList.add("hidden");
-        cart.clear();
-        renderCart();
-      } catch (err) {
-        alert("Error submitting order.");
-        console.error(err);
+      } 
+      else {
+        const newItem = { 
+          cardID: Date.now().toString() + Math.random().toFixed(4), 
+          ...baseItem, 
+          qty: 1, 
+          customization: customizations 
+        };
+        return [...previousCartItems, newItem];
       }
-    };
-
-    // =====================
-    // Render Menu and Inline Cart
-    // =====================
-
-    function renderMenu(items) {
-      const grid = $('#menuGrid');
-      grid.innerHTML = '';
-      items.forEach(it => {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'card';
-        card.setAttribute('aria-label', `${it.drink_name} ${money(it.price)}`);
-        card.innerHTML = `
-          <img class="card-img" src="/images/drink${it.id}.jpg" alt="${it.drink_name}" onerror="this.src='/images/placeholder.png'">
-          <div class="card-body">
-              <div class="card-name">${it.drink_name}</div>
-              <div class="card-price">${money(it.price)}</div>
-          </div>`;
-        // card.addEventListener('click', () => add(it));
-        card.addEventListener('click', () => openCustomization(it));
-        grid.appendChild(card);
-      });
-    }
-
-    function add(item) {
-      const cur = cart.get(item.id) || { item, qty: 0 };
-      cur.qty++;
-      cart.set(item.id, cur);
-      renderCart();
-    }
-
-    function dec(id) {
-      const cur = cart.get(id);
-      if (!cur) return;
-      cur.qty--;
-      if (cur.qty <= 0) cart.delete(id);
-      renderCart();
-    }
-
-    function totals() {
-      let sub = 0;
-      cart.forEach(({ item, qty }) => (sub += item.price * qty));
-      const tax = sub * TAX;
-      return { sub, tax, total: sub + tax };
-    }
-
-    function renderCart() {
-      const box = $('#cartItems');
-      box.innerHTML = '';
-
-      cart.forEach(({ item, qty }) => {
-        const tr = document.createElement('tr');
-        tr.className = 'cart-row';
-        tr.innerHTML = `
-  <td>${item.drink_name}</td>
-
-  <td class="td-btn">
-    <button class="btn sm" data-a="dec">−</button>
-  </td>
-
-  <td class="td-qty">
-    ${qty}
-  </td>
-
-  <td class="td-btn">
-    <button class="btn sm" data-a="inc">+</button>
-  </td>
-
-  <td>${money(item.price * qty)}</td>
-`;
-
-
-        tr.querySelector('[data-a="dec"]').onclick = () => dec(item.id);
-        tr.querySelector('[data-a="inc"]').onclick = () => add(item);
-
-        box.appendChild(tr);
-      });
-
-      const { sub, tax, total } = totals();
-      $('#subtotal').textContent = money(sub);
-      $('#tax').textContent = money(tax);
-      $('#total').textContent = money(total);
-    }
-
-    $('#search').addEventListener('input', (e) => {
-      const q = e.target.value.toLowerCase();
-      const filtered = menuItems.filter(it => it.drink_name.toLowerCase().includes(q));
-      renderMenu(filtered);
     });
+  }
 
-    $('#clearCart').addEventListener('click', () => {
-      cart.clear();
-      renderCart();
-    });
+  function openReview() {
+    // Prevent opening if cart is empty
+    if (cartItems.length === 0) {
+      alert("Your cart is empty!");
+      return;
+    }
+    setShowReviewModal(true);
+  }
 
-    $('#checkout').addEventListener('click', openReview);
-
-
-    $('#backBtn').addEventListener('click', () => {
-      window.location.href = '/';
+  function increaseQty(itemCardID) {
+    setCartItems(oldCartItems => {
+      return oldCartItems.map(item => {
+          if (item.cardID === itemCardID) { 
+              return { ...item, qty: item.qty + 1 };
+          }
+          return item;
+      })
     })
+  }
 
-    renderMenu(menuItems);
-    renderCart();
-  }, [menuItems]);
+  function decreaseQty(itemCardID) { // Now accepts the unique instance ID
+    setCartItems(oldCartItems => {
+      const newCartItems = oldCartItems.map(item => {
+          if (item.cardID === itemCardID) { 
+              return { ...item, qty: item.qty - 1 };
+          }
+          return item;
+      })
+      const filteredItems = newCartItems.filter(item => item.qty > 0);
+      return filteredItems;
+    })
+  }
 
+  function clearCart() {
+    setCartItems([]);
+  }
+
+  async function applyCoupon(code) {
+    if (couponApplied) {
+      alert("A coupon is already applied.");
+      return false;
+    }
+
+    try {
+      const pct = await getCouponCode(code);
+      if (pct && pct > 0) {
+        setCouponDiscount(pct);
+        setCouponApplied(true);
+        alert(`Coupon applied! ${pct * 100}% off`);
+        return true;
+      } else {
+        alert("Invalid coupon code.");
+        return false;
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Invalid coupon code.");
+      return false;
+    }
+  };
+
+ // =====================
+  // JSX Render
+  // =====================
   return (
-    <main className="wrap grid-2">
-      <section>
-        <div className="toolbar">
-          <button id="backBtn" className="btn gap-right">Back</button>
-          <label htmlFor="search" className="sr-only">Search menu</label>
-          <input id="search" className="search-input" type="search" placeholder="Search drinks…" />
-        </div>
-        <div id="menuGrid" className="grid-cards" aria-live="polite"></div>
-      </section>
+    <>
+      <main className="wrap grid-2">
+        <CategoryButtons setSelectedCategory={setSelectedCategory}/> 
+        <MenuDisplay menuItems={menuItems} money={money} setShowCustomizationModal={setShowCustomizationModal} setCurrentMenuItem={setCurrentMenuItem} selectedCategory={selectedCategory}/>
+        <Cart openReview={openReview} setCartItems={setCartItems} cartItems={cartItems} money={money} increaseQty={increaseQty} decreaseQty={decreaseQty} subtotal={subtotal} tax={tax} total={total} />
+        {showCustomizationModal && 
+          <CustomizationModal 
+            menuItemID={currentMenuItem} 
+            addItem={addItem}
+            setShowCustomizationModal={setShowCustomizationModal}
+            setCustomizationSubtotals={setCustomizationSubtotals}
+          />}
 
-      <aside className="panel" aria-labelledby="cartHeading">
-        <div id="cartHeadingBox">
-          <h2 id="cartHeading">Your Cart</h2>
-        </div>
+        {showReviewModal && 
+        <ReviewModal 
+          cartItems={cartItems} 
+          money={money} 
+          setShowReviewModal={setShowReviewModal} 
+          setShowPaymentModal={setShowPaymentModal}
+          couponApplied={couponApplied}
+          couponDiscount={couponDiscount}
+          applyCoupon={applyCoupon} 
+          subtotal={subtotal} 
+          tax={tax} 
+          total={total} 
+          />}
 
-        <div className="cart-table-wrap">
-          <table className="cart-table">
-            <colgroup>
-              <col style={{ width: "52%" }} />   {/* Item */}
-              <col style={{ width: "8%" }} />    {/* – */}
-              <col style={{ width: "8%" }} />    {/* qty */}
-              <col style={{ width: "8%" }} />    {/* + */}
-              <col style={{ width: "24%" }} />   {/* price */}
-            </colgroup>
+        <OrderModal />
 
-            <tbody id="cartItems"></tbody>
-          </table>
-        </div>
-
-        <div className="totals">
-          <div className="row gap-md"><span>Subtotal</span><strong id="subtotal">$0.00</strong></div>
-          <div className="row gap-sm"><span>Tax</span><strong id="tax">$0.00</strong></div>
-          <div className="row gap-sm total"><span>Total</span><strong id="total">$0.00</strong></div>
-        </div>
-
-        <div className="row gap-lg">
-          <button id="clearCart" className="btn">Clear</button>
-          <button id="checkout" className="btn primary">Checkout</button>
-          {/* <button id="reviewBtn" className="btn primary">Review Cart</button> */}
-        </div>
-      </aside>
-
-      <div id="customModal" className="modal-overlay hidden">
-        <div className="modal-panel">
-          <h2>Customizations</h2>
-
-          <div className="modal-body">
-            <p>Customization options will go here…</p>
-          </div>
-
-          <div className="modal-footer">
-            <button id="customOk" className="btn primary">Done</button>
-          </div>
-        </div>
-      </div>
-
-
-      {/* --- Review Cart Modal --- */}
-      <div id="reviewModal" className="modal-overlay hidden">
-        <div className="modal-panel large">
-          <h2>Review Your Order</h2>
-
-          <div className="modal-body">
-            <table className="cart-table review-table">
-              <thead>
-                <tr>
-                  <th>Item</th>
-                  <th>Qty</th>
-                  <th>Price</th>
-                </tr>
-              </thead>
-              <tbody id="reviewTableBody"></tbody>
-            </table>
-          </div>
-
-          <div className="modal-footer row gap">
-            <button id="reviewCancel" className="btn gap-right">Cancel</button>
-            <button id="reviewConfirm" className="btn primary">Confirm</button>
-          </div>
-        </div>
-      </div>
-
-      {/* --- Place Order Modal --- */}
-      <div id="orderModal" className="modal-overlay hidden">
-        <div className="modal-panel large">
-          <h2>Payment Details</h2>
-
-          <div className="modal-body">
-
-            <div className="totals mb">
-              <div className="row"><span>Subtotal</span><strong id="paySubtotal">$0.00</strong></div>
-              <div className="row"><span>Tax</span><strong id="payTax">$0.00</strong></div>
-              <div className="row total"><span>Total</span><strong id="payTotal">$0.00</strong></div>
-            </div>
-
-            <div className="card-field">
-              <label>Card Number</label>
-              <input id="cardNumber" className="card-input" placeholder="1234 5678 9012 3456" />
-            </div>
-
-            <div className="card-field">
-              <label>Expiration (MM / YY)</label>
-              <div className="card-row">
-                <input id="cardExpM" className="card-input card-exp-small" placeholder="MM" />
-                <input id="cardExpY" className="card-input card-exp-small" placeholder="YY" />
-              </div>
-            </div>
-
-            <div className="card-field">
-              <label>Cardholder Name</label>
-              <input id="cardHolder" className="card-input" placeholder="Name on card" />
-            </div>
-
-          </div>
-
-          <div className="modal-footer row gap">
-            <button id="orderCancel" className="btn gap-right">Back</button>
-            <button id="orderConfirm" className="btn primary">Submit Order</button>
-          </div>
-        </div>
-      </div>
-
-    </main>
+        {showPaymentModal && 
+          <PaymentModal 
+            cartItems={cartItems} 
+            clearCart={clearCart} 
+            createOrder={createOrder} 
+            subtotal={subtotal} 
+            tax={tax} 
+            total={total} 
+            setShowPaymentModal={setShowPaymentModal}
+          />}
+       
+      </main>
+    </>
   );
 }

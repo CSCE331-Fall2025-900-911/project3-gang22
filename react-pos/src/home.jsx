@@ -32,7 +32,7 @@ export default function Home() {
         }, []);
 
     if (!currentUser || currentUser.authenticated !== true) return <Login validatingUser={validatingUser} setCurrentUser={setCurrentUser}/>
-    if (currentScreen === "Customer" || currentUser.user.display_name === "Guest") return <Customer />;
+    if (currentScreen === "Customer") return <Customer />;
     if (currentScreen === "Employee" && (currentUser.user.role === "cashier" || currentUser.user.role === "manager")) return <Employee />;
     if (currentScreen === "Manager" && currentUser.user.role === "manager") return <Manager />;
 

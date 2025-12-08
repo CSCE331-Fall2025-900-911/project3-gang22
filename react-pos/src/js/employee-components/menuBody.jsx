@@ -18,17 +18,7 @@ export default function MenuBody({ itemsByCategory, categoriesToRender, money, s
                                 className="card"
                                 aria-label={`${item.drink_name} ${money(item.price)}`} 
                                 type="button"
-                                onClick={() => openCustomization(item.id)}
-                            >
-                                <img 
-                                    className="card-img" 
-                                    src={item.image_url || `/images/drink${item.id}.jpg`} 
-                                    alt={item.drink_name} 
-                                    onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.src = '/images/placeholder.png';
-                                    }}
-                                />
+                                onClick={() => openCustomization(item.id)}>
                                 <div className="card-body">
                                     <div className="card-name">{item.drink_name}</div>
                                     <div className="card-price">{money(item.price)}</div>
