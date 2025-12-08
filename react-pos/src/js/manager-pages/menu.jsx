@@ -8,7 +8,7 @@ export default function MenuPage() {
       fields={["Drink", "Price", "Category", "Tea", "Milk", "Picture URL"]}
 
       // FIXME: talk with Alex about the required fields
-      requiredFields={[0,1,2,3,4,5]}
+      requiredFields={[0,1,2,5]}
       numericFields={[1]}
       defaultValues={{5:"/images/placeholder.png"}}
       headers={[

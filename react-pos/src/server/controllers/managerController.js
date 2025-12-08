@@ -18,7 +18,7 @@ module.exports = {
   },
 
   async addMenu(req, res) {
-    const required = ['drink_name', 'price', 'category', 'picture_url', 'tea_type', 'milk_type'];
+    const required = ['drink_name', 'price', 'category', 'picture_url'];
     if (!required.every(k => req.body[k] != null)) return res.status(400).json({ error: 'Missing required fields' });
     try {
       res.json(await menuModel.add(req.body));
@@ -83,7 +83,7 @@ module.exports = {
 
     if (!id) return res.status(400).json({ error: 'Missing id' });
 
-    if (!name || !role || !schedule) {
+    if (!name || role == null || schedule == null) {
       return res.status(400).json({
         error: 'Missing required fields: name, role, schedule'
       });
