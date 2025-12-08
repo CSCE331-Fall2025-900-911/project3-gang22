@@ -54,3 +54,16 @@ export async function fetchCustomizations(menuItemID) {
     return [];
   }
 }
+
+export async function getCouponCode(code) {
+ try {
+    const response = await fetch(API_BASE + "/customer/coupon?code=" + code, {credentials: 'include'});
+    const data = await response.json(); 
+    if (data.length > 0)
+      return data[0]['pct_off'];
+    else return 0;
+  } catch (err) {
+    console.error("Error fetching menu:", err);
+    return [];
+  }
+}

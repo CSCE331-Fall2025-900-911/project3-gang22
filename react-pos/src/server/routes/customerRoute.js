@@ -36,6 +36,8 @@ router.get('/weather', customer.getWeather);
 
 router.get('/customizations', customer.getCustomizations);
 
+router.get('/coupon', customer.getCouponCodes);
+
 // --- POST ---
 router.post('/order', customer.createOrder);
 
