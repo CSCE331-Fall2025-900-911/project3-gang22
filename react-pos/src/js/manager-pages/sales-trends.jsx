@@ -73,7 +73,7 @@ export default function SalesTrendsPage() {
   // FIXME: Do we add the clickable pop-up window for more order information details?
   return (
     <div style={{ marginLeft: "20px"}}>
-      <h2>Sales Trends</h2>
+      <h2>Order Trends</h2>
 
       {/*Range and Date Selection*/}
       <RangeDateToolBar selectedDate={selectedDate} setSelectedDate={setSelectedDate} viewRange={viewRange} setViewRange={setViewRange}/>
