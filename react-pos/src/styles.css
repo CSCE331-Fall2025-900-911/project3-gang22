@@ -498,3 +498,81 @@ h1 {
 .logout-btn:hover {
     filter: brightness(.9)
 }
+
+/* POS LIST STYLE FOR CASHIER VIEW */
+.pos-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 100%;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+
+    background: #f3f4f6;       /* light grey */
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    cursor: pointer;
+    text-align: left;
+}
+
+.pos-list-item:hover {
+    background: #e5e7eb;
+}
+
+.pos-drink-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.pos-drink-price {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Category heading for cashier view */
+.pos-category-heading {
+    margin: 16px 4px 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* If #menuGrid is a CSS grid (it is), make the heading span full width */
+.pos-category-heading {
+    grid-column: 1 / -1;
+}
+
+/* List item style (you already have something like this; just keep/tweak) */
+.pos-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 6px;
+
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    cursor: pointer;
+    text-align: left;
+}
+
+.pos-list-item:hover {
+    background: #e5e7eb;
+}
+
+.pos-drink-name {
+    font-size: 0.98rem;
+    font-weight: 600;
+}
+
+.pos-drink-price {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
