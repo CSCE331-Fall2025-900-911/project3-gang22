@@ -5,7 +5,6 @@ export async function fetchMenu() {
   try {
     const response = await fetch(API_BASE + "/customer/menu", {credentials: 'include'});
     const data = await response.json(); 
-    console.log(data);
     return data;                           
   } catch (err) {
     console.error("Error fetching menu:", err);
@@ -41,5 +40,30 @@ export async function createOrder(orderData) {
   } catch (err) {
     console.error("Error creating order:", err);
     return { error: "Network error" };
+  }
+}
+
+export async function fetchCustomizations(menuItemID) {
+  try {
+    const response = await fetch(API_BASE + `/customer/customizations?menuItemID=${menuItemID}`);
+    const data = response.json();
+    return data;
+  }
+  catch (err) {
+    console.error("Error fetching customizations:", err);
+    return [];
+  }
+}
+
+export async function getCouponCode(code) {
+ try {
+    const response = await fetch(API_BASE + "/customer/coupon?code=" + code, {credentials: 'include'});
+    const data = await response.json(); 
+    if (data.length > 0)
+      return data[0]['pct_off'];
+    else return 0;
+  } catch (err) {
+    console.error("Error fetching menu:", err);
+    return [];
   }
 }
