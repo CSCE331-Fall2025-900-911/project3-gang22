@@ -7,6 +7,7 @@ import Cart from "./customer-components/cart.jsx";
 import ReviewModal from "./customer-components/reviewModal.jsx";
 import OrderModal from "./customer-components/orderModal.jsx";
 import PaymentModal from "./customer-components/paymentModal.jsx";
+import CategoryButtons from "./customer-components/categoryButtons.jsx";
 
 export const CUSTOMER_BASE_URL = `${API_BASE}/customer`;
 
@@ -29,6 +30,10 @@ export default function Customer() {
   // Coupon state
   const [couponDiscount, setCouponDiscount] = useState(0); // like 0.15 = 15%
   const [couponApplied, setCouponApplied] = useState(false);
+
+  // Category filter state
+  const categoryOrder = ['Milk Tea', 'Fruit Tea', 'Smoothie', 'Slush', 'Specialty'];
+  const [ selectedCategory, setSelectedCategory ] = useState('Milk Tea');
 
   // Persistent cart (critical fix)
   const cartRef = useRef(new Map());
@@ -363,30 +368,30 @@ export default function Customer() {
   }
 
   async function applyCoupon(code) {
-    if (couponApplied) {
-      alert("A coupon is already applied.");
-      return false;
-    }
+    if (couponApplied) {
+      alert("A coupon is already applied.");
+      return false;
+    }
 
-    try {
-      const pct = await getCouponCode(code);
-      if (pct && pct > 0) {
-        setCouponDiscount(pct);
-        setCouponApplied(true);
-        alert(`Coupon applied! ${pct * 100}% off`);
-        return true;
-      } else {
-        alert("Invalid coupon code.");
-        return false;
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Invalid coupon code.");
-      return false;
-    }
-  };
+    try {
+      const pct = await getCouponCode(code);
+      if (pct && pct > 0) {
+        setCouponDiscount(pct);
+        setCouponApplied(true);
+        alert(`Coupon applied! ${pct * 100}% off`);
+        return true;
+      } else {
+        alert("Invalid coupon code.");
+        return false;
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Invalid coupon code.");
+      return false;
+    }
+  };
 
-  // =====================
+ // =====================
   // JSX Render
   // =====================
   return (
@@ -399,7 +404,8 @@ export default function Customer() {
       )}
 
       <main className="wrap grid-2">
-        <MenuDisplay menuItems={menuItems} money={money} setShowCustomizationModal={setShowCustomizationModal} setCurrentMenuItem={setCurrentMenuItem}/>
+        <CategoryButtons setSelectedCategory={setSelectedCategory}/> 
+        <MenuDisplay menuItems={menuItems} money={money} setShowCustomizationModal={setShowCustomizationModal} setCurrentMenuItem={setCurrentMenuItem} selectedCategory={selectedCategory}/>
         <Cart openReview={openReview} setCartItems={setCartItems} cartItems={cartItems} money={money} increaseQty={increaseQty} decreaseQty={decreaseQty} subtotal={subtotal} tax={tax} total={total} />
         {showCustomizationModal && 
           <CustomizationModal 
