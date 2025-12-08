@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import MenuBody from "./menuBody";
-import CategoryButtons from "../customer-components/CategoryButtons";
+import CategoryButtons from "../customer-components/categoryButtons.jsx";
+
 
 export default function MenuDisplay({ 
   menuItems, 

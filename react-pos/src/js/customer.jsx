@@ -8,8 +8,6 @@ import Weather from "./customer-components/weather.jsx";
 import ReviewModal from "./customer-components/reviewModal.jsx";
 import OrderModal from "./customer-components/orderModal.jsx";
 import PaymentModal from "./customer-components/paymentModal.jsx";
-import CategoryButtons from "./customer-components/categoryButtons.jsx";
-
 
 export const CUSTOMER_BASE_URL = `${API_BASE}/customer`;
 
