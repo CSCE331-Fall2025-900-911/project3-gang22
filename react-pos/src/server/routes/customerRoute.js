@@ -38,6 +38,8 @@ router.get('/customizations', customer.getCustomizations);
 
 router.get('/coupon', customer.getCouponCodes);
 
+router.post('/spin-wheel', customer.spinWheel);
+
 // --- POST ---
 router.post('/order', customer.createOrder);
 

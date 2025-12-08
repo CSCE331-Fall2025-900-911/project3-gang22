@@ -66,4 +66,7 @@ export async function getCouponCode(code) {
     console.error("Error fetching menu:", err);
     return [];
   }
+
+
+
 }
