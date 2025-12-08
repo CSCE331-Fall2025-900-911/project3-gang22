@@ -6,6 +6,8 @@ const orderModel = require('../models/orderModel');
 const orderItemModel = require('../models/orderItemModel');
 const transactionModel = require('../models/transactionModel');
 const weatherModel =  require('../models/weatherModel');
+const { getCustomizations } = require('../models/customizationsModel');
+const customizationsModel = require('../models/customizationsModel');
 
 require("dotenv").config({path:'../.env'});
 const { TranslationServiceClient } = require("@google-cloud/translate").v3;
@@ -152,6 +154,24 @@ module.exports = {
       console.error("Error fetching weather:", err);
       return res.status(500).json({ error: "Internal server error" });
     }
-  }
+  },
 
+  async getCustomizations(req, res) {
+    try {
+      const { menuItemID } = req.query;
+
+      console.log("Controller menu ID: " + menuItemID);
+
+      if (!menuItemID) {
+        return res.status(400).json({ error: "Invalid menu ID"})
+      }
+
+      return res.json(await customizationsModel.getCustomizations(menuItemID));
+    }
+    catch (err) {
+      console.error("Error fetching customizations:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
 };
+
