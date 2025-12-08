@@ -234,27 +234,66 @@ export default function Customer() {
     // =====================
     // Menu + Cart Rendering
     // =====================
-    function renderMenu(items) {
-      const grid = $('#menuGrid');
-      grid.innerHTML = "";
-      items.forEach(it => {
-        const card = document.createElement("button");
-        card.type = "button";
-        card.className = "card";
-        card.innerHTML = `
-          <img class="card-img" src="/images/drink${it.id}.jpg" onerror="this.src='/images/placeholder.png'">
-          <div class="card-body">
-            <div class="card-name">${it.drink_name}</div>
-            <div class="card-price">${money(it.price)}</div>
-          </div>
-        `;
-        card.onclick = () => openCustomization(it);
-        grid.appendChild(card);
-      });
-    }
+      function renderMenu(items) {
+          const grid = $('#menuGrid');
+          grid.innerHTML = "";
+
+          // Desired category order
+          const categoryOrder = ['Milk Tea', 'Fruit Tea', 'Smoothie', 'Slush', 'Specialty'];
+
+          // Group items by category
+          const itemsByCategory = new Map();
+          items.forEach(it => {
+              const cat = it.category || 'Other';
+              if (!itemsByCategory.has(cat)) itemsByCategory.set(cat, []);
+              itemsByCategory.get(cat).push(it);
+          });
+
+          // Helper to render a category heading + its cards
+          function renderCategorySection(categoryName, list) {
+              if (!list || list.length === 0) return;
+
+              // Heading
+              const heading = document.createElement('h3');
+              heading.className = 'menu-category-heading';
+              heading.textContent = categoryName;
+              grid.appendChild(heading);
+
+              // Cards under this category
+              list.forEach(it => {
+                  const card = document.createElement("button");
+                  card.type = "button";
+                  card.className = "card";
+                  card.innerHTML = `
+        <img class="card-img"
+             src="${it.image_url || `/images/drink${it.id}.jpg`}"
+             alt="${it.drink_name}"
+             onerror="this.src='/images/placeholder.png'">
+        <div class="card-body">
+          <div class="card-name">${it.drink_name}</div>
+          <div class="card-price">${money(it.price)}</div>
+        </div>
+      `;
+                  card.onclick = () => openCustomization(it);
+                  grid.appendChild(card);
+              });
+          }
+
+          // Render in chosen order first
+          categoryOrder.forEach(cat => {
+              renderCategorySection(cat, itemsByCategory.get(cat));
+              itemsByCategory.delete(cat);
+          });
+
+          // Any leftover categories at the end (just in case)
+          itemsByCategory.forEach((list, cat) => {
+              renderCategorySection(cat, list);
+          });
+      }
 
 
-    function add(item) {
+
+      function add(item) {
       const cur = cart.get(item.id) || { item, qty: 0 };
       cur.qty++;
       cart.set(item.id, cur);

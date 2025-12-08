@@ -576,3 +576,17 @@ h1 {
     font-weight: 500;
 }
 
+/* Category headings for customer menu */
+.menu-category-heading {
+    margin: 18px 4px 8px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* Make heading span the full width of the grid */
+.grid-cards .menu-category-heading,
+#menuGrid .menu-category-heading {
+    grid-column: 1 / -1;
+}
+
