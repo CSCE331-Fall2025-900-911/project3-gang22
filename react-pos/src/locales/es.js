@@ -33,4 +33,16 @@ export const es = {
     'alert_coupon_applied': 'Un cupón ya está aplicado.',
     'alert_invalid_coupon': 'Código de cupón inválido.',
     'alert_translation_failed': 'La traducción falló. Por favor, inténtelo de nuevo.',
+    'loc_access_denied': 'Acceso a la ubicación denegado',
+'geo_not_supported': 'Geolocalización no compatible',
+'local_w': 'Clima local',
+'temp': 'Temperatura',
+'precip': 'Precipitación',
+'wspin': 'Gira para un descuento misterioso',
+'wused': 'Ruleta usada',
+'already_spun': 'Ya giraste la ruleta en esta visita',
+'cant_spin': 'No se puede girar la ruleta en este momento.',
+'siphap': '¡A veces pasa! No hay descuento esta vez, pero sigues siendo increíble 💛'
+
+
 };

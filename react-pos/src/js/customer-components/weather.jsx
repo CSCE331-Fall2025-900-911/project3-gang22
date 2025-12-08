@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getWeather } from "../customer-pages/menu"; // ✅ adjust path if needed
 
-export default function Weather() {
+export default function Weather({t}) {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,12 +14,12 @@ export default function Weather() {
     }
 
     function fail() {
-      setError("Location access denied");
+      setError(t("loc_access_denied"));
       setLoading(false);
     }
 
     if (!navigator.geolocation) {
-      setError("Geolocation not supported");
+      setError(t("geo_not_supported"));
       setLoading(false);
     } else {
       navigator.geolocation.getCurrentPosition(success, fail);
@@ -39,17 +39,16 @@ export default function Weather() {
 
   return (
 <div className="weather-box">
-      <h3 id="weatherHeading">Local Weather</h3>
+      <h3 id="weatherHeading">{t('local_w')}</h3>
 
-      {loading && <p>Loading weather...</p>}
+      {loading && <p>...</p>}
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       {weather && (
         <div>
-
-          <p>🌡 Temperature: <strong>{weather.temperature * (9/5) + 32}°F</strong></p>
-          <p>🌧 Precipitation: <strong>{weather.precipitation} mm</strong></p>
+          <p>{'🌡' + t('temp') + ': '} <strong>{weather.temperature * (9/5) + 32}°F</strong></p>
+          <p>{'🌧' + t('precip') + ': '} <strong>{weather.precipitation} mm</strong></p>
           </div>
       )}
         </div>

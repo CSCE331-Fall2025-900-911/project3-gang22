@@ -33,4 +33,16 @@ export const en = {
     'alert_coupon_applied': 'A coupon is already applied.',
     'alert_invalid_coupon': 'Invalid coupon code.',
     'alert_translation_failed': 'Translation failed. Please try again.',
+    'loc_access_denied': 'Location access denied',
+    'geo_not_supported': 'Geolocation not supported',
+    'local_w': 'Local Weather',
+    'temp': 'Temperature',
+    'precip': 'Precipitation',
+    'wspin': 'Spin For Mystery Discount',
+    'wused': 'Wheel Used',
+    'already_spun': "You've already spun the wheel this visit",
+    'cant_spin': 'Unable to spin the wheel right now.',
+    'siphap': "Sip happens! No discount this time, but you're still tea-rrific 💛"
+
+
 };

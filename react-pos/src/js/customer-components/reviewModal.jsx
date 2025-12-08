@@ -61,7 +61,7 @@ export default function ReviewModal(
                             onClick={spinWheel}
                             disabled={wheelUsed}
                         >
-                            {wheelUsed ? "Wheel Used" : "Spin for Mystery Discount"}
+                            {t(wheelUsed ? "wused" : "wspin")}
                         </button>
                     </div>
                     

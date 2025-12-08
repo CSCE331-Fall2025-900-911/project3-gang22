@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 
-export default function PaymentModal({ cartItems, clearCart, createOrder, subtotal, tax, total, setShowPaymentModal, setOrderInProgress, couponDiscount }) {
+export default function PaymentModal({ cartItems, clearCart, createOrder, subtotal, tax, total, setShowPaymentModal, setOrderInProgress, couponDiscount, t }) {
     const cardNumberRef = useRef(null);
     const cardExpMRef = useRef(null);
     const cardExpYRef = useRef(null);

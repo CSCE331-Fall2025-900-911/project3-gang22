@@ -204,7 +204,7 @@ export default function Customer() {
 
     async function spinWheel() {
         if (wheelUsed) {
-            alert("You've already spun the wheel this visit.");
+            alert(t('alread_spun'));
             return;
         }
 
@@ -217,7 +217,7 @@ export default function Customer() {
             const data = await res.json();
 
             if (!data || data.ok === false) {
-                alert(data?.message || "Unable to spin the wheel right now.");
+                alert(data?.message || t("cant_spin"));
                 return;
             }
 
@@ -234,7 +234,7 @@ export default function Customer() {
                 setFlatDiscount(data.value);
                 alert(`You won $${data.value.toFixed(2)} off! Code: ${data.code}`);
             } else if (data.type === "none") {
-                alert(data.message || "Sip happens! No discount this time, but you're still tea-rrific 💛");
+                alert(data.message || t("siphap"));
             }
         } catch (err) {
             console.error(err);
@@ -330,7 +330,7 @@ export default function Customer() {
         />
 
         <div className="cart-stack">
-          <Weather></Weather>
+          <Weather t={t}/>
           <Cart openReview={openReview} setCartItems={setCartItems} cartItems={cartItems} money={money} increaseQty={increaseQty} decreaseQty={decreaseQty} subtotal={subtotal} tax={tax} total={total} t={t}/>
         </div>
 
@@ -370,7 +370,8 @@ export default function Customer() {
             tax={tax}
             total={total}
             setShowPaymentModal={setShowPaymentModal}
-            setOrderInProgress={setOrderInProgress} />}
+            setOrderInProgress={setOrderInProgress} 
+            t={t}/>}
 
       </main>
     </>
