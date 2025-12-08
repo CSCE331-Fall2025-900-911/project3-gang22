@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { fetchMenu, createOrder } from "./customer-pages/menu.jsx";
+import { useEffect, useState, useRef } from "react";
+import { fetchMenu, createOrder, getCouponCode } from "./customer-pages/menu.jsx";
 import { API_BASE } from "./apibase.js";
 import CustomizationModal from "./customer-components/customizationModal.jsx";
 import MenuDisplay from "./customer-components/menuDisplay.jsx";
@@ -7,7 +7,6 @@ import Cart from "./customer-components/cart.jsx";
 import ReviewModal from "./customer-components/reviewModal.jsx";
 import OrderModal from "./customer-components/orderModal.jsx";
 import PaymentModal from "./customer-components/paymentModal.jsx";
-
 
 export const CUSTOMER_BASE_URL = `${API_BASE}/customer`;
 
@@ -27,16 +26,27 @@ export default function Customer() {
 
   const money = (n) => `$${Number(n).toFixed(2)}`;
 
+  // Coupon state
+  const [couponDiscount, setCouponDiscount] = useState(0); // like 0.15 = 15%
+  const [couponApplied, setCouponApplied] = useState(false);
 
-  // Fetches menu data whenever component is mounted
+  // Persistent cart (critical fix)
+  const cartRef = useRef(new Map());
+  const cart = cartRef.current;
+
+  // Fetch menu on mount
   useEffect(() => {
     async function loadMenuOnStart() {
       const data = await fetchMenu();
       setMenuItems(data);
     }
     loadMenuOnStart();
-  }, [])
+  }, []);
 
+
+  // =========================
+  // MAIN DOM EFFECT
+  // =========================
   useEffect(() => {
     const TAX_RATE = 0.0825; 
 
@@ -49,15 +59,19 @@ export default function Customer() {
       sub += item.customization.totalCustomizationPrice;
     });
 
+    let discountedSub = sub;
+    if (couponApplied && couponDiscount > 0) {
+        discountedSub = sub * (1 - couponDiscount);
+    }
 
-    const newSubtotal = money(sub);
-    const newTax = money(sub * TAX_RATE)
-    const newTotal = money(sub + sub * TAX_RATE);
+    const newSubtotal = money(discountedSub);
+    const newTax = money(discountedSub * TAX_RATE);
+    const newTotal = money(discountedSub + discountedSub * TAX_RATE);
 
     setSubtotal(newSubtotal);
     setTax(newTax);
     setTotal(newTotal);
-  }, [cartItems, customizationSubtotals]);
+  }, [cartItems, customizationSubtotals, couponApplied, couponDiscount]);
 
   // useEffect(() => {
 
@@ -174,10 +188,6 @@ export default function Customer() {
     //     console.error(err);
     //   }
     // };
-
-    // =====================
-    // Render Menu and Inline Cart
-    // =====================
 
 //     function renderMenu(items) {
 //       const grid = $('#menuGrid');
@@ -352,9 +362,41 @@ export default function Customer() {
     setCartItems([]);
   }
 
+  async function applyCoupon(code) {
+    if (couponApplied) {
+      alert("A coupon is already applied.");
+      return false;
+    }
+
+    try {
+      const pct = await getCouponCode(code);
+      if (pct && pct > 0) {
+        setCouponDiscount(pct);
+        setCouponApplied(true);
+        alert(`Coupon applied! ${pct * 100}% off`);
+        return true;
+      } else {
+        alert("Invalid coupon code.");
+        return false;
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Invalid coupon code.");
+      return false;
+    }
+  };
+
+  // =====================
+  // JSX Render
+  // =====================
   return (
     <>
-      {!orderInProgress && <div className="kiosk-entry">Place Order<button className="btn" onClick={() => setOrderInProgress(true)}>Begin</button></div>}
+      {!orderInProgress && (
+        <div className="kiosk-entry">
+          Place Order
+          <button className="btn" onClick={() => setOrderInProgress(true)}>Begin</button>
+        </div>
+      )}
 
       <main className="wrap grid-2">
         <MenuDisplay menuItems={menuItems} money={money} setShowCustomizationModal={setShowCustomizationModal} setCurrentMenuItem={setCurrentMenuItem}/>
@@ -366,8 +408,23 @@ export default function Customer() {
             setShowCustomizationModal={setShowCustomizationModal}
             setCustomizationSubtotals={setCustomizationSubtotals}
           />}
-        {showReviewModal && <ReviewModal cartItems={cartItems} money={money} setShowReviewModal={setShowReviewModal} setShowPaymentModal={setShowPaymentModal}/>}
+
+        {showReviewModal && 
+        <ReviewModal 
+          cartItems={cartItems} 
+          money={money} 
+          setShowReviewModal={setShowReviewModal} 
+          setShowPaymentModal={setShowPaymentModal}
+          couponApplied={couponApplied}
+          couponDiscount={couponDiscount}
+          applyCoupon={applyCoupon} 
+          subtotal={subtotal} 
+          tax={tax} 
+          total={total} 
+          />}
+
         <OrderModal />
+
         {showPaymentModal && 
           <PaymentModal 
             cartItems={cartItems} 
