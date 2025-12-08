@@ -4,6 +4,7 @@ import { API_BASE } from "./apibase.js";
 import CustomizationModal from "./customer-components/customizationModal.jsx";
 import MenuDisplay from "./customer-components/menuDisplay.jsx";
 import Cart from "./customer-components/cart.jsx";
+import Weather from "./customer-components/weather.jsx";
 import ReviewModal from "./customer-components/reviewModal.jsx";
 import OrderModal from "./customer-components/orderModal.jsx";
 import PaymentModal from "./customer-components/paymentModal.jsx";
@@ -194,7 +195,11 @@ export default function Customer() {
           setSelectedCategory={setSelectedCategory}
         />
 
-        <Cart openReview={openReview} setCartItems={setCartItems} cartItems={cartItems} money={money} increaseQty={increaseQty} decreaseQty={decreaseQty} subtotal={subtotal} tax={tax} total={total} />
+        <div className="cart-stack">
+          <Weather></Weather>
+          <Cart openReview={openReview} setCartItems={setCartItems} cartItems={cartItems} money={money} increaseQty={increaseQty} decreaseQty={decreaseQty} subtotal={subtotal} tax={tax} total={total} />
+        </div>
+
         {showCustomizationModal &&
           <CustomizationModal
             menuItemID={currentMenuItem}
