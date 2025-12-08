@@ -40,10 +40,12 @@ export default function Home() {
 
     return (
         <div>
-            <main className="wrap">
-                <h1>Bubble Tea POS</h1>
+            <main className="home-wrap">
+                <h1>Welcome {currentUser.user.display_name}</h1>
                 <nav className="nav">
-                <button className="nav-btn" onClick={() => setScreen("Customer")}>Customer Kiosk</button>
+                    {/* If customer: only display "Place Order", otherwise use "Customer Kiosk and Cashier POS wording" */}
+                {(currentUser.user.role !== "cashier" && currentUser.user.role !== "manager") && <button className="nav-btn" onClick={() => setScreen("Customer")}>Place Order</button>}
+                {(currentUser.user.role === "cashier" || currentUser.user.role === "manager") && <button className="nav-btn" onClick={() => setScreen("Customer")}>Customer Kiosk</button>}
                 {(currentUser.user.role === "cashier" || currentUser.user.role === "manager") && <button className="nav-btn" onClick={() => setScreen("Employee")}>Cashier POS</button>}
                 {(currentUser.user.role === "manager") && <button className="nav-btn" onClick={() => setScreen("Manager")}>Manager Dashboard</button>}
                 {(currentUser.user.role === "manager") && <button className="nav-btn" onClick={() => setScreen("Menu")}>Non-Interactive Menu</button>}
