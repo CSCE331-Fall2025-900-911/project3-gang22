@@ -10,7 +10,7 @@ export default function MenuBody({ itemsByCategory, categoriesToRender, money, s
             {categoriesToRender.map(categoryName => (
                 itemsByCategory.get(categoryName)?.length > 0 && (
                     <>
-                        <h3 className="menu-category-heading">{categoryName}</h3>
+                        {/* <h3 className="menu-category-heading">{categoryName}</h3> */}
                         
                         {itemsByCategory.get(categoryName).map(item => (
                             <button 
