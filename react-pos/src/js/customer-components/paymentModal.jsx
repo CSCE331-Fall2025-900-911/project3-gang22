@@ -6,58 +6,82 @@ export default function PaymentModal({ cartItems, clearCart, createOrder, subtot
     const cardExpYRef = useRef(null);
     const cardHolderRef = useRef(null);
 
-    async function submitOrder() {
-        const cardNumber = cardNumberRef.current.value.trim();
-        const cardExpM = Number(cardExpMRef.current.value.trim());
-        const cardExpY = Number(cardExpYRef.current.value.trim());
-        const cardHolder = cardHolderRef.current.value.trim();
+async function submitOrder() {
+    const cardNumber = cardNumberRef.current.value.trim();
+    const cardExpM = Number(cardExpMRef.current.value.trim());
+    const cardExpY = Number(cardExpYRef.current.value.trim());
+    const cardHolder = cardHolderRef.current.value.trim();
 
-        if (!cardNumber || !cardHolder || !cardExpM || !cardExpY) {
-            alert("Please fill in all card details.");
-            return;
+    if (!cardNumber || !cardHolder || !cardExpM || !cardExpY) {
+        alert("Please fill in all card details.");
+        return;
+    }
+
+    const order_time = new Date().toISOString();
+
+    const aggregatedItemsMap = cartItems.reduce((map, item) => {
+        const menuId = item.id;
+        
+        // 1. Calculate Customization Price: Use 0 if the field is missing
+        const itemCustomizationTotal = item.customization?.totalCustomizationPrice ?? 0;
+        
+        // 2. Calculate the total for this cart item line (Qty * Base Price + Customization Price)
+        const itemTotal = (item.price * item.qty) + itemCustomizationTotal; 
+        
+        // 3. Aggregate by menuId
+        if (map.has(menuId)) {
+            const existing = map.get(menuId);
+            existing.quantities += item.qty;
+            existing.totals += itemTotal;
+        } else {
+            map.set(menuId, {
+                menu_id: menuId,
+                quantities: item.qty,
+                totals: itemTotal,
+            });
         }
+        return map;
+    }, new Map()); 
 
-        const order_time = new Date().toISOString();
-        const menu_ids = [];
-        const quantities = [];
-        const totalsArr = [];
+    const menu_ids = [];
+    const quantities = [];
+    const totalsArr = [];
 
-        cartItems.map(item => {
-            menu_ids.push(item.id);
-            quantities.push(item.qty);
-            const itemTotal = item.price * item.qty + item.customization.totalCustomizationPrice; 
-            totalsArr.push(itemTotal);
-        });
+    // Convert the Map values into arrays
+    aggregatedItemsMap.forEach(aggregatedItem => {
+        menu_ids.push(aggregatedItem.menu_id);
+        quantities.push(aggregatedItem.quantities);
+        totalsArr.push(aggregatedItem.totals);
+    });
 
-        const orderData = {
-            order_time,
-            menu_ids,
-            quantities,
-            totals: totalsArr,
-            card_number: cardNumber,
-            card_expr_m: cardExpM,
-            card_expr_y: cardExpY,
-            card_holder: cardHolder
-        };
-
-        setShowPaymentModal(false);
-
-        try {
-            await createOrder(orderData);
-            alert("Order submitted!");
-            clearCart();
-            
-            // 3. ✅ Ensure setOrderInProgress is available and called
-            if (setOrderInProgress) {
-                setOrderInProgress(false);
-            }
-        } catch (err) {
-            alert("Error submitting order.");
-            console.error(err);
-            // If submission fails, you might want to show the modal again:
-            setShowPaymentModal(true); 
-        }
+    // Package for backend call
+    const orderData = {
+        order_time,
+        menu_ids, 
+        quantities,
+        totals: totalsArr, 
+        card_number: cardNumber,
+        card_expr_m: cardExpM,
+        card_expr_y: cardExpY,
+        card_holder: cardHolder
     };
+
+    setShowPaymentModal(false);
+
+    try {
+        await createOrder(orderData);
+        alert("Order submitted!");
+        clearCart();
+        
+        if (setOrderInProgress) {
+            setOrderInProgress(false);
+        }
+    } catch (err) {
+        alert("Error submitting order.");
+        console.error(err);
+        setShowPaymentModal(true); 
+    }
+};
 
     return (
         <div id="orderModal" className="modal-overlay">
