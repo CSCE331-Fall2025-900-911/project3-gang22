@@ -187,6 +187,74 @@ module.exports = {
       console.error('Error fetching menu_inventory:', err);
       res.status(500).json({ error: 'Internal server error' });
     }
-  }
+  },
+
+    async spinWheel(req, res) {
+        try {
+            // Use session to limit spins to once per day per browser session
+            const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+
+            if (!req.session) {
+                return res.status(500).json({ ok: false, message: 'Session not available' });
+            }
+
+            if (req.session.lastWheelSpinDate === today) {
+                return res.status(429).json({
+                    ok: false,
+                    message: 'You already spun the wheel today. Please come back tomorrow!',
+                });
+            }
+
+            // Save spin timestamp on session
+            req.session.lastWheelSpinDate = today;
+
+            // Define possible rewards
+            const rewards = [
+                // $1 off
+                {
+                    type: 'amount',
+                    code: 'BUBBLE1',
+                    value: 1.0,
+                    display: '$1 off your order!',
+                },
+                // 5% off
+                {
+                    type: 'percent',
+                    code: 'BUBBLE5',
+                    value: 0.05,
+                    display: '5% off your order!',
+                },
+                // 10% off
+                {
+                    type: 'percent',
+                    code: 'BUBBLE10',
+                    value: 0.10,
+                    display: '10% off your order!',
+                },
+                // 15% off
+                {
+                    type: 'percent',
+                    code: 'BUBBLE15',
+                    value: 0.15,
+                    display: '15% off your order!',
+                },
+                // No discount for you
+                {
+                    type: 'none',
+                    message: "Sip happens! No discount this time, but you're still tea-rrific 💛",
+                },
+            ];
+
+            const prize = rewards[Math.floor(Math.random() * rewards.length)];
+
+            return res.json({
+                ok: true,
+                ...prize,
+            });
+        } catch (err) {
+            console.error('Error in spinWheel:', err);
+            return res.status(500).json({ ok: false, message: 'Internal server error' });
+        }
+    },
 };
 

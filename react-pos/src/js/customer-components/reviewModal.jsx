@@ -9,6 +9,8 @@ export default function ReviewModal(
         couponApplied, 
         couponDiscount,
         applyCoupon,
+        spinWheel,
+        wheelUsed,
         subtotal,
         tax,
         total 
@@ -52,6 +54,14 @@ export default function ReviewModal(
                             disabled={couponApplied} 
                         >
                             {couponApplied ? "Applied" : "Apply"}
+                        </button>
+                        <button
+                            type="button"
+                            className="btn secondary"
+                            onClick={spinWheel}
+                            disabled={wheelUsed}
+                        >
+                            {wheelUsed ? "Wheel Used" : "Spin for Mystery Discount"}
                         </button>
                     </div>
                     
