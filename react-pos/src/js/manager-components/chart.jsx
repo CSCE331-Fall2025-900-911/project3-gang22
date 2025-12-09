@@ -1,9 +1,9 @@
 import React from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
-export default function Graph({ xaxis, yaxis, data, xLabel = "X-Axis", yLabel = "Y-Axis" }) {
+export default function Graph({ xaxis, yaxis, data, xLabel = "X-Axis", yLabel = "Y-Axis", width=600, height=300}) {
   return (
-    <LineChart width={600} height={300} data={data}>
+    <LineChart width={width} height={height} data={data}>
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis 
         dataKey={xaxis} 
