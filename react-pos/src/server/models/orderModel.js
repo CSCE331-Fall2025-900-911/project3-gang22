@@ -62,6 +62,47 @@ module.exports = {
     [range, dateStr]
   );
     return result.rows;
+  },
+
+  async getZReport(date) {
+    const result = await query(
+      `SELECT * FROM p2_zreport WHERE report_date = $1`,
+      [date]
+    );
+    return result.rows;
+  },
+
+  async insertZReport({
+    report_date,
+    total_sales,
+    total_returns,
+    total_voids,
+    total_discards,
+    total_cash,
+    total_card,
+    total_other
+  }) {
+    const result = await query(
+      `
+      INSERT INTO p2_zreport
+        (report_date, total_sales, total_returns, total_voids, total_discards,
+        total_cash, total_card, total_other, generated_at)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
+      RETURNING *;
+      `,
+      [
+        report_date,
+        total_sales,
+        total_returns,
+        total_voids,
+        total_discards,
+        total_cash,
+        total_card,
+        total_other
+      ]
+    );
+
+    return result.rows[0];
   }
   
   // ,

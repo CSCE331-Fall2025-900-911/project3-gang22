@@ -207,6 +207,56 @@ module.exports = {
   }
 },
 
+  async getZReport(req, res) {
+    try {
+      const { date } = req.query;
+      if (!date) {
+        return res.status(400).json({ error: 'Missing required parameter: date' });
+      }
+
+      const result = await orderModel.getZReport(date);
+      return res.json(result);
+    } catch (error) {
+      console.error('Error fetching Z report:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  },
+
+  async addZReport(req, res) {
+    try {
+      const {
+        report_date,
+        total_sales,
+        total_returns,
+        total_voids,
+        total_discards,
+        total_cash,
+        total_card,
+        total_other
+      } = req.body;
+
+      if (!report_date) {
+        return res.status(400).json({ error: "Missing required parameter: report_date" });
+      }
+
+      const result = await orderModel.insertZReport({
+        report_date,
+        total_sales,
+        total_returns,
+        total_voids,
+        total_discards,
+        total_cash,
+        total_card,
+        total_other
+      });
+
+      return res.json(result);
+    } catch (error) {
+      console.error("Error adding Z report:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  },
+
   // --- Inventory ---
   async getMenuInventory(req, res) {
     try {

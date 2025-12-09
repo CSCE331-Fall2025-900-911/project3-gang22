@@ -19,7 +19,7 @@ export default function SalesTrendsPage() {
 
   const SALES_TRENDS_HEADERS = [
       { display: xLabel, key: "label" },
-      { display: "Total Sales", key: "total_sales" },
+      { display: "Total Sales ", key: "total_sales" },
   ];
   const ORDER_HEADERS = [
     { display: "ID", key: "id" },

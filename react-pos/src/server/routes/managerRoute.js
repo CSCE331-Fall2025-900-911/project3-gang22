@@ -37,12 +37,14 @@ router.get('/order_items', manager.getOrderItems);
 router.get('/order_report', manager.getOrderReport);
 router.get('/product_usage', manager.getProductUsage);
 router.get('/x_report', manager.getXReport);
+router.get('/z_report', manager.getZReport);
 
 // --- POST ---
 
 router.post('/menu/add', manager.addMenu);
 router.post('/employee/add', manager.addEmployee);
 router.post('/inventory/add', manager.addInventory);
+router.post('/z_report/add', manager.addZReport);
 
 // --- PUT ---
 

@@ -26,8 +26,8 @@ export default function Navbar() {
                 {/* <button className="nav-btn" onClick={() => { navigate("/restock"); setShowChart(false);}}>Restock</button> */}
                 <button className="nav-btn" onClick={() => { navigate("/product-usage"); setShowChart(true);}}>Product Usage</button>
                 <button className="nav-btn" onClick={() => { navigate("/sales-report"); setShowChart(true);}}>Sales Report</button>
-                <button className="nav-btn" onClick={() => { navigate("/x-report"); setShowChart(true);}}>X-Report</button>
-                <button className="nav-btn" onClick={() => { navigate("/z-report"); setShowChart(true);}}>Z-Report</button>
+                {/* <button className="nav-btn" onClick={() => { navigate("/x-report"); setShowChart(true);}}>X-Report</button> */}
+                <button className="nav-btn" onClick={() => { navigate("/z-report"); setShowChart(true);}}>X & Z Report</button>
             </nav>
         </div>
     )

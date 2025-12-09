@@ -10,7 +10,7 @@ export default function ZReportPage() {
   const [tableData, setTableData] = useState([]);
   const [zReportDone, setZReportDone] = useState(false);
 
-  const ZREPORT_HEADERS = [
+  const XREPORT_HEADERS = [
     { display: "Hour", key: "label" },
     { display: "Sales", key: "sales" },
     { display: "Returns", key: "returns" },
@@ -27,21 +27,29 @@ export default function ZReportPage() {
     setReportDate(today);
   }, []);
 
-  // Check if Z-report already exists
+  // Check if Z report exists for the date
   useEffect(() => {
     if (!reportDate) return;
-    fetch(`${MANAGER_BASE_URL}/z_report/check?date=${reportDate}`, { credentials: "include" })
+
+    fetch(`${MANAGER_BASE_URL}/z_report?date=${reportDate}`, { credentials: "include" })
       .then(res => res.json())
       .then(data => {
-        setZReportDone(data.exists);
-        if (data.exists) {
-          loadXReportData(reportDate);
+        if (Array.isArray(data) && data.length > 0) {
+          setZReportDone(true);
+        } else {
+          setZReportDone(false);
         }
+        // Always load X report for chart + table
+        loadXReportData(reportDate);
       })
-      .catch(err => console.error("Check Z-report failed:", err));
+      .catch(err => {
+        console.error("Z-report check failed:", err);
+        setZReportDone(false);
+        loadXReportData(reportDate);
+      });
   }, [reportDate]);
 
-  // Load X-report data (chart + table)
+  // Load X report data (per-hour breakdown)
   function loadXReportData(date) {
     fetch(`${MANAGER_BASE_URL}/x_report?range=day&dateStr=${date}&dateFormat=HH12 AM`, { credentials: "include" })
       .then(res => res.json())
@@ -64,63 +72,67 @@ export default function ZReportPage() {
       .catch(err => console.error("X-report fetch failed:", err));
   }
 
-  // Generate Z-report
+  // Generate Z report (aggregate totals from X report)
   function generateZReport() {
-    // ⚠️ Warn if before 9 PM
     const now = new Date();
-    if (now.getHours() < 21) {
+    const todatStr = now.toISOString().split("T")[0]; // "YYYY-MM-DD"
+    if (reportDate == todatStr && now.getHours() < 21) {
       if (!window.confirm("It’s before 9:00 PM. Generating a Z-Report may cause incomplete totals. Continue?")) {
         return;
       }
     }
 
-    // Step 1: Load X-report data
-    loadXReportData(reportDate);
-
-    // Step 2: Aggregate totals
     const totals = tableData.reduce(
       (acc, row) => {
-        acc.sales += row.sales;
-        acc.returns += row.returns;
-        acc.voids += row.voids;
-        acc.discards += row.discards;
-        acc.cash += row.cash;
-        acc.card += row.card;
-        acc.other += row.other;
+        acc.total_sales += Number(row.sales) || 0;
+        acc.total_returns += Number(row.returns) || 0;
+        acc.total_voids += Number(row.voids) || 0;
+        acc.total_discards += Number(row.discards) || 0;
+        acc.total_cash += Number(row.cash) || 0;
+        acc.total_card += Number(row.card) || 0;
+        acc.total_other += Number(row.other) || 0;
         return acc;
       },
-      { sales: 0, returns: 0, voids: 0, discards: 0, cash: 0, card: 0, other: 0 }
+      {
+        total_sales: 0,
+        total_returns: 0,
+        total_voids: 0,
+        total_discards: 0,
+        total_cash: 0,
+        total_card: 0,
+        total_other: 0
+      }
     );
 
-    // Step 3: Send to backend
     fetch(`${MANAGER_BASE_URL}/z_report/add`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ date: reportDate, ...totals })
+      body: JSON.stringify({ report_date: reportDate, ...totals })
     })
       .then(res => res.json())
       .then(() => {
-        alert(`Z-Report generated for ${reportDate}\nX-report table reset.`);
+        // REMOVE THE ALERT
+        alert(`Z-Report generated for ${reportDate}`);
         setZReportDone(true);
       })
       .catch(err => console.error("Z-report generation failed:", err));
   }
 
-  //Returns a chart and table containing the generated z-report
   return (
     <div style={{ marginLeft: "20px"}}>
-      <h2>Z Report</h2>
+      <h2>X & Z Report</h2>
 
       <div style={{ marginBottom: "1rem" }}>
         <DatePicker label="Report Date: " value={reportDate} onChange={setReportDate} />
       </div>
 
-      <Chart title="Sales per Hour" xaxis="x" yaxis="y" data={chartData} yRangePadding={1000} />
-      <Table headers={ZREPORT_HEADERS} data={tableData} />
+      {/* Always show X report chart + table */}
+      <Chart title="Sales per Hour" xaxis="x" yaxis="y" data={chartData} yRangePadding={1000} xLabel="Hour" yLabel="Revenue ($)"/>
+      <Table headers={XREPORT_HEADERS} data={tableData} />
 
       <button onClick={generateZReport} disabled={zReportDone}>
-        Generate Z-Report
+        {zReportDone ? "Z Report Finalized" : "Generate Z Report"}
       </button>
     </div>
   );
