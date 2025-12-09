@@ -298,5 +298,16 @@ module.exports = {
       res.status(500).json({ error: 'Internal server error' });
     }
   },
+
+  async getProductUsage(req, res) {
+    try {
+      const { range, date } = req.query;
+      const data = await menuInventoryModel.getProductUsage(range, date);
+      res.json(data);
+    } catch (err) {
+      console.error('Error fetching product usage:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
 };
 

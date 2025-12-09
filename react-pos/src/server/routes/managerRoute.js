@@ -35,6 +35,7 @@ router.get('/menu_inventory', manager.getMenuInventory);
 router.get('/orders', manager.getOrders);
 router.get('/order_items', manager.getOrderItems);
 router.get('/order_report', manager.getOrderReport);
+router.get('/product_usage', manager.getProductUsage);
 router.get('/x_report', manager.getXReport);
 
 // --- POST ---
