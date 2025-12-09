@@ -26,85 +26,6 @@ export default function Customer() {
   const [tax, setTax] = useState(0.00);
   const [total, setTotal] = useState(0.00);
 
-  const originalTextMap = useRef(new WeakMap());
-  const [currentLanguage, setCurrentLanguage] = useState("en");
-  const languages = [
-    { code: "en", label: "English" },
-    { code: "es", label: "Español" },
-    { code: "fr", label: "Français" }
-  ];
-
-useEffect(() => {
-  async function translateDOMBatch() {
-    const walker = document.createTreeWalker(
-      document.body,
-      NodeFilter.SHOW_TEXT,
-      {
-        acceptNode: (node) => {
-          if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
-
-          // ⛔ Skip protected UI
-          if (
-            node.parentElement.closest("[data-no-translate]") ||
-            node.parentElement.closest("script, style, textarea, input, select, option")
-          ) {
-            return NodeFilter.FILTER_REJECT;
-          }
-
-          return NodeFilter.FILTER_ACCEPT;
-        }
-      }
-    );
-
-    const textNodes = [];
-    let node;
-
-    while ((node = walker.nextNode())) {
-      textNodes.push(node);
-    }
-
-    if (textNodes.length === 0) return;
-
-    // ✅ RESTORE ENGLISH
-    if (currentLanguage === "en") {
-      textNodes.forEach((node) => {
-        const original = originalTextMap.current.get(node);
-        if (original) node.nodeValue = original;
-      });
-      return;
-    }
-
-    // ✅ CACHE ORIGINAL TEXT BEFORE TRANSLATION
-    const originalTexts = textNodes.map((node) => {
-      if (!originalTextMap.current.has(node)) {
-        originalTextMap.current.set(node, node.nodeValue);
-      }
-      return node.nodeValue;
-    });
-
-    try {
-      const translatedArray = await translateBatch(
-        originalTexts.map(t => t.trim()),
-        currentLanguage
-      );
-
-      textNodes.forEach((node, i) => {
-        if (translatedArray[i]) {
-          node.nodeValue = translatedArray[i];
-        }
-      });
-    } catch (err) {
-      console.error("Batch DOM translation failed:", err);
-    }
-  }
-
-  translateDOMBatch();
-}, [currentLanguage]);
-
-
-
-
-
   const money = (n) => `$${Number(n).toFixed(2)}`;
 
   // Coupon state
@@ -317,11 +238,7 @@ useEffect(() => {
   // =====================
   return (
     <>
-      <LanguageSelectorDropdown
-        currentLanguage={currentLanguage}
-        setCurrentLanguage={setCurrentLanguage}
-        availableLanguages={languages}
-      />
+      <LanguageSelectorDropdown/>
       {/* {!orderInProgress && (
         <div className="kiosk-entry">
           Place Order

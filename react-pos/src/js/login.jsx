@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import "../styles.css"
 import { API_BASE } from "./apibase";
+import LanguageSelectorDropdown from "./customer-components/languageSelector.jsx";
 
 //If user is not authorized after validation is done, display button to navigate to google auth.
 export default function Login({ validatingUser, setCurrentUser }) {
@@ -10,15 +11,17 @@ export default function Login({ validatingUser, setCurrentUser }) {
     if (validatingUser) return <div className="page-container-alt"><img src="/images/loading.gif" alt="Loading" /></div>
 
     return (
-        <div className="login-page">
-            <div className="login-width-constraint">
+        <div>
+            <LanguageSelectorDropdown />
+            <main className="home-wrap">
+                <h1>Log In?</h1>
+                <nav className="nav">
+                    <button className="nav-btn" onClick={() => window.location.href = `${API_BASE}/auth/google`}>With Google</button>
+                    <button className="nav-btn " onClick={() => setCurrentUser(GUEST_CREDENTIALS)}>Continue as Guest</button>
+                </nav>
+            </main>
 
-                <h1 >Log In?</h1>
-                <div style={{height: '8px'}}></div>
-                <button className="nav-btn" onClick={() => window.location.href = `${API_BASE}/auth/google`}>With Google</button>
-                <div style={{height: '16px'}}></div>
-                <button className="nav-btn " onClick={() => setCurrentUser(GUEST_CREDENTIALS)}>Continue as Guest</button>
-            </div>
+
         </div>
     )
 }

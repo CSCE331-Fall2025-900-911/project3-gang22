@@ -6,6 +6,7 @@ import Employee from "./js/employee.jsx";
 import Manager from "./js/manager.jsx";
 import { API_BASE } from "./js/apibase.js";
 import Menu from "./js/menu.jsx";
+import LanguageSelectorDropdown from "./js/customer-components/languageSelector.jsx";
 
 export default function Home() {
 
@@ -63,8 +64,9 @@ export default function Home() {
 
     return (
         <div>
+                        <LanguageSelectorDropdown />
             <main className="home-wrap">
-                <h1>Welcome {currentUser.user.display_name}</h1>
+                <h1>Welcome {' ' + currentUser.user.display_name}</h1>
                 <nav className="nav">
                     {/* If customer: only display "Place Order", otherwise use "Customer Kiosk and Cashier POS wording" */}
                     {(currentUser.user.role !== "cashier" && currentUser.user.role !== "manager") && (
