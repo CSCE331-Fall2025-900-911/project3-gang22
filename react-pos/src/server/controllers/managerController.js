@@ -5,6 +5,7 @@ const employeeModel = require('../models/employeeModel');
 const inventoryModel = require('../models/inventoryModel');
 const menuInventoryModel = require('../models/menuInventoryModel');
 const orderModel = require('../models/orderModel');
+const orderItemModel = require('../models/orderItemModel')
 
 module.exports = {
   // --- Menu ---
@@ -139,6 +140,22 @@ module.exports = {
     } catch (err) {
       console.error('Error fetching orders:', err);
       res.status(500).json({ error: 'Internal server error' });
+    }
+  },
+
+  async getOrderItems(req, res) {
+    const { id } = req.query;
+
+    if (!id) {
+      return res.status(400).json({ error: "Missing required query parameter: id" });
+    }
+
+    try {
+      const items = await orderItemModel.getOrderItemsByOrderId(id);
+      res.json(items);
+    } catch (err) {
+      console.error("Error fetching order items:", err);
+      res.status(500).json({ error: "Internal server error" });
     }
   },
 

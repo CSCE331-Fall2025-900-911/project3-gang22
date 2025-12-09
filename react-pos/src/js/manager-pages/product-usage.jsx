@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import DatePicker from "../manager-components/datepicker.jsx";
 import Chart from "../manager-components/chart.jsx";
 import Table from "../manager-components/table.jsx";
+import VirtuosoTable from "../manager-components/tableVirtuoso.jsx";
 import RangeDateToolbar from "../manager-components/range-datepicker.jsx";
 import { MANAGER_BASE_URL } from "../manager";
 
@@ -47,11 +48,11 @@ export default function ProductUsagePage() {
 
         {/* Chart + Summary Table */}
         <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start" }}>
-            <div style={{ flex: 2 }}>
-            <Chart xaxis="item_name" yaxis="quantity_used" data={usageData} />
+            <div style={{ flex: 1 }}>
+            <Chart xaxis="item_name" yaxis="quantity_used" data={usageData} /*xLabel="Item Name" yLabel="Quantity Used"*/ /> 
             </div>
             <div style={{ flex: 1 }}>
-            <Table headers={USAGE_HEADERS} data={usageData} />
+            <VirtuosoTable headers={USAGE_HEADERS} data={usageData} height={250} />
             </div>
         </div>
 
