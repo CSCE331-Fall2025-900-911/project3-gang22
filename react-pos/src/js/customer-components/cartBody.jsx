@@ -1,6 +1,21 @@
 export default function CartBody({ cartItems, money, increaseQty, decreaseQty }) {
     if (!cartItems) { return <></>};
 
+    function capitalize(str) {
+        if (!str) return "";
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    }
+
+    const defaults = {
+        size: "Regular",
+        sugar: "Regular",
+        ice: "Regular",
+        boba: "Regular",
+        milk: "Whole" // future default
+        // toppings: no default
+    };
+
+
     function getCustomizationList(customization) {
         console.log(customization);
         if (!customization) {
@@ -12,12 +27,54 @@ export default function CartBody({ cartItems, money, increaseQty, decreaseQty })
             if (key === 'totalCustomizationPrice') {
                 return; 
             }
-            if (values.adjustment) {
-                const numNotZero = Number(values.price) > 0;
-                customizationSummary.push(`${key}: ${values.adjustment} ${numNotZero ? ` - $${values.price}` : ''}`);
-                customizationSummary.push('\n')
+
+            // Special case: Toppings
+            if (key.toLowerCase() === "toppings") {
+                // values here should be an array of {adjustment, price}
+                if (Array.isArray(values) && values.length > 0) {
+                    if (values.length === 1) {
+                        const topping = values[0];
+                        const numNotZero = Number(topping.price) > 0;
+                        customizationSummary.push(
+                            `${capitalize(key)}: ${topping.adjustment} ${
+                            numNotZero ? ` - $${topping.price}` : ""
+                            }`
+                        );
+                    } else {
+                        customizationSummary.push(`${capitalize(key)}:`);
+                        customizationSummary.push(
+                            <ul key="toppings-list">
+                            {values.map((topping, idx) => {
+                                const numNotZero = Number(topping.price) > 0;
+                                return (
+                                <li key={idx}>
+                                    {topping.adjustment} {numNotZero ? ` - $${topping.price}` : ""}
+                                </li>
+                                );
+                            })}
+                            </ul>
+                        );
+                    }
+                }
+            } else {
+                // Normal single‑select groups
+                if (values.adjustment) {
+                    // Skip if this adjustment matches the default for this group
+                    const defaultAdj = defaults[key.toLowerCase()];
+                    if (defaultAdj && values.adjustment.toLowerCase() === defaultAdj.toLowerCase()) {
+                        return; // don’t display default
+                    }
+
+                    const numNotZero = Number(values.price) > 0;
+                    customizationSummary.push(
+                        `${capitalize(key)}: ${values.adjustment} ${
+                            numNotZero ? ` - $${values.price}` : ""
+                        }`
+                    );
+                    customizationSummary.push('\n');
+                }
             }
-        })
+        });
 
         return customizationSummary ;
     }

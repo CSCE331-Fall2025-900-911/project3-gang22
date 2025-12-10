@@ -19,27 +19,55 @@ export default function CustomizationModal({ menuItemID, addItem, setShowCustomi
             const listOfCustomizations = {};
 
             data.forEach(customization => {
-                const currentCustomization = customization.name;
-                if (!groupedData[currentCustomization]) {
-                    groupedData[currentCustomization] = [];
-                    listOfCustomizations[currentCustomization] = [];
-                }
-                groupedData[currentCustomization].push(customization);
-                listOfCustomizations[currentCustomization].push(`${customization.adjustment}+${false}`);
+            const currentCustomization = customization.name;
+            if (!groupedData[currentCustomization]) {
+                groupedData[currentCustomization] = [];
+                listOfCustomizations[currentCustomization] = [];
+            }
+            groupedData[currentCustomization].push(customization);
+            // initialize all adjustments as false
+            listOfCustomizations[currentCustomization].push(`${customization.adjustment}+${false}`);
             });
-            
+
+            // Apply defaults
+            const defaults = {
+            size: "Regular",
+            sugar: "Regular",
+            ice: "Regular",
+            boba: "Regular",
+            milk: "Whole" // (not in DB yet, so skip for now)
+            // toppings: multi-select, so no default
+            };
+
+            Object.entries(defaults).forEach(([group, defaultAdjustment]) => {
+            if (listOfCustomizations[group]) {
+                // check if the default exists in this group
+                const hasDefault = groupedData[group].some(
+                c => c.adjustment.toLowerCase() === defaultAdjustment.toLowerCase()
+                );
+                if (hasDefault) {
+                listOfCustomizations[group] = listOfCustomizations[group].map(adjustment => {
+                    const [adjName] = adjustment.split("+");
+                    if (adjName.toLowerCase() === defaultAdjustment.toLowerCase()) {
+                    return `${adjName}+${true}`;
+                    }
+                    return adjustment;
+                });
+                }
+            }
+            });
+
             setCustomizationInUse(listOfCustomizations);
             setCustomizations(groupedData);
         }
         getItemCustomizations();
-
-    }, [menuItemID]);
+        }, [menuItemID]);
 
     function selectCustomization(customizationToSet) {
         const updatedCustomizations = { ...customizationInUse };
         const [customizationNameToSet, adjustmentNameToSet] = customizationToSet.split('+');
 
-        if (customizationNameToSet === "Toppings") {
+        if (customizationNameToSet.toLowerCase() === "toppings") {
             // Toggle selection instead of single-select
             updatedCustomizations[customizationNameToSet] =
             updatedCustomizations[customizationNameToSet]?.map(adjustment => {
@@ -73,9 +101,23 @@ export default function CustomizationModal({ menuItemID, addItem, setShowCustomi
             customizationValues.forEach(customization => {
                 const selectedAdjustment = `${customization.adjustment}+${true}`;
                 if (customizationInUse[customizationName]?.includes(selectedAdjustment)) {
-                    console.log("customization found");
-                    finalCustomizations = {...finalCustomizations, [customization.name]: {adjustment: customization.adjustment, price: customization.price}}
-                    totalCustomizationPrice += parseFloat(customization.price || '0');
+                    if (customizationName.toLowerCase() === "toppings") {
+                        // Collect multiple toppings in an array
+                        if (!finalCustomizations.Toppings) {
+                            finalCustomizations.Toppings = [];
+                        }
+                        finalCustomizations.Toppings.push({
+                            adjustment: customization.adjustment,
+                            price: customization.price
+                        });
+                    } else {
+                        // Single‑select groups
+                        finalCustomizations[customization.name] = {
+                            adjustment: customization.adjustment,
+                            price: customization.price
+                        };
+                    }
+                    totalCustomizationPrice += parseFloat(customization.price || "0");
                 }
            })
         })
@@ -83,6 +125,11 @@ export default function CustomizationModal({ menuItemID, addItem, setShowCustomi
         setShowCustomizationModal(false);
         addItem(menuItemID, finalCustomizations);
 
+    }
+
+    function capitalize(str) {
+        if (!str) return "";
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
     }
 
     return (
@@ -93,28 +140,34 @@ export default function CustomizationModal({ menuItemID, addItem, setShowCustomi
                 <div className="modal-body">
                     {Object.entries(customizations).map(([customizationGroup, customizationOptions]) => ( 
                         <div key={customizationGroup} className="modal-item">
-                            {customizationGroup}
+                            {capitalize(customizationGroup)}
                         <div key={customizationGroup} className="customization-wrap">
                             <div>
                                 {customizationOptions.map(customization => {
-                                    const customKey = `${customization.name}+${customization.adjustment}`
+                                    const customKey = `${customizationGroup}+${customization.adjustment}`;
                                     const selectedAdjustment = `${customization.adjustment}+${true}`;
                                     return (
-                                        <button 
-                                            key={customKey} 
-                                            className={customizationInUse[customization.name]?.includes(selectedAdjustment) ? "customization-btn selected" : "customization-btn"}
-                                            onClick={() => selectCustomization(customKey)}>
-                                                {customization.adjustment}
-                                                {parseFloat(customization.price) != 0 && (
-                                                    <><br />
-                                                    {customization.price > 0 
-                                                        ? `+${customization.price}` 
-                                                        : `${customization.price}`}
-                                                    </>
-                                                )}
+                                        <button
+                                            key={customKey}
+                                            className={
+                                                customizationInUse[customizationGroup]?.includes(selectedAdjustment)
+                                                ? "customization-btn selected"
+                                                : "customization-btn"
+                                            }
+                                            onClick={() => selectCustomization(customKey)}
+                                        >
+                                        {customization.adjustment}
+                                        {parseFloat(customization.price) !== 0 && (
+                                            <>
+                                            <br />
+                                            {parseFloat(customization.price) > 0
+                                                ? `+${customization.price}`
+                                                : `${customization.price}`}
+                                            </>
+                                        )}
                                         </button>
-                                    )
-                                })}
+                                    );
+                                    })}
                             </div>
                             </div>
                         </div>  
