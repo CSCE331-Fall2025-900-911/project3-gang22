@@ -76,12 +76,14 @@ export default function CustomizationModal({ menuItemID, addItem, setShowCustomi
 
     return (
         <div className="modal-overlay">
-            <div className="modal-panel">
+            <div className="modal-panel" style={{height: "390", width: "600px"}}>
                 <h2>Customizations</h2>
 
                 <div className="modal-body">
                     {Object.entries(customizations).map(([customizationGroup, customizationOptions]) => ( 
-                        <div key={customizationGroup} className="modal-item">{customizationGroup}
+                        <div key={customizationGroup} className="modal-item">
+                            {customizationGroup}
+                        <div key={customizationGroup} className="customization-wrap">
                             <div>
                                 {customizationOptions.map(customization => {
                                     const customKey = `${customization.name}+${customization.adjustment}`
@@ -93,6 +95,7 @@ export default function CustomizationModal({ menuItemID, addItem, setShowCustomi
                                             onClick={() => selectCustomization(customKey)}>{customization.adjustment}<br />{customization.price}</button>
                                     )
                                 })}
+                            </div>
                             </div>
                         </div>  
                     ))}

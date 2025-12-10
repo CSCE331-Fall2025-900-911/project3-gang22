@@ -11,6 +11,7 @@ export async function globalTranslateAllVisibleText() {
         return;
     }
     console.log("Asked for global render");
+    // setTimeout(() => __translateAllVisibleText(), 500);
 }
 
 // ✅ Global translated alert
