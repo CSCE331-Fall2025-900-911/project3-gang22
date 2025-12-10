@@ -362,7 +362,9 @@ h1 {
     flex-direction: column;
     position: sticky;
     top: 16px;
-    max-height: 50vh;
+    /* max-height: auto; */
+    height: auto;
+    max-height: 450px;
 }
 
 .weather-box {
@@ -440,9 +442,10 @@ h1 {
 }
 
 .cart-table-wrap {
-    flex: 1;
+    flex: none;
     overflow-y: auto;
     border-radius: 12px;
+    max-height: 200px;
 }
 
 .cart-table {
