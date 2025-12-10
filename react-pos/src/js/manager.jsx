@@ -27,7 +27,7 @@ export default function Manager() {
           <Route path="/employees" element={<EmployeePage />} />
           <Route path="/inventory" element={<InventoryPage />} />
           <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/sales-trends" element={<SalesTrendsPage />} />
+          <Route path="/order-trends" element={<SalesTrendsPage />} />
           <Route path="/restock" element={<InventoryRestockPage />} />
           <Route path="/product-usage" element={<ProductUsagePage />} />
           <Route path="/sales-report" element={<SalesReportPage />} />

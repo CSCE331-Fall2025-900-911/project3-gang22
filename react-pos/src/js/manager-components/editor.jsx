@@ -134,6 +134,7 @@ export default function Editor({ title, fields, headers, basePath, extractValues
         const parsed = JSON.parse(errorText);
         if (res.status == 400 && parsed?.error?.includes("required")) {
             setErrorMessage("Please fill in all required fields.");
+            console.log(parsed?.error)
         } else {
             setErrorMessage(`Server error: ${parsed?.error || "Unknown error"}`);
         }

@@ -13,7 +13,8 @@ export default function Table({ headers, data }) {
       </thead>
       <tbody>
         {Array.isArray(data) ? data.map((row, rowIndex) => (
-            <tr key={rowIndex}>
+            <tr key={rowIndex}
+            style={{ backgroundColor: rowIndex % 2 === 0 ? "#dfdfdf" : "#ffffff" }}>
               {headers.map((header, colIndex) => (
                 <td key={colIndex}>
                   {header.render ? header.render(row) : row[header.key]}

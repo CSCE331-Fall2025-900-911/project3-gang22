@@ -5,6 +5,7 @@ const employeeModel = require('../models/employeeModel');
 const inventoryModel = require('../models/inventoryModel');
 const menuInventoryModel = require('../models/menuInventoryModel');
 const orderModel = require('../models/orderModel');
+const orderItemModel = require('../models/orderItemModel')
 
 module.exports = {
   // --- Menu ---
@@ -18,7 +19,7 @@ module.exports = {
   },
 
   async addMenu(req, res) {
-    const required = ['drink_name', 'price', 'category', 'picture_url', 'tea_type', 'milk_type'];
+    const required = ['drink_name', 'price', 'category', 'picture_url'];
     if (!required.every(k => req.body[k] != null)) return res.status(400).json({ error: 'Missing required fields' });
     try {
       res.json(await menuModel.add(req.body));
@@ -83,7 +84,7 @@ module.exports = {
 
     if (!id) return res.status(400).json({ error: 'Missing id' });
 
-    if (!name || !role || !schedule) {
+    if (!name || role == null || schedule == null) {
       return res.status(400).json({
         error: 'Missing required fields: name, role, schedule'
       });
@@ -142,6 +143,22 @@ module.exports = {
     }
   },
 
+  async getOrderItems(req, res) {
+    const { id } = req.query;
+
+    if (!id) {
+      return res.status(400).json({ error: "Missing required query parameter: id" });
+    }
+
+    try {
+      const items = await orderItemModel.getOrderItemsByOrderId(id);
+      res.json(items);
+    } catch (err) {
+      console.error("Error fetching order items:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  },
+
   async getOrderReport(req, res) {
     const { interval, start, end } = req.query;
 
@@ -189,6 +206,56 @@ module.exports = {
     return res.status(500).json({ error: 'Internal server error' });
   }
 },
+
+  async getZReport(req, res) {
+    try {
+      const { date } = req.query;
+      if (!date) {
+        return res.status(400).json({ error: 'Missing required parameter: date' });
+      }
+
+      const result = await orderModel.getZReport(date);
+      return res.json(result);
+    } catch (error) {
+      console.error('Error fetching Z report:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  },
+
+  async addZReport(req, res) {
+    try {
+      const {
+        report_date,
+        total_sales,
+        total_returns,
+        total_voids,
+        total_discards,
+        total_cash,
+        total_card,
+        total_other
+      } = req.body;
+
+      if (!report_date) {
+        return res.status(400).json({ error: "Missing required parameter: report_date" });
+      }
+
+      const result = await orderModel.insertZReport({
+        report_date,
+        total_sales,
+        total_returns,
+        total_voids,
+        total_discards,
+        total_cash,
+        total_card,
+        total_other
+      });
+
+      return res.json(result);
+    } catch (error) {
+      console.error("Error adding Z report:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  },
 
   // --- Inventory ---
   async getMenuInventory(req, res) {
@@ -281,5 +348,16 @@ module.exports = {
       res.status(500).json({ error: 'Internal server error' });
     }
   },
+
+  async getProductUsage(req, res) {
+    try {
+      const { range, date } = req.query;
+      const data = await menuInventoryModel.getProductUsage(range, date);
+      res.json(data);
+    } catch (err) {
+      console.error('Error fetching product usage:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
 };
 
