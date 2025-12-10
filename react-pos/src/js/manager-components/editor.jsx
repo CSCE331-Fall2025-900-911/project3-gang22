@@ -3,8 +3,18 @@ import Table from "./table";
 import EditDialog from "./editDialog";
 import { MANAGER_BASE_URL } from "../manager";
 
-//Displays default manager page which contains a table and buttons to add or edit the table data
-export default function Editor({ title, fields, headers, basePath, extractValues, buildPayload, requiredFields = [], numericFields = [], defaultValues = {} }) {
+// Displays default manager page which contains a table and buttons to add or edit the table data
+export default function Editor({
+  title,
+  fields,
+  headers,
+  basePath,
+  extractValues,
+  buildPayload,
+  requiredFields = [],
+  numericFields = [],
+  defaultValues = {}
+}) {
   const [items, setItems] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
   const [dialogMode, setDialogMode] = useState("new");
@@ -18,8 +28,18 @@ export default function Editor({ title, fields, headers, basePath, extractValues
       key: "actions",
       render: (item) => (
         <div style={{ display: "flex", gap: "0.5rem" }}>
-          <button onClick={() => openEditDialog(item)}>Edit</button>
-          <button onClick={() => handleDelete(item.id)}>Del</button>
+          <button
+            onClick={() => openEditDialog(item)}
+            aria-label={`Edit ${title} with ID ${item.id}`}
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => handleDelete(item.id)}
+            aria-label={`Delete ${title} with ID ${item.id}`}
+          >
+            Del
+          </button>
         </div>
       )
     }
@@ -32,7 +52,7 @@ export default function Editor({ title, fields, headers, basePath, extractValues
   async function fetchItems() {
     try {
       const res = await fetch(`${MANAGER_BASE_URL}/${basePath}`, {
-        credentials: 'include'
+        credentials: "include"
       });
       const data = await res.json();
       setItems(Array.isArray(data) ? data : []);
@@ -49,7 +69,7 @@ export default function Editor({ title, fields, headers, basePath, extractValues
         credentials: "include",
         body: JSON.stringify({ id })
       });
-      setItems(items.filter(item => item.id !== id));
+      setItems(items.filter((item) => item.id !== id));
     } catch (err) {
       console.error(`Error deleting ${basePath}:`, err);
     }
@@ -65,7 +85,7 @@ export default function Editor({ title, fields, headers, basePath, extractValues
     for (const [index, value] of Object.entries(defaultValues)) {
       values[parseInt(index)] = value;
     }
-    setSelectedItem({__prefill: true, values });
+    setSelectedItem({ __prefill: true, values });
     setShowDialog(true);
   }
 
@@ -77,50 +97,47 @@ export default function Editor({ title, fields, headers, basePath, extractValues
   }
 
   async function handleDialogSubmit(values) {
-    // Attepts to add fallback for picture_url if needed
-    if (basePath == "menu") {
-        values[5] = values[5]?.trim() ? values[5] : "/images/placeholder.png";
+    if (basePath === "menu") {
+      values[5] = values[5]?.trim() ? values[5] : "/images/placeholder.png";
     }
 
-    // Check for missing required fields
-    const missingFields = requiredFields.filter(i => {
+    const missingFields = requiredFields.filter((i) => {
       const val = values[i];
-      return val === undefined || val === null || (typeof val === "string" && val.trim() === "");
+      return (
+        val === undefined ||
+        val === null ||
+        (typeof val === "string" && val.trim() === "")
+      );
     });
 
-    // Check for invalid numeric fields
-    const invalidNumericFields = numericFields.filter(i => isNaN(parseFloat(values[i])));
+    const invalidNumericFields = numericFields.filter((i) =>
+      isNaN(parseFloat(values[i]))
+    );
 
-    // Build error message
     if (missingFields.length > 0 || invalidNumericFields.length > 0) {
-        const missingLabels = missingFields.map(i => fields[i]);
-        const invalidLabels = invalidNumericFields.map(i => fields[i]);
+      const missingLabels = missingFields.map((i) => fields[i]);
+      const invalidLabels = invalidNumericFields.map((i) => fields[i]);
 
-        let message = "";
+      let message = "";
 
-        if (missingLabels.length > 0) {
-            message += `Please fill in the required fields: ${missingLabels.join(", ")}. `;
-        }
+      if (missingLabels.length > 0) {
+        message += `Please fill in the required fields: ${missingLabels.join(", ")}. `;
+      } else if (invalidLabels.length > 0) {
+        message += `Please enter valid numbers for: ${invalidLabels.join(", ")}.`;
+      }
 
-        else if (invalidLabels.length > 0) {
-            message += `Please enter valid numbers for: ${invalidLabels.join(", ")}.`;
-        }
-
-        setErrorMessage(message.trim());
-        return;
+      setErrorMessage(message.trim());
+      return;
     }
 
+    const payload = buildPayload(
+      values,
+      dialogMode === "edit" ? selectedItem.id : null
+    );
 
-    // Build payload that will be sent to server
-    const payload = buildPayload(values, dialogMode === "edit" ? selectedItem.id : null);
-    
-    // Determine 
     const method = "POST";
     const endpoint = dialogMode === "new" ? "add" : "update";
 
-    // DELETE WHEN DONE
-    // console.log("Received payload:", req.body);
-    // (END DELETE)
     try {
       const res = await fetch(`${MANAGER_BASE_URL}/${basePath}/${endpoint}`, {
         method,
@@ -132,11 +149,10 @@ export default function Editor({ title, fields, headers, basePath, extractValues
       if (!res.ok) {
         const errorText = await res.text();
         const parsed = JSON.parse(errorText);
-        if (res.status == 400 && parsed?.error?.includes("required")) {
-            setErrorMessage("Please fill in all required fields.");
-            console.log(parsed?.error)
+        if (res.status === 400 && parsed?.error?.includes("required")) {
+          setErrorMessage("Please fill in all required fields.");
         } else {
-            setErrorMessage(`Server error: ${parsed?.error || "Unknown error"}`);
+          setErrorMessage(`Server error: ${parsed?.error || "Unknown error"}`);
         }
         return;
       }
@@ -151,28 +167,49 @@ export default function Editor({ title, fields, headers, basePath, extractValues
       setErrorMessage("");
     } catch (err) {
       console.error(`Error saving ${basePath}:`, err);
-      setErrorMessage("Unexpected error occured.");
+      setErrorMessage("Unexpected error occurred.");
     }
-
-    
   }
 
   return (
-    <div style={{marginLeft: "20px" }}>
-      <h2>{title} Editor</h2>
-      <button onClick={openNewDialog}>+ New {title}{title === "Employee" ? "" : " Item"}</button>
-      <Table headers={TABLE_HEADERS} data={items} />
+    <section className="editor-container" style={{ marginLeft: "20px" }}>
+      <h1 id={`${basePath}-editor-title`}>{title} Editor</h1>
+      <button onClick={openNewDialog} aria-label={`Add new ${title}`}>
+        + New {title}
+        {title === "Employee" ? "" : " Item"}
+      </button>
+
+      {/* Accessible table */}
+      <Table
+        headers={TABLE_HEADERS}
+        data={items}
+        caption={`${title} records table`}
+      />
+
+      {/* Error messages */}
+      {errorMessage && (
+        <div role="alert" style={{ color: "red", marginTop: "1rem" }}>
+          {errorMessage}
+        </div>
+      )}
+
       {showDialog && (
         <EditDialog
           title={dialogMode === "new" ? `New ${title}` : `Edit ${title}`}
           fields={fields}
           requiredFields={requiredFields}
-          initialValues={dialogMode === "edit" ? extractValues(selectedItem) : selectedItem?.__prefill ? selectedItem.values : []}
+          initialValues={
+            dialogMode === "edit"
+              ? extractValues(selectedItem)
+              : selectedItem?.__prefill
+              ? selectedItem.values
+              : []
+          }
           onSubmit={handleDialogSubmit}
           onClose={() => setShowDialog(false)}
           errorMessage={errorMessage}
         />
       )}
-    </div>
+    </section>
   );
 }

@@ -5,6 +5,10 @@ import RestockOrderPanel from "../manager-components/restockOrdersPanel.jsx"
 import { MANAGER_BASE_URL } from "../manager.jsx";
 
 export default function InventoryRestockPage() {
+    useEffect(() => {
+        document.title = "Manager - Inventory Restock Page";
+    }, []);
+    
     const [inventoryData, setInventoryData] = useState([]);
     const [restockList, setRestockList] = useState([]);
     const [selectedItem, setSelectedItem] = useState(null);
@@ -123,11 +127,11 @@ export default function InventoryRestockPage() {
 
     return (
         <div style={{ marginLeft: "20px"}}>
-            <h2>Current Inventory Levels</h2>
+            <h1>Current Inventory Levels</h1>
             <Table headers={INVENTORY_HEADERS} data={inventoryData} />
 
             {/* Restock Input + Order Summary*/}
-            <h3>Create Restock Order</h3>
+            <h2>Create Restock Order</h2>
             <div style={{ display: "flex", gap: "2rem", marginTop: "2rem" }}>
                 <RestockInputPanel inventoryData={inventoryData} onAddItem={handleAddItem} />
                 <RestockOrderPanel restockList={restockList} onPlaceOrder={handlePlaceOrder} />

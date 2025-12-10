@@ -7,6 +7,10 @@ import { MANAGER_BASE_URL } from "../manager";
 import VirtuosoTable from "../manager-components/tableVirtuoso.jsx";
 
 export default function SalesReportPage() {
+  useEffect(() => {
+    document.title = "Manager - Sales Report Page";
+  }, []);
+
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [interval, setInterval] = useState("");
@@ -18,15 +22,13 @@ export default function SalesReportPage() {
 
   const yLabel = (yaxis === "total_sales") ? "Revenue ($)" : "Quantity Sold";
 
-    const SALES_REPORT_HEADERS = [
-      { display: "Drink", key: "drink_name" },
-      { display: "Time", key: "time_label" },
-      { display: "Quantity Sold", key: "total_qty" },
-      { display: "Total Sales", key: "total_sales" },
-    ];
+  const SALES_REPORT_HEADERS = [
+    { display: "Drink", key: "drink_name" },
+    { display: "Time", key: "time_label" },
+    { display: "Quantity Sold", key: "total_qty" },
+    { display: "Total Sales", key: "total_sales" },
+  ];
 
-
-  // Determine interval based on date range
   useEffect(() => {
     if (startDate && endDate && new Date(endDate) >= new Date(startDate)) {
       const conversion = 1000 * 60 * 60 * 24;
@@ -41,10 +43,9 @@ export default function SalesReportPage() {
     }
   }, [startDate, endDate]);
 
-  // Fetches sales report data from backend when component is mounted and stores it for use inside the table
   useEffect(() => {
     if (startDate && endDate && interval) {
-      getSalesReport(startDate, endDate, interval)
+      getSalesReport(startDate, endDate, interval);
     }
   }, [startDate, endDate, interval]); 
   
@@ -59,17 +60,16 @@ export default function SalesReportPage() {
         setSalesReportItems(data);
       } else {
         console.error("Unexpected response format:", data);
-        setSalesReportItems([]); // fallback to empty array
+        setSalesReportItems([]); 
       }                           
     } catch (err) {
       console.error("Error fetching sales report:", err);
-      setSalesReportItems([]); // prevent crash in Chart/Table
+      setSalesReportItems([]); 
     } finally {
       setLoading(false);
     }
   }
 
-  // Transform data before passing to Chart (by grouping drinks by time)
   const aggregatedData = salesReportItems.reduce((acc, item) => {
     const key = item.time_label;
     if (!acc[key]) {
@@ -81,44 +81,63 @@ export default function SalesReportPage() {
   }, {});
   const chartData = Object.values(aggregatedData);
 
-  // Filter table data
   const filteredData = salesReportItems.filter(item => {
     const matchesDrink = drinkFilter ? item.drink_name === drinkFilter : true;
     const matchesTime = timeFilter ? item.time_label === timeFilter : true;
     return matchesDrink && matchesTime;
   });
 
+  const chartIntervalLabel = (interval == "") ? "Time Interval" : interval;
+
   return (
-    <div style={{ marginLeft: "20px"}}>
-      <h2>Sales Report</h2>
+    <main role="main" style={{ marginLeft: "20px"}} aria-labelledby="sales-report-title">
+      <h1 id="sales-report-title">Sales Report</h1>
 
       <div style={{ width: "1000px", margin: "0 auto" }}>      
         {/* Filter Bar */}
         <div style={{display: "flex", gap:"1rem", justifyContent: "flex-start"}}>
-          <DatePicker label="Start Date: " value={startDate} onChange={setStartDate} />
-          <DatePicker label="End Date: " value={endDate} onChange={setEndDate} />
+          <DatePicker id="sales-report-start-datepicker" label="Start Date: " value={startDate} onChange={setStartDate} />
+          <DatePicker id="sales-report-end-datepicker" label="End Date: " value={endDate} onChange={setEndDate} />
           <div>
-            <label>Interval: </label>
-            <span>{interval || "—"}</span>
+            <label htmlFor="interval-display">Interval: </label>
+            <span id="interval-display">{interval || "—"}</span>
           </div>
-          <select value={yaxis} onChange={(e) => setYaxis(e.target.value)}>
+          <label htmlFor="yaxis-select" className="sr-only">Select Y-axis metric</label>
+          <select id="yaxis-select" value={yaxis} onChange={(e) => setYaxis(e.target.value)}>
             <option value="total_sales">Revenue ($)</option>
             <option value="total_qty">Quantity Sold</option>
           </select>
         </div>
 
         {/* Loading Indicator */}
-        {loading && <p>Loading sales report...</p>}
+        {loading && (
+          <p role="status" aria-live="polite">
+            Loading sales report...
+          </p>
+        )}
 
         {/* Chart */}
-        <Chart xaxis="time_label" yaxis={yaxis} data={chartData} xLabel="Time" yLabel={yLabel} width={1000} height={300} />
+        <h2 id="sales-report-chart-title" className="sr-only">Sales Report Chart</h2>
+        <Chart 
+          chartTitle={`Sales Report by ${chartIntervalLabel}`} 
+          xaxis="time_label" 
+          yaxis={yaxis} 
+          data={chartData} 
+          xLabel="Time" 
+          yLabel={yLabel} 
+          width={1000} 
+          height={300} 
+          aria-labelledby="sales-report-chart-title"
+          aria-label={`Chart showing ${yLabel} by ${chartIntervalLabel}`}
+        />
       </div>
 
+      <h2 id="sales-report-data-title">Sales Report Data</h2>
       {/* Table filter*/}
       <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
         <div>
-          <label>Filter by Drink: </label>
-          <select value={drinkFilter} onChange={(e) => setDrinkFilter(e.target.value)}>
+          <label htmlFor="drink-filter">Filter by Drink: </label>
+          <select id="drink-filter" value={drinkFilter} onChange={(e) => setDrinkFilter(e.target.value)}>
             <option value="">All</option>
             {[...new Set(salesReportItems.map(item => item.drink_name))].map(drink => (
               <option key={drink} value={drink}>{drink}</option>
@@ -126,8 +145,8 @@ export default function SalesReportPage() {
           </select>
         </div>
         <div>
-          <label>Filter by Time: </label>
-          <select value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)}>
+          <label htmlFor="time-filter">Filter by Time: </label>
+          <select id="time-filter" value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)}>
             <option value="">All</option>
             {[...new Set(salesReportItems.map(item => item.time_label))].map(time => (
               <option key={time} value={time}>{time}</option>
@@ -137,8 +156,14 @@ export default function SalesReportPage() {
       </div>
 
       {/* Table */}
-      <VirtuosoTable headers={SALES_REPORT_HEADERS} data={filteredData} height={400} />
-    </div>
+      <VirtuosoTable 
+        headers={SALES_REPORT_HEADERS} 
+        data={filteredData} 
+        height={400} 
+        caption="Sales Report Table"
+        aria-labelledby="sales-report-data-title"
+      />
+    </main>
   );
 }
 

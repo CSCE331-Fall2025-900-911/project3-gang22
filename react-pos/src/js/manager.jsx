@@ -20,7 +20,9 @@ export default function Manager() {
   return (
     <div>
       <BrowserRouter>
-        <Navbar />       
+      <a href="#main-content" className="skip-link">Skip to main content</a>
+        <Navbar />  
+        <main id="main-content">    
          <Routes>
           <Route path="/" element={<Navigate to="/menu" replace />} />
           <Route path="/menu" element={<MenuPage />} />
@@ -34,8 +36,8 @@ export default function Manager() {
           <Route path="/x-report" element={<XReportPage />} />
           <Route path="/z-report" element={<ZReportPage />} />
         </Routes>
+        </main> 
       </BrowserRouter>
-
     </div>
   );
 }
