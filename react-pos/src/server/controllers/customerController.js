@@ -67,7 +67,7 @@ module.exports = {
       menu_ids,
       quantities,
       totals,
-      customization,
+      customizations,
       card_number,
       card_expr_m,
       card_expr_y,
