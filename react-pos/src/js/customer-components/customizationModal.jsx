@@ -7,20 +7,34 @@ import "../../styles.css";
 export default function CustomizationModal({ menuItemID, addItem, setShowCustomizationModal, currentLanguage }) {
 
     const [ customizations, setCustomizations ] = useState([]);
+    const [ defaultCustomizations, setDefaultCustomizations ] = useState([]);
     const [ customizationInUse, setCustomizationInUse ] = useState({})
 
-    useEffect(() => {
-        async function translateText() {
-            try {
-                const translatedText = await translate(customizations, 'es');
-                setCartText(setCustomizations);
-            }
-            catch (err) {
-                console.error("Error batch translating text:", err);
-            }
-        }
-        translateText();
-    },[currentLanguage])
+   useEffect(() => {
+    if (currentLanguage === 'en') { 
+      setCustomizations(defaultCustomizations);
+      return;
+    }
+      async function translateMenu() {
+          try {
+            const customizations = defaultCustomizations.map(item => item.customization);
+            
+            // 2. Translate the array of strings
+            const tempTranslatedCustomizations = await translate(customizations, currentLanguage);
+            
+            // 3. Rebuild the menu items with translated names
+            const translatedCustomizations = tempTranslatedCustomizations.map((item, index) => ({
+                ...item,
+                customization: tempTranslatedCustomizations[index] 
+            }));
+            setCustomizations(translatedCustomizations);
+          }
+          catch (err) {
+              console.error("Error batch translating text:", err);
+          }
+      }
+      translateMenu();
+  },[currentLanguage])
 
     useEffect(() => {
         async function getItemCustomizations() {
