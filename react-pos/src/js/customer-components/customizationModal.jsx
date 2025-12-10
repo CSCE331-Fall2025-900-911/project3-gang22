@@ -1,16 +1,26 @@
 import { useEffect, useState } from "react"
 import { fetchCustomizations } from "../customer-pages/menu";
+import { translate } from "./languageSelector";
 import "../../styles.css";
-import { globalTranslateAllVisibleText } from "./languageSelector.jsx";
+// import { globalTranslateAllVisibleText } from "./languageSelector.jsx";
 
-export default function CustomizationModal({ menuItemID, addItem, setShowCustomizationModal, setCustomizationSubtotals }) {
+export default function CustomizationModal({ menuItemID, addItem, setShowCustomizationModal, currentLanguage }) {
 
     const [ customizations, setCustomizations ] = useState([]);
     const [ customizationInUse, setCustomizationInUse ] = useState({})
 
     useEffect(() => {
-        globalTranslateAllVisibleText();
-    },[]);
+        async function translateText() {
+            try {
+                const translatedText = await translate(customizations, 'es');
+                setCartText(setCustomizations);
+            }
+            catch (err) {
+                console.error("Error batch translating text:", err);
+            }
+        }
+        translateText();
+    },[currentLanguage])
 
     useEffect(() => {
         async function getItemCustomizations() {

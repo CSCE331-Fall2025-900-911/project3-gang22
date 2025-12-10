@@ -1,6 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
 import MenuBody from "./menuBody";
 import CategoryButtons from "../customer-components/categoryButtons.jsx";
+import LanguageSelectorDropdown from "./languageSelector.jsx";
+import { defaultMenuText } from "./defaultText.js";
+import { translate } from "./languageSelector";
 
 export default function MenuDisplay({ 
   menuItems, 
@@ -8,12 +11,28 @@ export default function MenuDisplay({
   setShowCustomizationModal, 
   setCurrentMenuItem, 
   selectedCategory,
-  setSelectedCategory
-}) { 
+  setSelectedCategory,
+  currentLanguage
+  }) { 
     
     const [filteredMenuItems, setFilteredMenuItems] = useState([...menuItems]);
 
     const categoryOrder = ['Milk Tea', 'Fruit Tea', 'Smoothie', 'Slush', 'Specialty'];
+
+    const [ menuText, setMenuText ] = useState(defaultMenuText);
+
+    useEffect(() => {
+        async function translateText() {
+            try {
+                const translatedText = await translate(menuText, currentLanguage);
+                setMenuText(translatedText);
+            }
+            catch (err) {
+                console.error("Error batch translating text:", err);
+            }
+        }
+        translateText();
+        },[currentLanguage])
 
     useEffect(() => {
         setFilteredMenuItems([...menuItems]);
@@ -48,6 +67,7 @@ export default function MenuDisplay({
 
     return (
         <div>
+            <LanguageSelectorDropdown/>
             <div className="toolbar">
                 <button 
                   id="backBtn" 
@@ -57,12 +77,12 @@ export default function MenuDisplay({
                   Back
                 </button>
 
-                <label htmlFor="search" className="sr-only">Search menu</label>
+                <label htmlFor="search" className="sr-only">{menuText[0]}</label>
                 <input 
                   id="search" 
                   className="search-input" 
                   type="search" 
-                  placeholder="Search drinks…" 
+                  placeholder={menuText[1]} 
                   onChange={(e) => filterItems(e.target.value)}
                 />
             </div>

@@ -8,13 +8,14 @@ import Weather from "./customer-components/weather.jsx";
 import ReviewModal from "./customer-components/reviewModal.jsx";
 import OrderModal from "./customer-components/orderModal.jsx";
 import PaymentModal from "./customer-components/paymentModal.jsx";
-import LanguageSelectorDropdown, { globalTranslateAllVisibleText } from "./customer-components/languageSelector.jsx";
+import LanguageSelector, { translate } from "./customer-components/languageSelector.jsx";
 
 export const CUSTOMER_BASE_URL = `${API_BASE}/customer`;
 
 export default function Customer() {
 
   const [menuItems, setMenuItems] = useState([]);
+  const [defaultMenuItems, setDefaultMenuItems ] = useState([]);
   const [cartItems, setCartItems] = useState([]);
   const [orderInProgress, setOrderInProgress] = useState(true);
   const [showCustomizationModal, setShowCustomizationModal] = useState(false);
@@ -25,6 +26,8 @@ export default function Customer() {
   const [subtotal, setSubtotal] = useState(0.00);
   const [tax, setTax] = useState(0.00);
   const [total, setTotal] = useState(0.00);
+
+  const [ currentLanguage, setCurrentLanguage ] = useState('en');  
 
   const money = (n) => `$${Number(n).toFixed(2)}`;
 
@@ -50,9 +53,25 @@ export default function Customer() {
     async function loadMenuOnStart() {
       const data = await fetchMenu();
       setMenuItems(data);
+      setDefaultMenuItems(data);
     }
     loadMenuOnStart();
   }, []);
+    
+  useEffect(() => {
+    if (currentLanguage === 'en') { return; }
+      async function translateMenu() {
+          try {
+              const translatedMenu = await translate(defaultMenuItems, currentLanguage);
+              setMenuItems(translatedMenu);
+          }
+          catch (err) {
+              console.error("Error batch translating text:", err);
+          }
+      }
+      translateMenu();
+  },[currentLanguage])
+
 
 
   // =========================
@@ -252,7 +271,7 @@ export default function Customer() {
   // =====================
   return (
     <>
-      <LanguageSelectorDropdown/>
+      <LanguageSelector currentLanguage={currentLanguage} setCurrentLanguage={setCurrentLanguage}/>
       {/* {!orderInProgress && (
         <div className="kiosk-entry">
           Place Order
@@ -268,11 +287,22 @@ export default function Customer() {
           setCurrentMenuItem={setCurrentMenuItem}
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
+          currentLanguage={currentLanguage}
         />
 
         <div className="cart-stack">
           <Weather></Weather>
-          <Cart openReview={openReview} setCartItems={setCartItems} cartItems={cartItems} money={money} increaseQty={increaseQty} decreaseQty={decreaseQty} subtotal={subtotal} tax={tax} total={total} />
+          <Cart
+           openReview={openReview} 
+           setCartItems={setCartItems} 
+           cartItems={cartItems} 
+           money={money} 
+           increaseQty={increaseQty} 
+           decreaseQty={decreaseQty} 
+           subtotal={subtotal} 
+           tax={tax} 
+           total={total}
+           currentLanguage={currentLanguage} />
         </div>
 
         {showCustomizationModal &&
@@ -281,6 +311,7 @@ export default function Customer() {
             addItem={addItem}
             setShowCustomizationModal={setShowCustomizationModal}
             setCustomizationSubtotals={setCustomizationSubtotals}
+            currentLanguage={currentLanguage}
           />}
 
         {showReviewModal &&
@@ -297,6 +328,7 @@ export default function Customer() {
             subtotal={subtotal}
             tax={tax}
             total={total}
+            currentLanguage={currentLanguage}
           />}
 
         <OrderModal />

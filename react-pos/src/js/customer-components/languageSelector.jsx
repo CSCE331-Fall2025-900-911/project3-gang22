@@ -1,42 +1,70 @@
 import { useEffect, useRef, useState } from "react";
 import { translateBatch } from "../customer-pages/menu.jsx";
 import { translateOne } from "../customer-pages/menu.jsx";
+import { API_BASE } from "../apibase";
 
 
-let __translateAllVisibleText = null;
 
-export async function globalTranslateAllVisibleText() {
-    if (__translateAllVisibleText === null) {
-        console.log("__translateAllVisibleText is NULL");
-        return;
-    }
-    console.log("Asked for global render");
-    // setTimeout(() => __translateAllVisibleText(), 500);
-}
+// let __translateAllVisibleText = null;
 
-// ✅ Global translated alert
-export async function transAlert(message) {
+export async function translate(texts, target) {
+    const textStr = texts.join('|||');
+    
     try {
-        const lang = localStorage.getItem("lang") || "en";
-
-        if (lang === "en") {
-            window.__nativeAlert(message);
-            return;
+        const response = await fetch(`${API_BASE}/customer/translate?text=${texts}&target=${target}`);
+        
+        if (!response.ok) {
+            throw new Error(`Translation API failed with status: ${response.status}`);
         }
+        
+        const data = await response.json();
+        
+        // Split the translated string back into an array of individual translated names
+        const translatedArray = data.translated.split(',');
+        
+        return translatedArray;
 
-        const translated = await translateOne(message, lang);
-        window.__nativeAlert(translated || message);
-    } catch (err) {
-        console.error("Translated alert failed:", err);
-        window.__nativeAlert(message); // Safe fallback
+    } 
+    catch (err) {
+        console.error("Error batch translating text:", err);
+
+        throw err; 
     }
 }
 
 
-export default function LanguageTranslator() {
-    const [currentLanguage, setCurrentLanguage] = useState(() => {
-        return localStorage.getItem("lang") || "en";
-    });
+// export async function globalTranslateAllVisibleText() {
+//     if (__translateAllVisibleText === null) {
+//         console.log("__translateAllVisibleText is NULL");
+//         return;
+//     }
+//     console.log("Asked for global render");
+//     // setTimeout(() => __translateAllVisibleText(), 500);
+// }
+
+// // ✅ Global translated alert
+// export async function transAlert(message) {
+//     try {
+//         const lang = localStorage.getItem("lang") || "en";
+
+//         if (lang === "en") {
+//             window.__nativeAlert(message);
+//             return;
+//         }
+
+//         const translated = await cartTextOne(message, lang);
+//         window.__nativeAlert(translated || message);
+//     } catch (err) {
+//         console.error("Translated alert failed:", err);
+//         window.__nativeAlert(message); // Safe fallback
+//     }
+// }
+
+
+export default function LanguageTranslator({currentLanguage, setCurrentLanguage}) {
+//     const [currentLanguage, setCurrentLanguage] = useState(() => {
+//         return localStorage.getItem("lang") || "en";
+//     });
 
     const availableLanguages = [
         { code: "en", label: "English" },
@@ -44,121 +72,121 @@ export default function LanguageTranslator() {
         { code: "fr", label: "Français" }
     ];
 
-    const originalTextMap = useRef(new WeakMap());
-    const observerRef = useRef(null);
+//     const originalTextMap = useRef(new WeakMap());
+//     const observerRef = useRef(null);
 
-    useEffect(() => {
-        // ✅ Store the real browser alert once
-        if (!window.__nativeAlert) {
-            window.__nativeAlert = window.alert;
-        }
+//     useEffect(() => {
+//         // ✅ Store the real browser alert once
+//         if (!window.__nativeAlert) {
+//             window.__nativeAlert = window.alert;
+//         }
 
-        // ✅ Override global alert
-        window.alert = (msg) => {
-            transAlert(msg);
-        };
+//         // ✅ Override global alert
+//         window.alert = (msg) => {
+//             transAlert(msg);
+//         };
 
-        return () => {
-            // ✅ Restore if component ever unmounts
-            if (window.__nativeAlert) {
-                window.alert = window.__nativeAlert;
-            }
-        };
-    }, []);
+//         return () => {
+//             // ✅ Restore if component ever unmounts
+//             if (window.__nativeAlert) {
+//                 window.alert = window.__nativeAlert;
+//             }
+//         };
+//     }, []);
 
 
-    // ✅ Persist language
-    useEffect(() => {
-        localStorage.setItem("lang", currentLanguage);
-    }, [currentLanguage]);
+//     // ✅ Persist language
+//     useEffect(() => {
+//         localStorage.setItem("lang", currentLanguage);
+//     }, [currentLanguage]);
 
-    // ✅ Core DOM translation logic (reusable)
-    async function internalTranslateAllVisibleText() {
-        console.log("Translate");
-        const walker = document.createTreeWalker(
-            document.body,
-            NodeFilter.SHOW_TEXT,
-            {
-                acceptNode: (node) => {
-                    if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+//     // ✅ Core DOM translation logic (reusable)
+//     async function internalTranslateAllVisibleText() {
+//         console.log("Translate");
+//         const walker = document.createTreeWalker(
+//             document.body,
+//             NodeFilter.SHOW_TEXT,
+//             {
+//                 acceptNode: (node) => {
+//                     if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
 
-                    if (
-                        node.parentElement.closest("[data-no-translate]") ||
-                        node.parentElement.closest("script, style, textarea, input, select, option")
-                    ) {
-                        return NodeFilter.FILTER_REJECT;
-                    }
+//                     if (
+//                         node.parentElement.closest("[data-no-translate]") ||
+//                         node.parentElement.closest("script, style, textarea, input, select, option")
+//                     ) {
+//                         return NodeFilter.FILTER_REJECT;
+//                     }
 
-                    return NodeFilter.FILTER_ACCEPT;
-                }
-            }
-        );
+//                     return NodeFilter.FILTER_ACCEPT;
+//                 }
+//             }
+//         );
 
-        const textNodes = [];
-        let node;
+//         const textNodes = [];
+//         let node;
 
-        while ((node = walker.nextNode())) {
-            textNodes.push(node);
-        }
+//         while ((node = walker.nextNode())) {
+//             textNodes.push(node);
+//         }
 
-        if (textNodes.length === 0) return;
+//         if (textNodes.length === 0) return;
 
-        // ✅ Restore English
-        if (currentLanguage === "en") {
-            textNodes.forEach((node) => {
-                const original = originalTextMap.current.get(node);
-                if (original) node.nodeValue = original;
-            });
-            return;
-        }
+//         // ✅ Restore English
+//         if (currentLanguage === "en") {
+//             textNodes.forEach((node) => {
+//                 const original = originalTextMap.current.get(node);
+//                 if (original) node.nodeValue = original;
+//             });
+//             return;
+//         }
 
-        // ✅ Cache original text
-        const originals = textNodes.map((node) => {
-            if (!originalTextMap.current.has(node)) {
-                originalTextMap.current.set(node, node.nodeValue);
-            }
-            return node.nodeValue;
-        });
+//         // ✅ Cache original text
+//         const originals = textNodes.map((node) => {
+//             if (!originalTextMap.current.has(node)) {
+//                 originalTextMap.current.set(node, node.nodeValue);
+//             }
+//             return node.nodeValue;
+//         });
 
-        try {
-            const translated = await translateBatch(
-                originals.map((t) => t.trim()),
-                currentLanguage
-            );
+//         try {
+//             const translated = await translateBatch(
+//                 originals.map((t) => t.trim()),
+//                 currentLanguage
+//             );
 
-            textNodes.forEach((node, i) => {
-                if (translated[i]) node.nodeValue = translated[i];
-            });
-        } catch (err) {
-            console.error("Batch DOM translation failed:", err);
-        }
-    }
+//             textNodes.forEach((node, i) => {
+//                 if (translated[i]) node.nodeValue = translated[i];
+//             });
+//         } catch (err) {
+//             console.error("Batch DOM translation failed:", err);
+//         }
+//     }
 
-    async function translateAllVisibleText() {
-        setTimeout(() => internalTranslateAllVisibleText(), 50);
-    }
-    __translateAllVisibleText = internalTranslateAllVisibleText;
+//     async function translateAllVisibleText() {
+//         setTimeout(() => internalTranslateAllVisibleText(), 50);
+//     }
+//     __translateAllVisibleText = internalTranslateAllVisibleText;
 
-    // ✅ Run when language changes
-    useEffect(() => {
-        translateAllVisibleText();
-    }, [currentLanguage]);
+//     // ✅ Run when language changes
+//     useEffect(() => {
+//         translateAllVisibleText();
+//     }, [currentLanguage]);
 
-    // ✅ Observe for dynamically added content (menu, modals, etc.)
-    useEffect(() => {
-        observerRef.current = new MutationObserver(() => {
-            if (currentLanguage !== "en") {
-                translateAllVisibleText();
-            }
-        });
+//     // ✅ Observe for dynamically added content (menu, modals, etc.)
+//     useEffect(() => {
+//         observerRef.current = new MutationObserver(() => {
+//             if (currentLanguage !== "en") {
+//                 translateAllVisibleText();
+//             }
+//         });
 
-        observerRef.current.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
+//         observerRef.current.observe(document.body, {
+//             childList: true,
+//             subtree: true
+//         });
 
-        return () => observerRef.current?.disconnect();
-    }, [currentLanguage]);
+//         return () => observerRef.current?.disconnect();
+//     }, [currentLanguage]);
 
     return (
         <div className="language-selector" data-no-translate>
