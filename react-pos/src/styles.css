@@ -362,7 +362,9 @@ h1 {
     flex-direction: column;
     position: sticky;
     top: 16px;
-    max-height: 50vh;
+    /* max-height: auto; */
+    height: auto;
+    max-height: 450px;
 }
 
 .weather-box {
@@ -440,9 +442,10 @@ h1 {
 }
 
 .cart-table-wrap {
-    flex: 1;
+    flex: none;
     overflow-y: auto;
     border-radius: 12px;
+    max-height: 200px;
 }
 
 .cart-table {
@@ -684,11 +687,11 @@ h1 {
     margin-bottom: 20px;
 }
 
-.modal-item div {
+/* .modal-item div {
     display: flex;
     margin-top: 10px;
     gap: 5px;
-}
+} */
 
 .modal-footer {
     padding: 12px 16px;
@@ -790,9 +793,24 @@ h1 {
     cursor: pointer;
 }
 
+.customization-wrap {
+    margin-top: 6px;
+    max-width: 600px;
+    display: flex;
+    flex-wrap: wrap;   /* <-- allows wrapping to next line */
+    gap: 8px;          /* optional spacing */
+}
+
+.customization-wrap > div {
+    display: flex;
+    flex-wrap: wrap;   /* allow wrapping */
+    gap: 5px;
+}
 
 .customization-btn {
-    height: 50px;
+    /* flex: 1 1 calc(50% - 8px); */
+    min-height: 50px;
+    max-height: 100px;
     width: 100px;
     border: 2px solid transparent;
     border-radius: 8px;
@@ -803,6 +821,8 @@ h1 {
 }
 
 .customization-btn.selected {
+    min-height: 50px;
+    max-height: 100px;
     border: 2px solid rgb(72, 121, 255);
     border-radius: 8px;
     padding: .55rem .9rem;

@@ -9,7 +9,7 @@ module.exports = {
   },
 
   async add(data) {
-    const { drink_name, price, category, picture_url, tea_type, milk_type } = data;
+    const { drink_name, price, category, picture_url, tea_type = null, milk_type = null } = data;
     const { rows } = await query(
       `INSERT INTO p2_menu (drink_name, price, category, picture_url, tea_type, milk_type)
        VALUES ($1, $2, $3, $4, $5, $6)
@@ -20,7 +20,7 @@ module.exports = {
   },
 
   async update(data) {
-    const { id, drink_name, price, category, picture_url, tea_type, milk_type } = data;
+    const { id, drink_name, price, category, picture_url, tea_type = null, milk_type = null } = data;
     await query(
       `UPDATE p2_menu
        SET drink_name=$1, price=$2, category=$3, picture_url=$4, tea_type=$5, milk_type=$6

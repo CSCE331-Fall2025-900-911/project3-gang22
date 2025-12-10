@@ -79,7 +79,7 @@ export default function XReportPage() {
       </div>
 
       {/* Chart */}
-      <Chart title="Sales per Hour" xaxis="x" yaxis="y" data={chartData} yRangePadding={1000} />
+      <Chart title="Sales per Hour" xaxis="x" yaxis="y" data={chartData} yRangePadding={1000} xLabel="Hour" yLabel="Revenue ($)"/>
 
       {/* Table */}
       <Table headers={XREPORT_HEADERS} data={tableData} />
