@@ -195,10 +195,12 @@ export default function LanguageTranslator() {
     }, [currentLanguage]);
 
     return (
+        <nav aria-label="Language selector">
         <div className="language-selector" data-no-translate>
             <select
                 value={currentLanguage}
                 onChange={(e) => setCurrentLanguage(e.target.value)}
+                aria-label="Choose language"
             >
                 {availableLanguages.map((lang) => (
                     <option key={lang.code} value={lang.code}>
@@ -207,5 +209,6 @@ export default function LanguageTranslator() {
                 ))}
             </select>
         </div>
+        </nav>
     );
 }

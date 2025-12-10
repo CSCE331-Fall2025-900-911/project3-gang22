@@ -1,3 +1,5 @@
+import React from "react"
+
 export default function MenuBody({ itemsByCategory, categoriesToRender, money, setShowCustomizationModal, setCurrentMenuItem }) {
 
     function openCustomization(menuItem) {
@@ -9,7 +11,7 @@ export default function MenuBody({ itemsByCategory, categoriesToRender, money, s
         <>
             {categoriesToRender.map(categoryName => (
                 itemsByCategory.get(categoryName)?.length > 0 && (
-                    <>
+                    <React.Fragment key={categoryName}>
                         {/* <h3 className="menu-category-heading">{categoryName}</h3> */}
                         
                         {itemsByCategory.get(categoryName).map(item => (
@@ -35,7 +37,7 @@ export default function MenuBody({ itemsByCategory, categoriesToRender, money, s
                                 </div>
                             </button>
                         ))}
-                    </>
+                    </React.Fragment>
                 )
             ))}
         </>
