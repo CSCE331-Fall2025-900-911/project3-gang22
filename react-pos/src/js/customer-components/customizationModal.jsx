@@ -76,7 +76,7 @@ export default function CustomizationModal({ menuItemID, addItem, setShowCustomi
 
     return (
         <div className="modal-overlay">
-            <div className="modal-panel" style={{height: "390", width: "600px"}}>
+            <div className="modal-panel large" style={{height: "85vh", width: "600px"}}>
                 <h2>Customizations</h2>
 
                 <div className="modal-body">
@@ -101,7 +101,8 @@ export default function CustomizationModal({ menuItemID, addItem, setShowCustomi
                     ))}
                 </div>
 
-                <div className="modal-footer">
+                <div className="modal-footer row gap-lg">
+                    <button className="btn" onClick={() => setShowCustomizationModal(false)}>Cancel</button>
                     <button className="btn primary" onClick={() => calculateSubtotals()}>Done</button>
                 </div>
             </div>
