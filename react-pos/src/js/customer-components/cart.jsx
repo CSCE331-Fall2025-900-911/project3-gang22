@@ -1,7 +1,16 @@
 import { useState } from "react";
 import CartBody from "./cartBody";
 
-export default function Cart({ openReview, setCartItems, cartItems, money, increaseQty, decreaseQty, subtotal, tax, total }) {
+export default function Cart({ openReview, cartItems, money, increaseQty, decreaseQty, subtotal, tax, total, clearCart }) {
+
+    function handleCheckoutClick() {
+        if ( cartItems.length === 0 ) {
+            alert("Your cart is empty.")
+        }
+        else {
+            openReview();
+        }
+    }
 
     return (
         <aside className="panel" aria-labelledby="cartHeading">
@@ -29,8 +38,8 @@ export default function Cart({ openReview, setCartItems, cartItems, money, incre
             </div>
 
             <div className="row gap-lg">
-                <button id="clearCart" className="btn" onClick={() => setCartItems([])}>Clear</button>
-                <button id="checkout" className="btn primary" onClick={() => openReview()}>Checkout</button>
+                <button id="clearCart" className="btn" onClick={() => clearCart()}>Clear</button>
+                <button id="checkout" className="btn primary" onClick={() => handleCheckoutClick()}>Checkout</button>
             </div>
         </aside>
     );

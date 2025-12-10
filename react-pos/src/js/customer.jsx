@@ -207,13 +207,13 @@ export default function Customer() {
       {page === "menu" && (
         <main className="wrap grid-2">
         <MenuDisplay
-  menuItems={menuItems}
-  money={money}
-  setCurrentMenuItem={setCurrentMenuItem}
-  setShowCustomizationModal={() => setPage("customization")}
-  selectedCategory={selectedCategory}
-  setSelectedCategory={setSelectedCategory}
-/>
+          menuItems={menuItems}
+          money={money}
+          setCurrentMenuItem={setCurrentMenuItem}
+          setShowCustomizationModal={() => setPage("customization")}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+        />
 
           <div className="cart-stack">
             <Weather />
@@ -226,6 +226,7 @@ export default function Customer() {
               tax={tax}
               total={total}
               openReview={() => setPage("review")}
+              clearCart={clearCart}
             />
           </div>
         </main>
