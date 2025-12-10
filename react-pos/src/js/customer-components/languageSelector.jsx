@@ -135,7 +135,7 @@ export default function LanguageTranslator() {
     }
 
     async function translateAllVisibleText() {
-        setTimeout(() => internalTranslateAllVisibleText(), 50);
+        setTimeout(() => internalTranslateAllVisibleText(), 10);
     }
     __translateAllVisibleText = internalTranslateAllVisibleText;
 
