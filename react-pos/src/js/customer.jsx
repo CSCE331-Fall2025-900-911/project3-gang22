@@ -59,11 +59,23 @@ export default function Customer() {
   }, []);
     
   useEffect(() => {
-    if (currentLanguage === 'en') { return; }
+    if (currentLanguage === 'en') { 
+      setMenuItems(defaultMenuItems);
+      return;
+    }
       async function translateMenu() {
           try {
-              const translatedMenu = await translate(defaultMenuItems, currentLanguage);
-              setMenuItems(translatedMenu);
+            const drinkNames = defaultMenuItems.map(item => item.drink_name);
+            
+            // 2. Translate the array of strings
+            const translatedNames = await translate(drinkNames, currentLanguage);
+            
+            // 3. Rebuild the menu items with translated names
+            const translatedMenu = defaultMenuItems.map((item, index) => ({
+                ...item,
+                drink_name: translatedNames[index] 
+            }));
+            setMenuItems(translatedMenu);
           }
           catch (err) {
               console.error("Error batch translating text:", err);
