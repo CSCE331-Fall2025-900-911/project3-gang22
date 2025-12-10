@@ -43,7 +43,7 @@ export default function Weather() {
 
       {loading && <p>Loading weather...</p>}
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p style={{ color: "black" }}>{error}</p>}
 
       {weather && (
         <div>
