@@ -37,23 +37,34 @@ export default function CustomizationModal({ menuItemID, addItem, setShowCustomi
 
     function selectCustomization(customizationToSet) {
         const updatedCustomizations = { ...customizationInUse };
-        const argument = customizationToSet.split('+');
-        const customizationNameToSet = argument[0];
-        const adjustmentNameToSet = argument[1];
+        const [customizationNameToSet, adjustmentNameToSet] = customizationToSet.split('+');
 
-        updatedCustomizations[customizationNameToSet] = updatedCustomizations[customizationNameToSet]?.map(adjustment => {
-            const tempArgument = adjustment.split('+');
-            const tempAdjustmentName = tempArgument[0];
-            if (tempAdjustmentName === adjustmentNameToSet) {
+        if (customizationNameToSet === "Toppings") {
+            // Toggle selection instead of single-select
+            updatedCustomizations[customizationNameToSet] =
+            updatedCustomizations[customizationNameToSet]?.map(adjustment => {
+                const [tempAdjustmentName, tempSelected] = adjustment.split('+');
+                if (tempAdjustmentName === adjustmentNameToSet) {
+                // flip true/false
+                return `${tempAdjustmentName}+${tempSelected === "true" ? false : true}`;
+                }
+                return adjustment; // leave others unchanged
+            });
+        } else {
+            // Default single-select behavior
+            updatedCustomizations[customizationNameToSet] =
+            updatedCustomizations[customizationNameToSet]?.map(adjustment => {
+                const [tempAdjustmentName] = adjustment.split('+');
+                if (tempAdjustmentName === adjustmentNameToSet) {
                 return `${tempAdjustmentName}+${true}`;
-            }
-            else { 
-                return `${tempAdjustmentName}+${false}` 
-            }
-        })
-        setCustomizationInUse(updatedCustomizations);
+                } else {
+                return `${tempAdjustmentName}+${false}`;
+                }
+            });
+        }
 
-    }
+        setCustomizationInUse(updatedCustomizations);
+        }
 
     function calculateSubtotals() {
         let finalCustomizations = {};
@@ -92,7 +103,16 @@ export default function CustomizationModal({ menuItemID, addItem, setShowCustomi
                                         <button 
                                             key={customKey} 
                                             className={customizationInUse[customization.name]?.includes(selectedAdjustment) ? "customization-btn selected" : "customization-btn"}
-                                            onClick={() => selectCustomization(customKey)}>{customization.adjustment}<br />{customization.price}</button>
+                                            onClick={() => selectCustomization(customKey)}>
+                                                {customization.adjustment}
+                                                {parseFloat(customization.price) != 0 && (
+                                                    <><br />
+                                                    {customization.price > 0 
+                                                        ? `+${customization.price}` 
+                                                        : `${customization.price}`}
+                                                    </>
+                                                )}
+                                        </button>
                                     )
                                 })}
                             </div>
