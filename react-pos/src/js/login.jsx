@@ -11,19 +11,23 @@ export default function Login({ validatingUser, setCurrentUser }) {
     if (validatingUser) return <div className="page-container-alt"><img src="/images/loading.gif" alt="Loading" /></div>
 
     useEffect(() => {
-        setCurrentUser(GUEST_CREDENTIALS);
+        if (window.location.hash === "#guest") {
+            setCurrentUser(GUEST_CREDENTIALS);
+        }
     }, []);
 
     return (
         <div>
-            {/* <LanguageSelectorDropdown />
-            <main className="home-wrap">
-                <h1>Log In?</h1>
-                <nav className="nav">
-                    <button className="nav-btn" onClick={() => window.location.href = `${API_BASE}/auth/google`}>With Google</button>
-                    <button className="nav-btn " onClick={() => setCurrentUser(GUEST_CREDENTIALS)}>Continue as Guest</button>
-                </nav>
-            </main> */}
+            {window.location.hash !== "#guest" &&
+                (<div>
+                    <LanguageSelectorDropdown />
+                    <main className="home-wrap">
+                        <h1>Log In?</h1>
+                        <nav className="nav">
+                            <button className="nav-btn" onClick={() => window.location.href = `${API_BASE}/auth/google`}>With Google</button>
+                            <button className="nav-btn " onClick={() => setCurrentUser(GUEST_CREDENTIALS)}>Continue as Guest</button>
+                        </nav>
+                    </main> </div>)}
 
 
 
