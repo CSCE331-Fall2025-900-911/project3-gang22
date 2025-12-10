@@ -72,8 +72,40 @@ export default function LanguageTranslator() {
         localStorage.setItem("lang", currentLanguage);
     }, [currentLanguage]);
 
+    async function translateInputAttributes(lang) {
+        const inputs = document.querySelectorAll("input[placeholder], textarea[placeholder]");
+
+        const originals = [];
+        inputs.forEach(input => {
+            const original = input.getAttribute("placeholder");
+            if (!originalTextMap.current.has(input)) {
+                originalTextMap.current.set(input, { placeholder: original });
+            }
+            originals.push(original);
+        });
+
+        if (lang === "en") {
+            inputs.forEach(input => {
+                const saved = originalTextMap.current.get(input);
+                if (saved?.placeholder) input.setAttribute("placeholder", saved.placeholder);
+            });
+            return;
+        }
+
+        try {
+            const translated = await translateBatch(originals, lang);
+            inputs.forEach((input, i) => {
+                if (translated[i]) input.setAttribute("placeholder", translated[i]);
+            });
+        } catch (err) {
+            console.error("Placeholder translation failed:", err);
+        }
+    }
+
+
     // ✅ Core DOM translation logic (reusable)
     async function internalTranslateAllVisibleText() {
+
         console.log("Translate");
         const walker = document.createTreeWalker(
             document.body,
@@ -132,10 +164,12 @@ export default function LanguageTranslator() {
         } catch (err) {
             console.error("Batch DOM translation failed:", err);
         }
+
+        await translateInputAttributes(currentLanguage);
     }
 
     async function translateAllVisibleText() {
-        setTimeout(() => internalTranslateAllVisibleText(), 50);
+        setTimeout(() => internalTranslateAllVisibleText(), 10);
     }
     __translateAllVisibleText = internalTranslateAllVisibleText;
 
