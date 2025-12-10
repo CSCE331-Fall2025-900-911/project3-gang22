@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react"
 import { fetchCustomizations } from "../customer-pages/menu";
 import "../../styles.css";
+import { globalTranslateAllVisibleText } from "./languageSelector.jsx";
 
 export default function CustomizationModal({ menuItemID, addItem, setShowCustomizationModal, setCustomizationSubtotals }) {
 
     const [ customizations, setCustomizations ] = useState([]);
     const [ customizationInUse, setCustomizationInUse ] = useState({})
+
+    useEffect(() => {
+        globalTranslateAllVisibleText();
+    },[]);
 
     useEffect(() => {
         async function getItemCustomizations() {

@@ -2,6 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { translateBatch } from "../customer-pages/menu.jsx";
 import { translateOne } from "../customer-pages/menu.jsx";
 
+
+let __translateAllVisibleText = null;
+
+export async function globalTranslateAllVisibleText() {
+    if (__translateAllVisibleText === null) {
+        console.log("__translateAllVisibleText is NULL");
+        return;
+    }
+    console.log("Asked for global render");
+}
+
 // ✅ Global translated alert
 export async function transAlert(message) {
     try {
@@ -61,7 +72,8 @@ export default function LanguageTranslator() {
     }, [currentLanguage]);
 
     // ✅ Core DOM translation logic (reusable)
-    async function translateAllVisibleText() {
+    async function internalTranslateAllVisibleText() {
+        console.log("Translate");
         const walker = document.createTreeWalker(
             document.body,
             NodeFilter.SHOW_TEXT,
@@ -120,6 +132,11 @@ export default function LanguageTranslator() {
             console.error("Batch DOM translation failed:", err);
         }
     }
+
+    async function translateAllVisibleText() {
+        setTimeout(() => internalTranslateAllVisibleText(), 50);
+    }
+    __translateAllVisibleText = internalTranslateAllVisibleText;
 
     // ✅ Run when language changes
     useEffect(() => {

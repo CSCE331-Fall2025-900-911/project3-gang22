@@ -8,7 +8,7 @@ import Weather from "./customer-components/weather.jsx";
 import ReviewModal from "./customer-components/reviewModal.jsx";
 import OrderModal from "./customer-components/orderModal.jsx";
 import PaymentModal from "./customer-components/paymentModal.jsx";
-import LanguageSelectorDropdown from "./customer-components/languageSelector.jsx";
+import LanguageSelectorDropdown, { globalTranslateAllVisibleText } from "./customer-components/languageSelector.jsx";
 
 export const CUSTOMER_BASE_URL = `${API_BASE}/customer`;
 
@@ -97,38 +97,53 @@ export default function Customer() {
   ]);
 
 
-  function addItem(itemToAddID, customizations) {
-    setCartItems(previousCartItems => {
-      const baseItem = menuItems.find(item => item.id === itemToAddID);
-      const newCustomizationString = JSON.stringify(customizations);
-      const existingItemIndex = previousCartItems.findIndex(item => {
-        if (item.id === itemToAddID) {
-          const existingCustomizationString = JSON.stringify(item.customization);
-          return existingCustomizationString === newCustomizationString;
-        }
-        return false;
-      });
+  async function addItem(itemToAddID, customizations) {
+  const lang = localStorage.getItem("lang") || "en";
 
-      if (existingItemIndex !== -1) {
-        return previousCartItems.map((item, index) => {
-          if (index === existingItemIndex) {
-            return { ...item, qty: item.qty + 1 };
-          }
-          return item;
-        });
+  const baseItem = menuItems.find(item => item.id === itemToAddID);
 
-      }
-      else {
-        const newItem = {
-          cardID: Date.now().toString() + Math.random().toFixed(4),
-          ...baseItem,
-          qty: 1,
-          customization: customizations
-        };
-        return [...previousCartItems, newItem];
-      }
-    });
+  // Translate BEFORE calling setCartItems
+  let translatedName = baseItem.drink_name;
+  if (lang !== "en") {
+    try {
+      translatedName = await translateOne(baseItem.drink_name, lang);
+    } catch (e) {
+      console.error("Translation failed:", e);
+    }
   }
+
+  // Now update cart
+  setCartItems(previousCartItems => {
+    const newCustomizationString = JSON.stringify(customizations);
+
+    const existingItemIndex = previousCartItems.findIndex(item => {
+      if (item.id === itemToAddID) {
+        const existingCustomizationString = JSON.stringify(item.customization);
+        return existingCustomizationString === newCustomizationString;
+      }
+      return false;
+    });
+
+    if (existingItemIndex !== -1) {
+      return previousCartItems.map((item, index) =>
+        index === existingItemIndex
+          ? { ...item, qty: item.qty + 1 }
+          : item
+      );
+    }
+
+    const newItem = {
+      cardID: Date.now().toString() + Math.random().toFixed(4),
+      ...baseItem,
+      drink_name: translatedName,
+      qty: 1,
+      customization: customizations
+    };
+
+    return [...previousCartItems, newItem];
+  });
+}
+
 
   function openReview() {
     // Prevent opening if cart is empty
@@ -230,7 +245,6 @@ export default function Customer() {
       alert("Error spinning the wheel. Please try again later.");
     }
   }
-
 
 
   // =====================
