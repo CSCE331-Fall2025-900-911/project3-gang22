@@ -5,10 +5,15 @@ import DatePicker from "../manager-components/datepicker.jsx";
 import { MANAGER_BASE_URL } from "../manager";
 
 export default function ZReportPage() {
+  useEffect(() => {
+    document.title = "Manager - X and Z Report Page";
+  }, []);
+
   const [reportDate, setReportDate] = useState("");
   const [chartData, setChartData] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [zReportDone, setZReportDone] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
 
   const XREPORT_HEADERS = [
     { display: "Hour", key: "label" },
@@ -21,25 +26,18 @@ export default function ZReportPage() {
     { display: "Other", key: "other" }
   ];
 
-  // Default date = today
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
     setReportDate(today);
   }, []);
 
-  // Check if Z report exists for the date
   useEffect(() => {
     if (!reportDate) return;
 
     fetch(`${MANAGER_BASE_URL}/z_report?date=${reportDate}`, { credentials: "include" })
       .then(res => res.json())
       .then(data => {
-        if (Array.isArray(data) && data.length > 0) {
-          setZReportDone(true);
-        } else {
-          setZReportDone(false);
-        }
-        // Always load X report for chart + table
+        setZReportDone(Array.isArray(data) && data.length > 0);
         loadXReportData(reportDate);
       })
       .catch(err => {
@@ -49,7 +47,6 @@ export default function ZReportPage() {
       });
   }, [reportDate]);
 
-  // Load X report data (per-hour breakdown)
   function loadXReportData(date) {
     fetch(`${MANAGER_BASE_URL}/x_report?range=day&dateStr=${date}&dateFormat=HH12 AM`, { credentials: "include" })
       .then(res => res.json())
@@ -72,11 +69,10 @@ export default function ZReportPage() {
       .catch(err => console.error("X-report fetch failed:", err));
   }
 
-  // Generate Z report (aggregate totals from X report)
   function generateZReport() {
     const now = new Date();
-    const todatStr = now.toISOString().split("T")[0]; // "YYYY-MM-DD"
-    if (reportDate == todatStr && now.getHours() < 21) {
+    const todayStr = now.toISOString().split("T")[0];
+    if (reportDate === todayStr && now.getHours() < 21) {
       if (!window.confirm("It’s before 9:00 PM. Generating a Z-Report may cause incomplete totals. Continue?")) {
         return;
       }
@@ -112,28 +108,63 @@ export default function ZReportPage() {
     })
       .then(res => res.json())
       .then(() => {
-        // REMOVE THE ALERT
-        alert(`Z-Report generated for ${reportDate}`);
         setZReportDone(true);
+        setStatusMessage(`Z-Report generated for ${reportDate}`);
       })
       .catch(err => console.error("Z-report generation failed:", err));
   }
 
   return (
-    <div style={{ marginLeft: "20px"}}>
-      <h2>X & Z Report</h2>
+    <main role="main" style={{ marginLeft: "20px" }} aria-labelledby="xz-report-title">
+      <h1 id="xz-report-title">X & Z Report</h1>
 
       <div style={{ marginBottom: "1rem" }}>
-        <DatePicker label="Report Date: " value={reportDate} onChange={setReportDate} />
+        <DatePicker
+          id="X-and-z-report-datepicker"
+          label="Report Date: "
+          value={reportDate}
+          onChange={setReportDate}
+        />
       </div>
 
-      {/* Always show X report chart + table */}
-      <Chart title="Sales per Hour" xaxis="x" yaxis="y" data={chartData} yRangePadding={1000} xLabel="Hour" yLabel="Revenue ($)"/>
-      <Table headers={XREPORT_HEADERS} data={tableData} />
+      {/* Chart */}
+      <h2 id="x-report-chart-title" className="sr-only">X Report Chart</h2>
+      <Chart
+        chartTitle="Sales per Hour"
+        xaxis="x"
+        yaxis="y"
+        data={chartData}
+        yRangePadding={1000}
+        xLabel="Hour"
+        yLabel="Revenue ($)"
+        aria-labelledby="x-report-chart-title"
+        aria-label="Chart showing hourly sales revenue"
+      />
 
-      <button onClick={generateZReport} disabled={zReportDone}>
+      {/* Table */}
+      <h2 id="x-report-table-title">X Report Data</h2>
+      <Table
+        headers={XREPORT_HEADERS}
+        data={tableData}
+        caption="X Report Table"
+        aria-labelledby="x-report-table-title"
+      />
+
+      {/* Status message */}
+      {statusMessage && (
+        <p role="status" aria-live="polite" style={{ marginTop: "1rem", color: "green" }}>
+          {statusMessage}
+        </p>
+      )}
+
+      {/* Button */}
+      <button
+        onClick={generateZReport}
+        disabled={zReportDone}
+        aria-label={zReportDone ? "Z Report already finalized" : "Generate Z Report"}
+      >
         {zReportDone ? "Z Report Finalized" : "Generate Z Report"}
       </button>
-    </div>
+    </main>
   );
 }

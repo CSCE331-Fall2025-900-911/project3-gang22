@@ -5,6 +5,10 @@ import DatePicker from "../manager-components/datepicker.jsx";
 import { MANAGER_BASE_URL } from "../manager";
 
 export default function XReportPage() {
+  useEffect(() => {
+    document.title = "Manager - X Report Page";
+  }, []);
+
   const [reportDate, setReportDate] = useState("");
   const [chartData, setChartData] = useState([]);
   const [tableData, setTableData] = useState([]);
@@ -71,18 +75,18 @@ export default function XReportPage() {
 
   return (
     <div style={{ marginLeft: "20px"}}>
-      <h2>X Report</h2>
+      <h1>X Report</h1>
 
       {/* Date Picker */}
       <div style={{ marginBottom: "1rem" }}>
-        <DatePicker label="Report Date: " value={reportDate} onChange={setReportDate} />
+        <DatePicker id="x-report-datepicker" label="Report Date: " value={reportDate} onChange={setReportDate} />
       </div>
 
       {/* Chart */}
       <Chart title="Sales per Hour" xaxis="x" yaxis="y" data={chartData} yRangePadding={1000} xLabel="Hour" yLabel="Revenue ($)"/>
 
       {/* Table */}
-      <Table headers={XREPORT_HEADERS} data={tableData} />
+      <Table headers={XREPORT_HEADERS} data={tableData} caption="X Report Table"/>
     </div>
   );
 }

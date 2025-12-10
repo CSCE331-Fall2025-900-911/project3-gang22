@@ -5,6 +5,10 @@ import { MANAGER_BASE_URL } from "../manager.jsx";
 
 export default function OrdersPage() {
 
+  useEffect(() => {
+    document.title = "Manager - Orders Page";
+  }, []);
+
   const [ orderItems , setOrderItems ] = useState([]);
   const [ date , setDate] = useState("2024-10-25");
   const [loading, setLoading] = useState(false);
@@ -38,10 +42,10 @@ export default function OrdersPage() {
   // Returns table containing stored order data
   return (
     <div style={{ padding: "1rem" }}>
-      <h2>Orders by Date</h2>
+      <h1>Orders by Date</h1>
 
       {/* Date Picker */}
-      <DatePicker label="Select Date: " value={date} onChange={setDate} />
+      <DatePicker id="Order-datepicker" label="Select Date: " value={date} onChange={setDate} />
 
       {/* Optional Loading Indicator */}
       {loading && <p>Loading orders...</p>}
