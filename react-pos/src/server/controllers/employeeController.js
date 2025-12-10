@@ -23,6 +23,7 @@ module.exports = {
       menu_ids,
       quantities,
       totals,
+      customizations,
       card_number,
       card_expr_m,
       card_expr_y,
@@ -36,6 +37,7 @@ module.exports = {
       !Array.isArray(menu_ids) ||
       !Array.isArray(quantities) ||
       !Array.isArray(totals) ||
+      !Array.isArray(customizations) ||
       !card_number ||
       !card_expr_m ||
       !card_expr_y ||
@@ -44,8 +46,8 @@ module.exports = {
       return res.status(400).json({ error: 'Missing or invalid required fields' });
     }
 
-    if (menu_ids.length !== quantities.length || menu_ids.length !== totals.length) {
-      return res.status(400).json({ error: 'menu_ids, quantities, totals must have same length' });
+    if (menu_ids.length !== quantities.length || menu_ids.length !== totals.length !== customizations) {
+      return res.status(400).json({ error: 'menu_ids, quantities, totals, customizations must have same length' });
     }
 
     try {
@@ -68,6 +70,7 @@ module.exports = {
           menu_id: menu_ids[i],
           quantity: quantities[i],
           total: totals[i],
+          customization: customizations[i],
         });
       }
 
