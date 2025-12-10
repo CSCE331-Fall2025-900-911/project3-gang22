@@ -23,9 +23,9 @@ export default function Cart({ openReview, setCartItems, cartItems, money, incre
             </div>
 
             <div className="totals">
-                <div className="row gap-md"><span>Subtotal</span><strong id="subtotal">{`${subtotal}`}</strong></div>
-                <div className="row gap-sm"><span>Tax</span><strong id="tax">{`${tax}`}</strong></div>
-                <div className="row gap-sm total"><span>Total</span><strong id="total">{`${total}`}</strong></div>
+                <div className="row gap-md"><span>Subtotal</span><strong data-no-translate id="subtotal">{`${subtotal}`}</strong></div>
+                <div className="row gap-sm"><span>Tax</span><strong data-no-translate id="tax">{`${tax}`}</strong></div>
+                <div className="row gap-sm total"><span>Total</span><strong data-no-translate id="total">{`${total}`}</strong></div>
             </div>
 
             <div className="row gap-lg">

@@ -48,7 +48,7 @@ export default function Weather() {
       {weather && (
         <div>
 
-          <p>🌡 Temperature: <strong>{weather.temperature * (9/5) + 32}°F</strong></p>
+          <p>🌡 Temperature: <strong>{Math.round(weather.temperature * (9/5) + 32)}°F</strong></p>
           <p>🌧 Precipitation: <strong>{weather.precipitation} mm</strong></p>
           </div>
       )}

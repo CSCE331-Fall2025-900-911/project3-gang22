@@ -85,4 +85,49 @@ export async function getWeather(latitude, longitude) {
     return { error: "Network error" };
   }
 }
+export async function translateOne(text, target) {
+  try {
+    const response = await fetch(
+      `${API_BASE}/customer/translate?text=${encodeURIComponent(text)}&target=${encodeURIComponent(target)}`,
+      {
+        credentials: "include"
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Translation API failed with status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.translated;
+  } catch (err) {
+    console.error("Error translating text:", err);
+    return null;
+  }
+}
+
+export async function translateBatch(textArray, target) {
+  try {
+    const textStr = textArray.join("|||");
+
+    const response = await fetch(
+      `${API_BASE}/customer/translate?text=${encodeURIComponent(textStr)}&target=${encodeURIComponent(target)}`,
+      {
+        credentials: "include"
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Translation API failed with status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // Split translated results back into array
+    return data.translated.split("|||");
+  } catch (err) {
+    console.error("Error translating batch:", err);
+    return [];
+  }
+}
 

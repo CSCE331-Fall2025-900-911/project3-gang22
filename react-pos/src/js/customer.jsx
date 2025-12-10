@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { fetchMenu, createOrder, getCouponCode } from "./customer-pages/menu.jsx";
+import { fetchMenu, createOrder, getCouponCode, translateOne, translateBatch } from "./customer-pages/menu.jsx";
 import { API_BASE } from "./apibase.js";
 import CustomizationModal from "./customer-components/customizationModal.jsx";
 import MenuDisplay from "./customer-components/menuDisplay.jsx";
@@ -8,6 +8,7 @@ import Weather from "./customer-components/weather.jsx";
 import ReviewModal from "./customer-components/reviewModal.jsx";
 import OrderModal from "./customer-components/orderModal.jsx";
 import PaymentModal from "./customer-components/paymentModal.jsx";
+import LanguageSelectorDropdown, { globalTranslateAllVisibleText } from "./customer-components/languageSelector.jsx";
 
 export const CUSTOMER_BASE_URL = `${API_BASE}/customer`;
 
@@ -36,7 +37,7 @@ export default function Customer() {
   const [wheelUsed, setWheelUsed] = useState(false);   // to avoid multiple spins per visit
 
 
-    // Category filter state
+  // Category filter state
   const categoryOrder = ['Milk Tea', 'Fruit Tea', 'Smoothie', 'Slush', 'Specialty'];
   const [selectedCategory, setSelectedCategory] = useState('Milk Tea');
 
@@ -57,77 +58,92 @@ export default function Customer() {
   // =========================
   // MAIN DOM EFFECT
   // =========================
-    useEffect(() => {
-        const TAX_RATE = 0.0825;
-        let sub = 0;
+  useEffect(() => {
+    const TAX_RATE = 0.0825;
+    let sub = 0;
 
-        cartItems.forEach(item => {
-            const price = Number(item?.price) || 0;
-            const qty = Number(item?.qty) || 1;
-            sub += price * qty;
-            sub += item.customization.totalCustomizationPrice;
-        });
-
-        // Apply percentage coupon first
-        let discountedSub = sub;
-        if (couponApplied && couponDiscount > 0) {
-            discountedSub = sub * (1 - couponDiscount);
-        }
-
-        // Apply mystery wheel discount (flat $ amount)
-        if (wheelUsed && flatDiscount > 0) {
-            discountedSub = Math.max(0, discountedSub - flatDiscount);
-        }
-
-        const newSubtotal = money(discountedSub);
-        const newTax = money(discountedSub * TAX_RATE);
-        const newTotal = money(discountedSub + discountedSub * TAX_RATE);
-
-        setSubtotal(newSubtotal);
-        setTax(newTax);
-        setTotal(newTotal);
-    }, [
-        cartItems,
-        customizationSubtotals,
-        couponApplied,
-        couponDiscount,
-        wheelUsed,
-        flatDiscount   //NEW dependency
-    ]);
-
-
-    function addItem(itemToAddID, customizations) {
-    setCartItems(previousCartItems => {
-      const baseItem = menuItems.find(item => item.id === itemToAddID);
-      const newCustomizationString = JSON.stringify(customizations);
-      const existingItemIndex = previousCartItems.findIndex(item => {
-        if (item.id === itemToAddID) {
-          const existingCustomizationString = JSON.stringify(item.customization);
-          return existingCustomizationString === newCustomizationString;
-        }
-        return false;
-      });
-
-      if (existingItemIndex !== -1) {
-        return previousCartItems.map((item, index) => {
-          if (index === existingItemIndex) {
-            return { ...item, qty: item.qty + 1 };
-          }
-          return item;
-        });
-
-      }
-      else {
-        const newItem = {
-          cardID: Date.now().toString() + Math.random().toFixed(4),
-          ...baseItem,
-          qty: 1,
-          customization: customizations
-        };
-        return [...previousCartItems, newItem];
-      }
+    cartItems.forEach(item => {
+      const price = Number(item?.price) || 0;
+      const qty = Number(item?.qty) || 1;
+      sub += price * qty;
+      sub += item.customization.totalCustomizationPrice;
     });
+
+    // Apply percentage coupon first
+    let discountedSub = sub;
+    if (couponApplied && couponDiscount > 0) {
+      discountedSub = sub * (1 - couponDiscount);
+    }
+
+    // Apply mystery wheel discount (flat $ amount)
+    if (wheelUsed && flatDiscount > 0) {
+      discountedSub = Math.max(0, discountedSub - flatDiscount);
+    }
+
+    const newSubtotal = money(discountedSub);
+    const newTax = money(discountedSub * TAX_RATE);
+    const newTotal = money(discountedSub + discountedSub * TAX_RATE);
+
+    setSubtotal(newSubtotal);
+    setTax(newTax);
+    setTotal(newTotal);
+  }, [
+    cartItems,
+    customizationSubtotals,
+    couponApplied,
+    couponDiscount,
+    wheelUsed,
+    flatDiscount   //NEW dependency
+  ]);
+
+
+  async function addItem(itemToAddID, customizations) {
+  const lang = localStorage.getItem("lang") || "en";
+
+  const baseItem = menuItems.find(item => item.id === itemToAddID);
+
+  // Translate BEFORE calling setCartItems
+  let translatedName = baseItem.drink_name;
+  if (lang !== "en") {
+    try {
+      translatedName = await translateOne(baseItem.drink_name, lang);
+    } catch (e) {
+      console.error("Translation failed:", e);
+    }
   }
+
+  // Now update cart
+  setCartItems(previousCartItems => {
+    const newCustomizationString = JSON.stringify(customizations);
+
+    const existingItemIndex = previousCartItems.findIndex(item => {
+      if (item.id === itemToAddID) {
+        const existingCustomizationString = JSON.stringify(item.customization);
+        return existingCustomizationString === newCustomizationString;
+      }
+      return false;
+    });
+
+    if (existingItemIndex !== -1) {
+      return previousCartItems.map((item, index) =>
+        index === existingItemIndex
+          ? { ...item, qty: item.qty + 1 }
+          : item
+      );
+    }
+
+    const newItem = {
+      cardID: Date.now().toString() + Math.random().toFixed(4),
+      ...baseItem,
+      drink_name: translatedName,
+      qty: 1,
+      customization: customizations
+    };
+
+    return [...previousCartItems, newItem];
+  });
+}
+
 
   function openReview() {
     // Prevent opening if cart is empty
@@ -190,53 +206,53 @@ export default function Customer() {
     }
   }
 
-    async function spinWheel() {
-        if (wheelUsed) {
-            alert("You've already spun the wheel this visit.");
-            return;
-        }
-
-        try {
-            const res = await fetch(CUSTOMER_BASE_URL + "/spin-wheel", {
-                method: "POST",
-                credentials: "include",
-            });
-
-            const data = await res.json();
-
-            if (!data || data.ok === false) {
-                alert(data?.message || "Unable to spin the wheel right now.");
-                return;
-            }
-
-            // Prevent further spins
-            setWheelUsed(true);
-
-            if (data.type === "percent") {
-                // e.g. 0.05, 0.10, 0.15
-                setCouponDiscount(data.value);
-                setCouponApplied(true);
-                alert(`You won ${data.value * 100}% off! Code: ${data.code}`);
-            } else if (data.type === "amount") {
-                // e.g. $1 off
-                setFlatDiscount(data.value);
-                alert(`You won $${data.value.toFixed(2)} off! Code: ${data.code}`);
-            } else if (data.type === "none") {
-                alert(data.message || "Sip happens! No discount this time, but you're still tea-rrific 💛");
-            }
-        } catch (err) {
-            console.error(err);
-            alert("Error spinning the wheel. Please try again later.");
-        }
+  async function spinWheel() {
+    if (wheelUsed) {
+      alert("You've already spun the wheel this visit.");
+      return;
     }
 
+    try {
+      const res = await fetch(CUSTOMER_BASE_URL + "/spin-wheel", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (!data || data.ok === false) {
+        alert(data?.message || "Unable to spin the wheel right now.");
+        return;
+      }
+
+      // Prevent further spins
+      setWheelUsed(true);
+
+      if (data.type === "percent") {
+        // e.g. 0.05, 0.10, 0.15
+        setCouponDiscount(data.value);
+        setCouponApplied(true);
+        alert(`You won ${data.value * 100}% off! Code: ${data.code}`);
+      } else if (data.type === "amount") {
+        // e.g. $1 off
+        setFlatDiscount(data.value);
+        alert(`You won $${data.value.toFixed(2)} off! Code: ${data.code}`);
+      } else if (data.type === "none") {
+        alert(data.message || "Sip happens! No discount this time, but you're still tea-rrific 💛");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error spinning the wheel. Please try again later.");
+    }
+  }
 
 
-    // =====================
+  // =====================
   // JSX Render
   // =====================
   return (
     <>
+      <LanguageSelectorDropdown/>
       {/* {!orderInProgress && (
         <div className="kiosk-entry">
           Place Order
