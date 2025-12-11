@@ -140,9 +140,9 @@ export default function MenuDisplay({
 
             <CategoryButtons setSelectedCategory={setSelectedCategory} />
             {/* <h3 className="menu-category-heading">{selectedCategory}</h3> */}
-            <h1 className="menu-category-heading">
+            <h2 className="menu-category-heading">
                 {translatedCategories[selectedCategory] || selectedCategory}
-            </h1>
+            </h2>
 
             <div id="menuGrid" className="grid-cards" aria-live="polite">
                 <MenuBody

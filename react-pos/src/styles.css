@@ -385,10 +385,12 @@ h1 {
   height: 100px;
 }
 
-.weather-box h3 {
+#weatherHeading {
     margin-top: 14px;
     margin-bottom: -4px;
     text-align: center;
+    font-size:18px;
+    font-weight: bold;
 }
 
 /* Weather Text Lines */
