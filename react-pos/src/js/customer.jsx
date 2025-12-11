@@ -205,12 +205,12 @@ export default function Customer() {
   return (
     <>
       <div style={{ 
-        left: `${20 / zoomAmount}px`, 
-        top: `${20 / zoomAmount}px`, 
+        bottom: `${20 / zoomAmount}px`, 
+        right: `${20 / zoomAmount}px`, 
         transform: `scale(${1 / zoomAmount})`,
-        transformOrigin: 'top left',
-        right: 'auto',
-        bottom: 'auto', 
+        transformOrigin: 'bottom right',
+        top: 'auto',
+        left: 'auto', 
       }} 
        className="accessibility-box" >
         <LanguageSelectorDropdown />
