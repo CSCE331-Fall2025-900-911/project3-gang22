@@ -204,6 +204,8 @@ export default function Customer() {
     <>
       <LanguageSelectorDropdown />
 
+      <h1 className="globalhead">Customer Kiosk</h1>
+
       {page === "menu" && (
         <main className="wrap grid-2">
         <MenuDisplay
