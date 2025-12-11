@@ -82,16 +82,18 @@ export default function MenuPage() {
         extraFields={(allGroups, selectedGroups, toggleGroup) => (
           <fieldset>
             <legend>Customizations</legend>
-            {allGroups.map(group => (
-              <label key={group}>
-                <input
-                  type="checkbox"
-                  checked={selectedGroups.includes(group)}
-                  onChange={() => toggleGroup(group)}
-                />
-                {group}
-              </label>
-            ))}
+            <div className="customization-group-container">
+              {allGroups.map((group) => (
+                <label key={group} className="customization-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={selectedGroups.includes(group)}
+                    onChange={() => toggleGroup(group)}
+                  />
+                  {group}
+                </label>
+              ))}
+            </div>
           </fieldset>
         )}
 
