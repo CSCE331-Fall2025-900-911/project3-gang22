@@ -1,9 +1,24 @@
 import Editor from "../manager-components/editor";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { MANAGER_BASE_URL } from "../manager";
 
 export default function MenuPage() {
+  const [allGroups, setAllGroups] = useState([]);
+
   useEffect(() => {
     document.title = "Manager - Menu Editor Page";
+
+    async function fetchGroups() {
+      try {
+        const res = await fetch(`${MANAGER_BASE_URL}/customization_groups`, { credentials: "include" });
+        const data = await res.json();
+        setAllGroups(data);
+      } catch (err) {
+        console.error("Error fetching customization groups:", err);
+      }
+    }
+
+    fetchGroups();
   }, []);
 
   return (
@@ -16,6 +31,7 @@ export default function MenuPage() {
         requiredFields={[0,1,2,5]}
         numericFields={[1]}
         defaultValues={{5:"/images/placeholder.png"}}
+        allCustomizationGroups={allGroups}
         headers={[
           { display: "ID", key: "id" },
           { display: "Drink", key: "drink_name" },
@@ -23,7 +39,25 @@ export default function MenuPage() {
           { display: "Category", key: "category" },
           { display: "Tea", key: "tea_type" },
           { display: "Milk", key: "milk_type" },
-          { display: "Image", key: "picture_url" }
+          { display: "Image", key: "picture_url" },
+          {
+            display: "Customizations",
+            key: "customization_groups",
+            render: (item) => {
+              if (!item.customization_groups) return "";
+              const groups = item.customization_groups.split(",").map(g => g.trim());
+              return (
+                <div className="customization-list">
+                  {groups.map((g, idx) => (
+                    <span key={idx} className="customization-item">
+                      {g}
+                    </span>
+                  ))}
+                </div>
+              );
+            }
+          }
+
         ]}
         extractValues={(item) => [
           item.drink_name,
@@ -45,6 +79,22 @@ export default function MenuPage() {
             picture_url: pictureUrl
           };
         }}
+        extraFields={(allGroups, selectedGroups, toggleGroup) => (
+          <fieldset>
+            <legend>Customizations</legend>
+            {allGroups.map(group => (
+              <label key={group}>
+                <input
+                  type="checkbox"
+                  checked={selectedGroups.includes(group)}
+                  onChange={() => toggleGroup(group)}
+                />
+                {group}
+              </label>
+            ))}
+          </fieldset>
+        )}
+
       />
     </main>
   );

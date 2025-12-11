@@ -5,7 +5,8 @@ const employeeModel = require('../models/employeeModel');
 const inventoryModel = require('../models/inventoryModel');
 const menuInventoryModel = require('../models/menuInventoryModel');
 const orderModel = require('../models/orderModel');
-const orderItemModel = require('../models/orderItemModel')
+const orderItemModel = require('../models/orderItemModel');
+const customizationsModel = require('../models/customizationsModel');
 
 module.exports = {
   // --- Menu ---
@@ -19,37 +20,95 @@ module.exports = {
   },
 
   async addMenu(req, res) {
-    const required = ['drink_name', 'price', 'category', 'picture_url'];
-    if (!required.every(k => req.body[k] != null)) return res.status(400).json({ error: 'Missing required fields' });
+    const required = ["drink_name", "price", "category", "picture_url"];
+    if (!required.every((k) => req.body[k] != null)) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
     try {
-      res.json(await menuModel.add(req.body));
+      const payload = req.body;
+
+      // Insert the base menu item
+      const newItem = await menuModel.add(payload);
+
+      // Handle initial customizations if provided
+      if (payload.customizations_add && payload.customizations_add.length > 0) {
+        for (const group of payload.customizations_add) {
+          await customizationsModel.addGroup(newItem.id, group);
+        }
+      }
+
+      res.json(newItem);
     } catch (err) {
-      console.error('Error adding menu:', err);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error("Error adding menu:", err);
+      res.status(500).json({ error: "Internal server error" });
     }
   },
 
   async updateMenu(req, res) {
-    if (!req.body.id) return res.status(400).json({ error: 'Missing id' });
+    if (!req.body.id) {
+      return res.status(400).json({ error: "Missing id" });
+    }
+
     try {
-      await menuModel.update(req.body);
-      res.json({ message: 'Menu item updated successfully' });
+      const payload = req.body;
+
+      // Update the base menu item fields
+      await menuModel.update(payload);
+
+      // Handle customization changes if provided
+      if (payload.customizations_change) {
+        const { add = [], remove = [] } = payload.customizations_change;
+
+        // Remove unchecked groups
+        for (const group of remove) {
+          await customizationsModel.removeGroup(payload.id, group);
+        }
+
+        // Add newly checked groups
+        for (const group of add) {
+          await customizationsModel.addGroup(payload.id, group);
+        }
+      }
+
+      res.json({ message: "Menu item updated successfully" });
     } catch (err) {
-      console.error('Error updating menu:', err);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error("Error updating menu:", err);
+      res.status(500).json({ error: "Internal server error" });
     }
   },
 
   async deleteMenu(req, res) {
-    if (!req.body.id) return res.status(400).json({ error: 'Missing id' });
+    if (!req.body.id) {
+      return res.status(400).json({ error: "Missing id" });
+    }
+
     try {
-      await menuModel.delete(req.body.id);
-      res.json({ message: 'Menu item deleted successfully' });
+      const menuId = req.body.id;
+
+      // First remove all customizations tied to this menu item
+      await customizationsModel.removeAllForMenu(menuId);
+
+      // Then remove the menu item itself
+      await menuModel.delete(menuId);
+
+      res.json({ message: "Menu item and its customizations deleted successfully" });
     } catch (err) {
-      console.error('Error deleting menu:', err);
+      console.error("Error deleting menu:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  },
+
+  async getCustomizationGroups(req, res) {
+    try {
+      const groups = await customizationsModel.getGroups();
+      res.json(groups);
+    } catch (err) {
+      console.error('Error fetching customization groups:', err);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
+
   // --- Employee ---
   async getEmployees(req, res) {
     try {

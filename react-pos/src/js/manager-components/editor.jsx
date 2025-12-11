@@ -13,7 +13,9 @@ export default function Editor({
   buildPayload,
   requiredFields = [],
   numericFields = [],
-  defaultValues = {}
+  defaultValues = {},
+  allCustomizationGroups = [],
+  extraFields = null,
 }) {
   const [items, setItems] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
@@ -61,6 +63,17 @@ export default function Editor({
     }
   }
 
+  // Used for menu only
+  function computeCustomizationChanges(originalGroups, newGroups) {
+    const originalSet = new Set(originalGroups || []);
+    const newSet = new Set(newGroups || []);
+
+    const add = [...newSet].filter(g => !originalSet.has(g));
+    const remove = [...originalSet].filter(g => !newSet.has(g));
+
+    return { add, remove };
+  }
+
   async function handleDelete(id) {
     try {
       await fetch(`${MANAGER_BASE_URL}/${basePath}/del`, {
@@ -96,7 +109,11 @@ export default function Editor({
     setShowDialog(true);
   }
 
-  async function handleDialogSubmit(values) {
+  async function handleDialogSubmit(formData) {
+    // formData now contains { values, customization_groups }
+    const values = formData.values;
+    const customizationGroups = formData.customization_groups || [];
+
     if (basePath === "menu") {
       values[5] = values[5]?.trim() ? values[5] : "/images/placeholder.png";
     }
@@ -135,6 +152,30 @@ export default function Editor({
       dialogMode === "edit" ? selectedItem.id : null
     );
 
+    // ✅ Handle customization groups for menu editor
+    if (basePath === "menu") {
+      if (dialogMode === "edit") {
+        const originalGroups = selectedItem.customization_groups
+          ? selectedItem.customization_groups.split(",").map((g) => g.trim())
+          : [];
+
+        const originalSet = new Set(originalGroups);
+        const newSet = new Set(customizationGroups);
+
+        const add = [...newSet].filter((g) => !originalSet.has(g));
+        const remove = [...originalSet].filter((g) => !newSet.has(g));
+
+        if (add.length > 0 || remove.length > 0) {
+          payload.customizations_change = { add, remove };
+        }
+      } else if (dialogMode === "new") {
+        // For new items, just send all selected groups to backend
+        if (customizationGroups.length > 0) {
+          payload.customizations_add = customizationGroups;
+        }
+      }
+    }
+
     const method = "POST";
     const endpoint = dialogMode === "new" ? "add" : "update";
 
@@ -143,7 +184,7 @@ export default function Editor({
         method,
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -158,11 +199,7 @@ export default function Editor({
       }
 
       const result = await res.json();
-      if (dialogMode === "new") {
-        setItems([...items, result]);
-      } else {
-        await fetchItems();
-      }
+      await fetchItems();
       setShowDialog(false);
       setErrorMessage("");
     } catch (err) {
@@ -208,6 +245,9 @@ export default function Editor({
           onSubmit={handleDialogSubmit}
           onClose={() => setShowDialog(false)}
           errorMessage={errorMessage}
+          allCustomizationGroups={allCustomizationGroups}
+          customizationGroups={selectedItem?.customization_groups || ""}
+          extraFields={extraFields}
         />
       )}
     </section>

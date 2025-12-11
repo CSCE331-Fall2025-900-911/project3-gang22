@@ -59,7 +59,7 @@ export default function OrderItemsDialog({ order, items, onClose }) {
         <ul>
           {items.map((item, idx) => (
             <li key={idx}>
-              {item.drink_name} — {item.quantity} × ${item.total}
+              {item.drink_name} × {item.quantity} - ${item.total}
             </li>
           ))}
         </ul>

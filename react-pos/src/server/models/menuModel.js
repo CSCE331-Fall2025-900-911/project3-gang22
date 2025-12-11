@@ -4,7 +4,14 @@ const { query } = require('../db');
 
 module.exports = {
   async getAll() {
-    const { rows } = await query('SELECT * FROM p2_menu ORDER BY id');
+    const { rows } = await query(`
+      SELECT m.*,
+            STRING_AGG(DISTINCT c.name, ', ') AS customization_groups
+      FROM p2_menu m
+      LEFT JOIN customizations c ON c.menu_id = m.id
+      GROUP BY m.id
+      ORDER BY m.id
+    `);
     return rows;
   },
 

@@ -8,9 +8,18 @@ export default function EditDialog({
   onSubmit,
   onClose,
   requiredFields = [],
-  errorMessage
+  errorMessage,
+  extraFields = null,
+  allCustomizationGroups = [],
+  customizationGroups = ""   // ✅ string of groups passed from Editor
 }) {
   const [values, setValues] = useState(fields.map((_, i) => initialValues[i] ?? ""));
+  const [selectedGroups, setSelectedGroups] = useState(
+    customizationGroups
+      ? customizationGroups.split(",").map(g => g.trim())
+      : []
+  );
+
   const dialogRef = useRef(null);
 
   useEffect(() => {
@@ -25,9 +34,18 @@ export default function EditDialog({
     setValues(updated);
   }
 
+  function toggleGroup(group) {
+    setSelectedGroups(prev =>
+      prev.includes(group)
+        ? prev.filter(g => g !== group)
+        : [...prev, group]
+    );
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
-    onSubmit(values);
+    // Pass both normal values and customization groups back
+    onSubmit({ values, customization_groups: selectedGroups });
   }
 
   // Trap focus inside dialog
@@ -66,7 +84,7 @@ export default function EditDialog({
         <h3 id="edit-dialog-title">{title}</h3>
 
         {errorMessage && (
-          <div role="alert" style={{ color: "red", marginBottom: "0.75rem" }}>
+          <div role="alert" className="dialog-error">
             {errorMessage}
           </div>
         )}
@@ -76,8 +94,8 @@ export default function EditDialog({
             const inputId = `edit-field-${i}`;
             const isRequired = requiredFields.includes(i);
             return (
-              <div key={i} style={{ marginBottom: "0.5rem" }}>
-                <label htmlFor={inputId}> {isRequired ? "*" : ""}{label}: </label>
+              <div key={i} className="dialog-field">
+                <label htmlFor={inputId}>{isRequired ? "*" : ""}{label}: </label>
                 <input
                   id={inputId}
                   type="text"
@@ -90,7 +108,10 @@ export default function EditDialog({
             );
           })}
 
-          <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
+          {/* Render extra fields if provided (e.g. customization checkboxes for MenuPage) */}
+          {extraFields && extraFields(allCustomizationGroups, selectedGroups, toggleGroup)}
+
+          <div className="dialog-actions">
             <button type="submit">Save</button>
             <button type="button" onClick={onClose} aria-label="Cancel editing dialog">
               Cancel

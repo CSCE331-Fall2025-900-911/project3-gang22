@@ -19,6 +19,38 @@
   width: 320px;
 }
 
+.dialog-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end; 
+  gap: 0.75rem; 
+}
+
+.customization-list {
+  display: flex;
+  flex-wrap: wrap;       /* allow wrapping if too many */
+  gap: 0.5rem;           /* space between items */
+  margin-left: 0;        /* remove indent */
+  padding: 0;            /* remove default ul padding */
+}
+
+.customization-item {
+  display: inline-flex;
+  align-items: center;
+  background-color: #dcdcff;   /* light gray pill background */
+  border-radius: 12px;         /* rounded pill shape */
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  color: #333;
+  border: 1px solid #333;
+}
+
+
+.customization-checkbox {
+  display: block;
+  margin: 0.25rem 0;
+}
+
 
 
 /* FIXME: NEED TO FIX */
