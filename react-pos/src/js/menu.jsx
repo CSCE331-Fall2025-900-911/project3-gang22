@@ -38,8 +38,10 @@ export default function Menu() {
 
     return (
         <>
-            <button className="btn" style={{marginTop: "20px", marginLeft: "20px"}}onClick={() => { window.location.pathname = '/'}}>Back</button>
-            <img className="logo" src="images/placeholder.png" />
+            <div style={{display: "flex", alignContent: "center"}}>
+                <button className="btn" style={{marginTop: "20px", marginLeft: "20px"}}onClick={() => { window.location.pathname = '/'}}>Back</button>
+                <img className="logo" src="images/placeholder.png" />
+            </div>
             <div className="menu-categories-container">
                 {categoriesToRender.map(category => (
                     <div key={category} className="menu-section">
