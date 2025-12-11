@@ -9,6 +9,7 @@ import Weather from "./customer-components/weather.jsx";
 import ReviewModal from "./customer-components/reviewModal.jsx";
 import PaymentModal from "./customer-components/paymentModal.jsx";
 import LanguageSelectorDropdown from "./customer-components/languageSelector.jsx";
+import ZoomAdjuster from "./customer-components/zoomAdjuster.jsx";
 
 
 export const CUSTOMER_BASE_URL = `${API_BASE}/customer`;
@@ -38,6 +39,7 @@ export default function Customer() {
   const [couponApplied, setCouponApplied] = useState(false);
   const [flatDiscount, setFlatDiscount] = useState(0);
   const [wheelUsed, setWheelUsed] = useState(false);
+  const [ zoomAmount, setZoomAmount ] = useState(1.00);
 
   const TAX_RATE = 0.0825;
 
@@ -202,7 +204,18 @@ export default function Customer() {
   // --------------------------
   return (
     <>
-      <LanguageSelectorDropdown />
+      <div style={{ 
+        left: `${20 / zoomAmount}px`, 
+        top: `${20 / zoomAmount}px`, 
+        transform: `scale(${1 / zoomAmount})`,
+        transformOrigin: 'top left',
+        right: 'auto',
+        bottom: 'auto', 
+      }} 
+       className="accessibility-box" >
+        <LanguageSelectorDropdown />
+        <ZoomAdjuster zoomAmount={zoomAmount} setZoomAmount={setZoomAmount} />
+      </div>
 
     <header>
       <h1 className="globalhead">Customer Kiosk</h1>
