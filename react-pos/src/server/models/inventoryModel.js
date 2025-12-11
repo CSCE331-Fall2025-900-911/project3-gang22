@@ -4,7 +4,7 @@ const { query } = require('../db');
 
 module.exports = {
   async getAll() {
-    const { rows } = await query('SELECT * FROM p2_inventory');
+    const { rows } = await query('SELECT * FROM p2_inventory ORDER BY id');
     return rows;
   },
 

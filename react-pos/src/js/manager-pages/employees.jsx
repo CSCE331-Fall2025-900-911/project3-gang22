@@ -14,7 +14,7 @@ export default function EmployeePage() {
         basePath="employee"
         fields={["Name", "Role"]}
         requiredFields={[0, 1]}
-        numericFields={[1]}
+        numericFields={[]}
         headers={[
           { display: "Employee ID", key: "id" },
           { display: "Name", key: "name" },
@@ -22,7 +22,7 @@ export default function EmployeePage() {
         ]}
         extractValues={(item) => [
           item.name,
-          item.role,
+          item.role === 0 ? "Customer" : "Manager",
           item.schedule
         ]}
         buildPayload={(values, id) => {
@@ -35,7 +35,7 @@ export default function EmployeePage() {
           return {
             id,
             name: values[0],
-            role: values[1],
+            role: roleValue,
             schedule: 0
           };
         }}

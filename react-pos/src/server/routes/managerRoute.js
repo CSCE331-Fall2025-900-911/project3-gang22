@@ -29,6 +29,7 @@ router.get('/', (req, res) => {
 // --- GET ---
 
 router.get('/menu', manager.getMenu);
+router.get('/customization_groups', manager.getCustomizationGroups);
 router.get('/employee', manager.getEmployees);
 router.get('/inventory', manager.getInventory);
 router.get('/menu_inventory', manager.getMenuInventory);
