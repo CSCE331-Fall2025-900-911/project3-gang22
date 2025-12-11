@@ -39,11 +39,11 @@ export default function Weather() {
 
   return (
 <div className="weather-box">
-      <h3 id="weatherHeading">Local Weather</h3>
+      <p id="weatherHeading">Local Weather</p>
 
       {loading && <p>Loading weather...</p>}
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p style={{ color: "black" }}>{error}</p>}
 
       {weather && (
         <div>
