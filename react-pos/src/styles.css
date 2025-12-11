@@ -835,13 +835,16 @@ h1 {
 
 .category-buttons {
     display: flex;
-    flex-direction: row;      /* ✅ Horizontal */
+    flex-direction: row;
+    flex-wrap: wrap;          /* allow a second row */
     gap: 16px;
-    justify-content: center; /* ✅ Centered under search */
+    justify-content: center;
     align-items: center;
-    margin: -60px 0 0px 0;    
-    position: static;        /* ✅ Kills the absolute bug */
+    margin: -60px auto 0;
+    position: static;
+    max-width: 600px;         /* forces 4 buttons on the first row */
 }
+
 
 .category-buttons button {
     border: none;

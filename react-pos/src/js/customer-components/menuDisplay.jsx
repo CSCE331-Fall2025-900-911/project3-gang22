@@ -15,7 +15,7 @@ export default function MenuDisplay({
     const [filteredMenuItems, setFilteredMenuItems] = useState([...menuItems]);
     const [translatedMenuItems, setTranslatedMenuItems] = useState([]);
 
-    const categoryOrder = ['Milk Tea', 'Fruit Tea', 'Smoothie', 'Slush', 'Specialty'];
+    const categoryOrder = ['Classics', 'Milk Tea', 'Fruit Tea', 'Smoothie', 'Slush', 'Matcha', 'Specialty'];
     const [translatedCategories, setTranslatedCategories] = useState({});
 
     useEffect(() => {
