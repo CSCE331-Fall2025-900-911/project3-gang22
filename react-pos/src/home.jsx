@@ -64,7 +64,7 @@ export default function Home() {
 
     return (
         <div>
-                        <LanguageSelectorDropdown />
+            <div className="accessibility-box"><LanguageSelectorDropdown /></div>
             <main className="home-wrap">
                 <h1>Welcome {' ' + currentUser.user.display_name}</h1>
                 <nav className="nav">

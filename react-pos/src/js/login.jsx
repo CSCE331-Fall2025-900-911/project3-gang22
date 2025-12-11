@@ -33,7 +33,9 @@ export default function Login({ validatingUser, setCurrentUser }) {
         <div>
             {!isGuestMode && (
                 <div>
-                    <LanguageSelectorDropdown />
+                    <div className="accessibility-box"> 
+                        <LanguageSelectorDropdown />
+                    </div>
 
                     <main className="home-wrap">
                         <h1>Log In?</h1>

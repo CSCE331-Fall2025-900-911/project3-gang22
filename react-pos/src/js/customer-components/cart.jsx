@@ -1,7 +1,16 @@
-import { useState } from "react";
+import { useEffect, useRef } from "react";
 import CartBody from "./cartBody";
 
 export default function Cart({ openReview, cartItems, money, increaseQty, decreaseQty, subtotal, tax, total, clearCart }) {
+
+    const cartContainerRef = useRef(null);
+
+    useEffect(() => {
+        // When the cart page mounts/loads, focus the container
+        if (cartContainerRef.current) {
+        cartContainerRef.current.focus();
+        }
+    }, []);
 
     function handleCheckoutClick() {
         if ( cartItems.length === 0 ) {
@@ -14,7 +23,11 @@ export default function Cart({ openReview, cartItems, money, increaseQty, decrea
 
     return (
         <aside className="panel" aria-labelledby="cartHeading">
-            <div id="cartHeadingBox">
+            <div id="cartHeadingBox"
+                ref={cartContainerRef}
+                tabIndex="-1"
+                role="main"
+                aria-label="Your Shopping Cart">
                 <h2 id="cartHeading">Your Cart</h2>
             </div>
 
