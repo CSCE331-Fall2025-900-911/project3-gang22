@@ -14,7 +14,7 @@ export default function MenuDisplay({
     
     const [filteredMenuItems, setFilteredMenuItems] = useState([...menuItems]);
 
-    const categoryOrder = ['Milk Tea', 'Fruit Tea', 'Smoothie', 'Slush', 'Specialty'];
+    const categoryOrder = ['Classics', 'Milk Tea', 'Fruit Tea', 'Smoothie', 'Slush', 'Matcha', 'Specialty'];
 
     useEffect(() => {
         setFilteredMenuItems([...menuItems]);

@@ -15,7 +15,7 @@ export default function MenuDisplay({
     const [filteredMenuItems, setFilteredMenuItems] = useState([...menuItems]);
     const [translatedMenuItems, setTranslatedMenuItems] = useState([]);
 
-    const categoryOrder = ['Milk Tea', 'Fruit Tea', 'Smoothie', 'Slush', 'Specialty'];
+    const categoryOrder = ['Classics', 'Milk Tea', 'Fruit Tea', 'Smoothie', 'Slush', 'Matcha', 'Specialty'];
     const [translatedCategories, setTranslatedCategories] = useState({});
 
     useEffect(() => {
@@ -140,9 +140,9 @@ export default function MenuDisplay({
 
             <CategoryButtons setSelectedCategory={setSelectedCategory} />
             {/* <h3 className="menu-category-heading">{selectedCategory}</h3> */}
-            <h3 className="menu-category-heading">
+            <h2 className="menu-category-heading">
                 {translatedCategories[selectedCategory] || selectedCategory}
-            </h3>
+            </h2>
 
             <div id="menuGrid" className="grid-cards" aria-live="polite">
                 <MenuBody
