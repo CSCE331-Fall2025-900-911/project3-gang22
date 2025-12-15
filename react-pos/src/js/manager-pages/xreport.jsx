@@ -4,6 +4,7 @@ import Table from "../manager-components/table.jsx";
 import DatePicker from "../manager-components/datepicker.jsx";
 import { MANAGER_BASE_URL } from "../manager";
 
+// This component displays specific sales data for a given day
 export default function XReportPage() {
   useEffect(() => {
     document.title = "Manager - X Report Page";
