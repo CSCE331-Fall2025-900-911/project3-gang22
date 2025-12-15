@@ -48,6 +48,8 @@ export default function ReviewModal(
                             ref={couponInputRef} 
                             disabled={couponApplied}
                         />
+                        
+                        {/* Button to apply coupon*/}
                         <button 
                             id="applyCouponBtn" 
                             className="btn" 
@@ -56,6 +58,8 @@ export default function ReviewModal(
                         >
                             {couponApplied ? "Applied" : "Apply"}
                         </button>
+
+                        {/* Button to apply mystery discount*/}
                         <button
                             type="button"
                             className="btn secondary"

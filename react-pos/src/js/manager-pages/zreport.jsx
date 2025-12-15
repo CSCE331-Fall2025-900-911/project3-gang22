@@ -4,7 +4,7 @@ import Table from "../manager-components/table.jsx";
 import DatePicker from "../manager-components/datepicker.jsx";
 import { MANAGER_BASE_URL } from "../manager";
 
-// This component displays a button to generate a z-report
+// This component displays a button to generate a z-report and zeros out the x-report when pressed
 export default function ZReportPage() {
   useEffect(() => {
     document.title = "Manager - X and Z Report Page";
