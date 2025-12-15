@@ -1,3 +1,5 @@
+
+// This component sets up the menu items (without images) for the menu component to display
 export default function MenuBody({ itemsByCategory, categoriesToRender, money, setShowCustomizationModal, setCurrentMenuItem }) {
 
     function openCustomization(menuItem) {

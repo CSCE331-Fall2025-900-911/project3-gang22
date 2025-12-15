@@ -3,6 +3,7 @@ import { fetchCustomizations } from "../customer-pages/menu";
 import "../../styles.css";
 import { globalTranslateAllVisibleText } from "./languageSelector.jsx";
 
+// This component displays the customization modal which allows the user to select single customizations for each adjustment except toppings which allows any amount.
 export default function CustomizationModal({ menuItemID, addItem, setShowCustomizationModal, setCustomizationSubtotals }) {
 
     const [ customizations, setCustomizations ] = useState([]);

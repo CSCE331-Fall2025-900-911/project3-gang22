@@ -3,6 +3,7 @@ import "../styles.css";
 import { API_BASE } from "./apibase";
 import LanguageSelectorDropdown from "./customer-components/languageSelector.jsx";
 
+// This component dislays the login in page where the user can choose to log in or continue as guest
 export default function Login({ validatingUser, setCurrentUser }) {
 
     const GUEST_CREDENTIALS = { 

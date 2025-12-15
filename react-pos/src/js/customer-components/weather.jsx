@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { getWeather } from "../customer-pages/menu"; // ✅ adjust path if needed
+import { getWeather } from "../customer-pages/menu";
 
+// This component uses the users location to display local weather information
 export default function Weather() {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);

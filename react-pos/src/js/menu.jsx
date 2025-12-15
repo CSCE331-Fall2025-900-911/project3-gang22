@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchMenu } from "./customer-pages/menu";
 
+// This component displays the non-interactive menu 
 export default function Menu() {
     const [ menuItems, setMenuItems ] = useState([]);
 

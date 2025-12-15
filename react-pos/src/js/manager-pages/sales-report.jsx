@@ -6,6 +6,7 @@ import DatePicker from "../manager-components/datepicker.jsx";
 import { MANAGER_BASE_URL } from "../manager";
 import VirtuosoTable from "../manager-components/tableVirtuoso.jsx";
 
+// This component displays a specified range of sales information for the manager dashboard
 export default function SalesReportPage() {
   useEffect(() => {
     document.title = "Manager - Sales Report Page";

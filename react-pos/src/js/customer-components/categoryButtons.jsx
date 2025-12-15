@@ -1,3 +1,5 @@
+
+// This component handles the filtering of menu items by categories through the use of buttons
 export default function CategoryButtons({ setSelectedCategory }) {
     return (
         <div className="category-buttons">

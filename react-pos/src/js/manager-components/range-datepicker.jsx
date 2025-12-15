@@ -15,6 +15,7 @@ function RangeButton({ label, value, viewRange, setViewRange }) {
   );
 }
 
+// This component displays buttons for the user to select a range of a day, week, month, or year
 export default function RangeDateToolbar({ selectedDate, setSelectedDate, viewRange, setViewRange }) {
   return (
     <div style={{ display: "flex", gap: ".5rem", marginBottom: "1rem", alignItems: "center" }}>

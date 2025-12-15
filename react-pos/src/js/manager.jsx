@@ -14,6 +14,7 @@ import { API_BASE } from "./apibase.js";
 
 export const MANAGER_BASE_URL = `${API_BASE}/manager`;
 
+// This component displays the manager dashboard
 export default function Manager() {
 
   // Renders appropriate page when Navbar updates the URL

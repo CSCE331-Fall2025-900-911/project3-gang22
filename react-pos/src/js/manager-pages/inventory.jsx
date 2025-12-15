@@ -1,6 +1,7 @@
 import Editor from "../manager-components/editor";
 import { useEffect } from "react";
 
+// This component displays the basic inventory information for the manager dashboard
 export default function InventoryPage() {
   useEffect(() => {
     document.title = "Manager - Inventory Editor Page";

@@ -3,6 +3,7 @@ import Table from "../manager-components/table";
 import DatePicker from "../manager-components/datepicker.jsx";
 import { MANAGER_BASE_URL } from "../manager.jsx";
 
+// This component displays the basic order information for the manager dashboard
 export default function OrdersPage() {
 
   useEffect(() => {

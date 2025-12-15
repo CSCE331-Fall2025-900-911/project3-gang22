@@ -1,3 +1,5 @@
+
+// LEGACY: This component displays the payment information
 export default function OrderModal() {
     return (
          <div id="orderModal" className="modal-overlay hidden">

@@ -1,3 +1,5 @@
+
+// This component sets up the cart items to be displayed inside the cart component
 export default function CartBody({ cartItems, money, increaseQty, decreaseQty }) {
     if (!cartItems) { return <></>};
 

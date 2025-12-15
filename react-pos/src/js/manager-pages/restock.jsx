@@ -4,6 +4,7 @@ import RestockInputPanel from "../manager-components/restockInputPanel.jsx"
 import RestockOrderPanel from "../manager-components/restockOrdersPanel.jsx"
 import { MANAGER_BASE_URL } from "../manager.jsx";
 
+// This component displays the restocking information for the inventory on the manager dashboard
 export default function InventoryRestockPage() {
     useEffect(() => {
         document.title = "Manager - Inventory Restock Page";

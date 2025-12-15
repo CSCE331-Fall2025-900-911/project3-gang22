@@ -7,6 +7,7 @@ import VirtuosoTable from "../manager-components/tableVirtuoso.jsx";
 import RangeDateToolbar from "../manager-components/range-datepicker.jsx";
 import { MANAGER_BASE_URL } from "../manager";
 
+// This component displays a specified range of product usage information for the manager dashboard
 export default function ProductUsagePage() {
   useEffect(() => {
     document.title = "Manager - Product Usage Page";

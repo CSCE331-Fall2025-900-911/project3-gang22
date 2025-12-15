@@ -1,5 +1,6 @@
 const { query } = require('../db');
 
+// Provides CRUD operations for customizations
 module.exports = {
     async getCustomizations(menuItemID) {
         console.log("Query Menu ID: " + menuItemID);

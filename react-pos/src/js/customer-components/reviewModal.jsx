@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import ReviewBody from "./reviewBody";
 
+// This component displays the cart information as well as field for coupons and the mystery reward
 export default function ReviewModal(
     {   cartItems, 
         money, 

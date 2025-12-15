@@ -85,6 +85,8 @@ export async function getWeather(latitude, longitude) {
     return { error: "Network error" };
   }
 }
+
+// Translate a single piece of text
 export async function translateOne(text, target) {
   try {
     const response = await fetch(
@@ -106,6 +108,7 @@ export async function translateOne(text, target) {
   }
 }
 
+// Translate a batch of text
 export async function translateBatch(textArray, target) {
   try {
     const textStr = textArray.join("|||");

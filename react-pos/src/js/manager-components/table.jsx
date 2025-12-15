@@ -1,6 +1,6 @@
 import React from "react";
 
-// Dynamically populates table with passed in headers and data
+// This component dynamically populates a table with passed in headers and data
 export default function Table({ headers, data, caption = "Data table" }) {
   return (
     <table className="menu">

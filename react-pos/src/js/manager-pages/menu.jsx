@@ -2,6 +2,7 @@ import Editor from "../manager-components/editor";
 import { useEffect, useState } from "react";
 import { MANAGER_BASE_URL } from "../manager";
 
+// This component displays the basic menu item information for the manager dashboard
 export default function MenuPage() {
   const [allGroups, setAllGroups] = useState([]);
 

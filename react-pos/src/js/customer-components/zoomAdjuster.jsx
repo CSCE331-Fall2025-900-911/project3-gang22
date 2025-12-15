@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import "../../styles.css"
 
+// This component handles the zooming of the page with plus and minus buttons
 export default function ZoomAdjuster({ zoomAmount, setZoomAmount}) {
 
     const [ zoomToggled, setZoomToggled ] = useState(false);
@@ -13,7 +14,7 @@ export default function ZoomAdjuster({ zoomAmount, setZoomAmount}) {
     return (
         <div>
             <button className="zoom-toggle"><img src="/images/magnifiying-glass.png" onClick={() => setZoomToggled(oldToggle => !oldToggle)} /></button>
-            {!zoomToggled &&
+            {zoomToggled &&
                 <div className="zoom-button-container">
                     <button onClick={() => setZoomAmount(oldZoom => oldZoom + .15)}><img src="/images/plus.png" /></button>
                     <button onClick={() => setZoomAmount(oldZoom => oldZoom - .15)}><img src="/images/minus.png" /></button>

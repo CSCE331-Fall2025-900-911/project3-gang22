@@ -1,3 +1,5 @@
+
+// This component sets up the review modal items for the review modal to display
 export default function ReviewBody({ cartItems, money}) {
     function capitalize(str) {
         if (!str) return "";

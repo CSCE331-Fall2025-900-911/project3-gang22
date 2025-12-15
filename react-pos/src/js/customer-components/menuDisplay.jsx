@@ -3,6 +3,7 @@ import MenuBody from "./menuBody";
 import CategoryButtons from "../customer-components/categoryButtons.jsx";
 import { translateBatch } from "../customer-pages/menu.jsx";
 
+// This component displays menu items based off the selected category which when clicked adds the respective item to the cart
 export default function MenuDisplay({
     menuItems,
     money,

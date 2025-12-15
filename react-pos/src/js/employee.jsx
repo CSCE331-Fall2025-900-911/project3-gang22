@@ -11,6 +11,7 @@ import CategoryButtons from "./customer-components/categoryButtons.jsx";
 
 export const CUSTOMER_BASE_URL = `${API_BASE}/customer`;
 
+// This component displays the cashier screen
 export default function Customer() {
 
   const [ menuItems, setMenuItems ] = useState([]);

@@ -14,6 +14,8 @@ import ZoomAdjuster from "./customer-components/zoomAdjuster.jsx";
 
 export const CUSTOMER_BASE_URL = `${API_BASE}/customer`;
 
+
+// This component displays the customer kiosk screen
 export default function Customer() {
 
   // PAGE STATE — controls which "screen" is visible

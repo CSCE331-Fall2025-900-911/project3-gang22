@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import "./managerStyles.css";
 
+// This component displays the order item details for a given order
 export default function OrderItemsDialog({ order, items, onClose }) {
   const dialogRef = useRef(null);
   const closeButtonRef = useRef(null);
@@ -34,7 +35,7 @@ export default function OrderItemsDialog({ order, items, onClose }) {
     }
   };
 
-  // ✅ Hooks are always called, but rendering is conditional
+  // Hooks are always called, but rendering is conditional
   if (!order) return null;
 
   return (

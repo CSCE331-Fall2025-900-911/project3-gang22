@@ -1,5 +1,6 @@
 import React from "react"
 
+// This component sets up the menu items for the menu component to display
 export default function MenuBody({ itemsByCategory, categoriesToRender, money, setShowCustomizationModal, setCurrentMenuItem }) {
 
     function openCustomization(menuItem) {

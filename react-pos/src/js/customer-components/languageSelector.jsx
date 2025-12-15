@@ -5,6 +5,7 @@ import { translateOne } from "../customer-pages/menu.jsx";
 
 let __translateAllVisibleText = null;
 
+// Global translation function for other components use
 export async function globalTranslateAllVisibleText() {
     if (__translateAllVisibleText === null) {
         console.log("__translateAllVisibleText is NULL");
@@ -14,7 +15,7 @@ export async function globalTranslateAllVisibleText() {
     // setTimeout(() => __translateAllVisibleText(), 500);
 }
 
-// ✅ Global translated alert
+// Global translated alert
 export async function transAlert(message) {
     try {
         const lang = localStorage.getItem("lang") || "en";
@@ -32,7 +33,7 @@ export async function transAlert(message) {
     }
 }
 
-
+// This component displays the language selector which automatically translates the page based off the selected language
 export default function LanguageTranslator() {
     const [currentLanguage, setCurrentLanguage] = useState(() => {
         return localStorage.getItem("lang") || "en";
@@ -103,7 +104,7 @@ export default function LanguageTranslator() {
     }
 
 
-    // ✅ Core DOM translation logic (reusable)
+    //  Core DOM translation logic (reusable)
     async function internalTranslateAllVisibleText() {
 
         console.log("Translate");
@@ -135,7 +136,7 @@ export default function LanguageTranslator() {
 
         if (textNodes.length === 0) return;
 
-        // ✅ Restore English
+        // Restore English
         if (currentLanguage === "en") {
             textNodes.forEach((node) => {
                 const original = originalTextMap.current.get(node);
@@ -144,7 +145,7 @@ export default function LanguageTranslator() {
             return;
         }
 
-        // ✅ Cache original text
+        // Cache original text
         const originals = textNodes.map((node) => {
             if (!originalTextMap.current.has(node)) {
                 originalTextMap.current.set(node, node.nodeValue);
@@ -173,12 +174,12 @@ export default function LanguageTranslator() {
     }
     __translateAllVisibleText = internalTranslateAllVisibleText;
 
-    // ✅ Run when language changes
+    // Run when language changes
     useEffect(() => {
         translateAllVisibleText();
     }, [currentLanguage]);
 
-    // ✅ Observe for dynamically added content (menu, modals, etc.)
+    // Observe for dynamically added content (menu, modals, etc.)
     useEffect(() => {
         observerRef.current = new MutationObserver(() => {
             if (currentLanguage !== "en") {

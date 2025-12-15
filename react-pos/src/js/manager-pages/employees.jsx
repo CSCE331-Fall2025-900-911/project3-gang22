@@ -1,6 +1,7 @@
 import Editor from "../manager-components/editor";
 import { useEffect } from "react";
 
+// This component displays the basic employee information for the manager dashboard
 export default function EmployeePage() {
   useEffect(() => {
     document.title = "Manager - Employee Editor Page";

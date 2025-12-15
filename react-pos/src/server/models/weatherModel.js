@@ -1,3 +1,5 @@
+
+// Provides weather information for a given latitude and longtitude
 module.exports = {
   async getWeather(lat, lon) {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=precipitation`;

@@ -1,6 +1,7 @@
 import React from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
+// This component receives data and displays a representative line graph
 export default function Graph({ xaxis, yaxis, data, xLabel = "X-Axis", yLabel = "Y-Axis", width = 600, height = 300, chartTitle = "Line chart" }) {
   const hasData = Array.isArray(data) && data.length > 0;
 

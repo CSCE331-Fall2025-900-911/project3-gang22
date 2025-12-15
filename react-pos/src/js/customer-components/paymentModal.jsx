@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 
+// This component displays the fields for the user to enter payment information. It handles submitting the order to the database when submit is selected
 export default function PaymentModal({ cartItems, clearCart, createOrder, subtotal, tax, total, setShowPaymentModal, setOrderInProgress, couponDiscount }) {
     const cardNumberRef = useRef(null);
     const cardExpMRef = useRef(null);

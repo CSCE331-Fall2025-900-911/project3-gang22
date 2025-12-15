@@ -1,6 +1,7 @@
 import React from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
+// This component receives data and displays a representative bar graph
 export default function BarGraph({ xaxis, yaxis, data, xLabel = "X-Axis", yLabel = "Y-Axis", width = 600, height = 300, barColor = "#8884d8", chartTitle = "Bar chart" }) {
   const hasData = Array.isArray(data) && data.length > 0;
 
