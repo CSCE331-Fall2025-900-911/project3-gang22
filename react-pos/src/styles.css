@@ -1009,7 +1009,7 @@ h1 {
 
 .accessibility-box {
     display: flex;
-    position: fixed;
+    position: relative;
     align-items: flex-start;
     z-index: 1000;
     padding: 10px;
@@ -1106,4 +1106,13 @@ h1 {
     padding-right: 50px;
     margin-left: 36px;
     transition: background-color 0.3s;
+}
+
+@media (max-width: 1920px) {
+    .accessibility-box {
+        bottom: 0;
+        right: 0;
+        top: auto;
+        left: auto;
+    }
 }
